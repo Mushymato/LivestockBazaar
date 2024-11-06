@@ -26,6 +26,17 @@
             "Action": "mushymato.LivestockBazaar_Shop Marnie down 0800 2000 13 20 3 3"
           }
         },
+        {
+          "Position": {
+            "X": 15,
+            "Y": 21
+          },
+          "Layer": "Buildings",
+          "SetProperties": {
+            // Make Shane sell blue chickens :)
+            "Action": "mushymato.LivestockBazaar_Shop {{ModId}}_Shane"
+          }
+        },
       ]
     },
   ]

@@ -245,5 +245,26 @@
         },
       }
     },
+    {
+      "Action": "EditData",
+      "Target": "Data/FarmAnimals",
+      "TargetField": [
+        "Blue Chicken"
+      ],
+      "Entries": {
+        "PurchasePrice": 2000,
+        "ShopTexture": "Animals/Blue Chicken",
+        "ShopSourceRect": {
+          "X": 0,
+          "Y": 0,
+          "Width": 16,
+          "Height": 16
+        },
+        "CustomFields": {
+          // allow chicken to be bought from Shane's shop
+          "mushymato.LivestockBazaar/BuyFrom.{{ModId}}_Shane": true
+        }
+      }
+    }
   ]
 }

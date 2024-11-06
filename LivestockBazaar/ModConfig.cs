@@ -5,14 +5,13 @@ namespace LivestockBazaar;
 internal sealed class ModConfig
 {
     /// <summary>Do not override marnie's stock and shop menu</summary>
-    public bool VanillaMarnieShop { get; set; } = false;
-    /// <summary>Use vanilla shop menu</summary>
-    public bool VanillaAnimalShopMenu { get; set; } = false;
+    public bool VanillaMarnieStock { get; set; } = false;
+
     /// <summary>Restore default config values</summary>
     private void Reset()
     {
-        VanillaMarnieShop = false;
-        VanillaAnimalShopMenu = false;
+        VanillaMarnieStock = false;
+        // VanillaLivestockMenu = false;
     }
 
     /// <summary>Add mod config to GMCM if available</summary>
@@ -31,6 +30,13 @@ internal sealed class ModConfig
             reset: () => { Reset(); helper.WriteConfig(this); },
             save: () => { helper.WriteConfig(this); },
             titleScreenOnly: false
+        );
+        GMCM.AddBoolOption(
+            mod: mod,
+            getValue: () => VanillaMarnieStock,
+            setValue: (value) => VanillaMarnieStock = value,
+            name: I18n.Config_VanillaMarnieStock_Name,
+            tooltip: I18n.Config_VanillaMarnieStock_Tooltip
         );
     }
 }

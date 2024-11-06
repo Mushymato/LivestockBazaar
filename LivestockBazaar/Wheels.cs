@@ -10,7 +10,6 @@ internal static class Wheels
     /// <returns></returns>
     internal static string FormatTime(int timeCode)
     {
-        Console.WriteLine($"{timeCode % 100}, {timeCode % 100:D2}");
         int hour = timeCode / 100;
         if (hour > 24)
             hour -= 24;

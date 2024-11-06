@@ -16,27 +16,25 @@ internal static class OpenBazaar
 {
     /// <summary>Tile action to open FAB shop</summary>
     internal static readonly string TileAction_Shop = $"{ModEntry.ModId}_Shop";
-    /// <summary>Show anima shop</summary>
-    internal static Func<string, bool> ShowAnimalShop => ModEntry.Config.VanillaAnimalShopMenu ? ShowVanillaAnimalShop : BazaarMenu.ShowFor;
 
     internal static void Register(IModHelper helper, Harmony harmony)
     {
-        GameLocation.RegisterTileAction(TileAction_Shop, TileActionShowAnimalShop);
+        GameLocation.RegisterTileAction(TileAction_Shop, TileAction_ShowLivestockShop);
         harmony.Patch(
             original: AccessTools.DeclaredMethod(typeof(GameLocation), nameof(GameLocation.ShowAnimalShopMenu)),
             prefix: new HarmonyMethod(typeof(OpenBazaar), nameof(GameLocation_ShowAnimalShopMenu_Prefix))
         );
         helper.ConsoleCommands.Add(
-            "fab-shop",
+            "lb-shop",
             "Triggers sowing (planting of seed and fertilizer from attachment) on all sprinklers with applicable attachment.",
-            ConsoleShowAnimalShop
+            Console_ShowLivestockShop
         );
     }
 
     /// <summary>Show specific FAB shop, using vanilla menu</summary>
     /// <param name="command"></param>
     /// <param name="args"></param>
-    private static void ConsoleShowAnimalShop(string command, string[] args)
+    private static void Console_ShowLivestockShop(string command, string[] args)
     {
         if (!Context.IsWorldReady)
         {
@@ -47,8 +45,8 @@ internal static class OpenBazaar
         {
             ModEntry.Log(error, LogLevel.Error);
         }
-        ModEntry.Log($"Show animal shop '{args[0]}' (vanilla: {ModEntry.Config.VanillaAnimalShopMenu})", LogLevel.Info);
-        ShowAnimalShop(shopName);
+        ModEntry.Log($"Show animal shop '{shopName}'", LogLevel.Info);
+        BazaarMenu.ShowFor(shopName);
     }
 
     /// <summary>Tile Action show shop, do checks for open/close time and owner present as required</summary>
@@ -57,7 +55,7 @@ internal static class OpenBazaar
     /// <param name="who"></param>
     /// <param name="tile"></param>
     /// <returns></returns>
-    private static bool TileActionShowAnimalShop(GameLocation location, string[] action, Farmer who, Point tile)
+    private static bool TileAction_ShowLivestockShop(GameLocation location, string[] action, Farmer who, Point tile)
     {
         if (!ArgUtility.TryGet(action, 1, out var shopName, out string error, allowBlank: true, "string shopId") ||
             !ArgUtility.TryGetOptional(action, 2, out var direction, out error, null, allowBlank: true, "string direction") ||
@@ -138,7 +136,7 @@ internal static class OpenBazaar
             }
         }
         // show shop
-        return ShowAnimalShop(shopName);
+        return BazaarMenu.ShowFor(shopName);
     }
 
     /// <summary>Override marnie shop and menu, if enabled in config</summary>
@@ -150,13 +148,10 @@ internal static class OpenBazaar
         try
         {
             // if ModEntry.Config.VanillaMarnieShop is true or if this menu uses the PurchaseAnimalsMenu delegate, use vanilla
-            if (ModEntry.Config.VanillaMarnieShop || onMenuOpened != null)
-            {
-                Console.WriteLine($"GameLocation_ShowAnimalShopMenu_Prefix: {ModEntry.Config.VanillaMarnieShop}, {onMenuOpened}");
+            if (ModEntry.Config.VanillaMarnieStock || onMenuOpened != null)
                 return true;
-            }
             // use custom menu
-            ShowAnimalShop(AssetManager.MARNIE);
+            BazaarMenu.ShowFor(AssetManager.MARNIE);
             return false;
         }
         catch (Exception err)
@@ -166,43 +161,43 @@ internal static class OpenBazaar
         }
     }
 
-    /// <summary>Show the vanilla animal shop, but with custom stock rules</summary>
-    /// <param name="shopName"></param>
-    /// <returns></returns>
-    public static bool ShowVanillaAnimalShop(string shopName)
-    {
-        List<KeyValuePair<string, string>> list = [];
-        foreach (GameLocation location in Game1.locations)
-        {
-            if (location.buildings.Any((Building p) => p.GetIndoors() is AnimalHouse) && (!Game1.IsClient || location.CanBeRemotedlyViewed()))
-            {
-                list.Add(new KeyValuePair<string, string>(location.NameOrUniqueName, location.DisplayName));
-            }
-        }
-        if (!list.Any())
-        {
-            Farm farm = Game1.getFarm();
-            list.Add(new KeyValuePair<string, string>(farm.NameOrUniqueName, farm.DisplayName));
-        }
-        Game1.currentLocation.ShowPagedResponses(Game1.content.LoadString("Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.ChooseLocation"), list, delegate (string value)
-        {
-            GameLocation locationFromName = Game1.getLocationFromName(value);
-            if (locationFromName != null)
-            {
-                Game1.activeClickableMenu = new PurchaseAnimalsMenu(
-                    AssetManager.GetAnimalStockData(shopName, location: locationFromName)
-                        .Select((entry) => new SObject("100", 1, isRecipe: false, entry.Data.PurchasePrice)
-                        {
-                            Name = entry.Key,
-                            Type = entry.AvailableForLocation ? null : ((entry.Data.ShopMissingBuildingDescription == null) ? "" : TokenParser.ParseText(entry.Data.ShopMissingBuildingDescription)),
-                            displayNameFormat = entry.Data.ShopDisplayName
-                        })
-                        .ToList(),
-                    locationFromName
-                );
-            }
-        }, auto_select_single_choice: true);
-        return true;
-    }
+    // /// <summary>Show the vanilla animal shop, but with custom stock rules</summary>
+    // /// <param name="shopName"></param>
+    // /// <returns></returns>
+    // public static bool ShowVanillaAnimalShop(string shopName)
+    // {
+    //     List<KeyValuePair<string, string>> list = [];
+    //     foreach (GameLocation location in Game1.locations)
+    //     {
+    //         if (location.buildings.Any((Building p) => p.GetIndoors() is AnimalHouse) && (!Game1.IsClient || location.CanBeRemotedlyViewed()))
+    //         {
+    //             list.Add(new KeyValuePair<string, string>(location.NameOrUniqueName, location.DisplayName));
+    //         }
+    //     }
+    //     if (!list.Any())
+    //     {
+    //         Farm farm = Game1.getFarm();
+    //         list.Add(new KeyValuePair<string, string>(farm.NameOrUniqueName, farm.DisplayName));
+    //     }
+    //     Game1.currentLocation.ShowPagedResponses(Game1.content.LoadString("Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.ChooseLocation"), list, delegate (string value)
+    //     {
+    //         GameLocation locationFromName = Game1.getLocationFromName(value);
+    //         if (locationFromName != null)
+    //         {
+    //             Game1.activeClickableMenu = new PurchaseAnimalsMenu(
+    //                 AssetManager.GetAnimalStockData(shopName, location: locationFromName)
+    //                     .Select((entry) => new SObject("100", 1, isRecipe: false, entry.Data.PurchasePrice)
+    //                     {
+    //                         Name = entry.Key,
+    //                         Type = entry.AvailableForLocation ? null : ((entry.Data.ShopMissingBuildingDescription == null) ? "" : TokenParser.ParseText(entry.Data.ShopMissingBuildingDescription)),
+    //                         displayNameFormat = entry.Data.ShopDisplayName
+    //                     })
+    //                     .ToList(),
+    //                 locationFromName
+    //             );
+    //         }
+    //     }, auto_select_single_choice: true);
+    //     return true;
+    // }
 }
 
