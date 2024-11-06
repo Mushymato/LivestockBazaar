@@ -1,0 +1,20 @@
+{
+  "Name": "[CP] Error chicken",
+  "Author": "mushymato",
+  "Version": "0.1.0",
+  "Description": "[NoChimkinException]",
+  "UniqueID": "mushymato.ErrorChicken",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [
+    "Nexus:???"
+  ],
+  "ContentPackFor": {
+    "UniqueID": "Pathoschild.ContentPatcher"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "mushymato.LivestockBazaar",
+      "IsRequired": true
+    }
+  ]
+}

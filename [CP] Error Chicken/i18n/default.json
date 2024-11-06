@@ -1,0 +1,12 @@
+{
+    "ErrorChicken.DisplayName": "Error Chicken",
+    "ErrorChicken.ShopDisplayName": "??? Chimkin",
+    "ErrorChicken.ShopDescription": "[ERR Invalid Chicken Access]",
+    "ErrorChicken.BirthText": "free(): invalid chimkin",
+    "Erregg.Name": "Erregg",
+    "Erregg.Description": "NullReferenceEggception: Egg reference not set to an instance of egg",
+    "EGGFAULT.Name": "EGGFAULT",
+    "EGGFAULT.Description": "fatal chimkin: eggmentation fault",
+    "Erronnaise.Name": "Erronnaise",
+    "Erronnaise.Description": "418 I'm a teapot\nTastes like AccessViolationException",
+}

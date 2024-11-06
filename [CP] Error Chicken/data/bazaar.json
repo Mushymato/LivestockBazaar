@@ -1,0 +1,42 @@
+{
+  "Changes": [
+    {
+      "Action": "EditData",
+      "Target": "mushymato.LivestockBazaar/Shops",
+      "Entries": {
+        "{{ModId}}_Valgrind": {
+          "Currency": 0,
+          "StackSizeVisibility": null,
+          "OpenSound": null,
+          "PurchaseSound": null,
+          "PurchaseRepeatSound": null,
+          "ApplyProfitMargins": null,
+          "PriceModifiers": null,
+          "PriceModifierMode": "Stack",
+          "Owners": [
+            {
+              "Condition": null,
+              "Portrait": null,
+              "Dialogues": [
+                {
+                  "Id": "Default",
+                  "Dialogue": "?"
+                }
+              ],
+              "RandomizeDialogueOnOpen": false,
+              "ClosedMessage": null,
+              "Id": "Krobus",
+              "Name": "Krobus"
+            }
+          ],
+          "VisualTheme": null,
+          "SalableItemTags": [],
+          "Items": [],
+          "CustomFields": null,
+          "BazaarOpenFlag": "Stat",
+          "BazaarOpenKey": "Book_Grass"
+        },
+      }
+    }
+  ]
+}

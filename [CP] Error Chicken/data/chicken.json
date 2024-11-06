@@ -1,0 +1,249 @@
+{
+  "Changes": [
+    {
+      "Action": "Load",
+      "Target": "Mods/{{ModId}}/BabyErrorChicken, Mods/{{ModId}}/Erregg",
+      "FromFile": "assets/{{TargetWithoutPath}}.png"
+    },
+    {
+      "Action": "EditData",
+      "Target": "Data/Objects",
+      "Entries": {
+        "{{ModId}}_Erregg": {
+          "Name": "{{i18n:Erregg.Name}}",
+          "DisplayName": "{{i18n:Erregg.Name}}",
+          "Description": "{{i18n:Erregg.Description}}",
+          "Type": "Basic",
+          "Category": -5,
+          "Price": 50,
+          "Edibility": -10,
+          "Texture": "Mods/{{ModId}}/Erregg",
+          "SpriteIndex": 0,
+          "ContextTags": [
+            "color_red",
+            "egg_item"
+          ],
+          "Buffs": [
+            {
+              "Id": "Food",
+              "Duration": 404,
+              "IsDebuff": true,
+              "CustomAttributes": {
+                "Speed": 2.0,
+                "LuckLevel": -6.0,
+              },
+            }
+          ]
+        },
+        "{{ModId}}_EGGFAULT": {
+          "Name": "{{i18n:EGGFAULT.Name}}",
+          "DisplayName": "{{i18n:EGGFAULT.Name}}",
+          "Description": "{{i18n:EGGFAULT.Description}}",
+          "Type": "Basic",
+          "Category": -5,
+          "Price": 95,
+          "Edibility": -15,
+          "Texture": "Mods/{{ModId}}/Erregg",
+          "SpriteIndex": 1,
+          "ContextTags": [
+            "color_red",
+            "egg_item",
+            "large_egg_item"
+          ],
+          "Buffs": [
+            {
+              "Id": "Food",
+              "Duration": 404,
+              "IsDebuff": true,
+              "CustomAttributes": {
+                "Speed": 3.0,
+                "LuckLevel": -9.0,
+              },
+            }
+          ]
+        },
+        "{{ModId}}_Erronnaise": {
+          "Name": "{{i18n:Erronnaise.Name}}",
+          "DisplayName": "{{i18n:Erronnaise.Name}}",
+          "Description": "{{i18n:Erronnaise.Description}}",
+          "Type": "Basic",
+          "Category": -26,
+          "Price": 190,
+          "Texture": "Mods/{{ModId}}/Erregg",
+          "SpriteIndex": 2,
+          "Edibility": -300,
+          "IsDrink": true,
+          "ContextTags": [
+            "color_red",
+            "mayo_item"
+          ],
+        }
+      }
+    },
+    {
+      "Action": "EditData",
+      "Target": "spacechase0.SpaceCore/ObjectExtensionData",
+      "Entries": {
+        "{{ModId}}_Erronnaise": {
+          "TotemWarp": {
+            "Location": "Summit",
+            "Position": "10, 29",
+            "Color": {
+              "R": 255,
+              "G": 0,
+              "B": 0,
+              "A": 255
+            },
+            "ConsumedOnUse": true
+          }
+        }
+      },
+      "When": {
+        "HasMod": "spacechase0.SpaceCore"
+      }
+    },
+    {
+      "Action": "EditData",
+      "Target": "Data/Machines",
+      "TargetField": [
+        "(BC)24",
+        "OutputRules"
+      ],
+      "Entries": {
+        "{{ModId}}_Erregg": {
+          "Id": "{{ModId}}_Erregg",
+          "Triggers": [
+            {
+              "Trigger": "ItemPlacedInMachine",
+              "RequiredItemId": "{{ModId}}_Erregg",
+              "RequiredCount": 1
+            }
+          ],
+          "OutputItem": [
+            {
+              "ItemId": "{{ModId}}_Erronnaise"
+            }
+          ],
+          "MinutesUntilReady": 180,
+        },
+        "{{ModId}}_EGGFAULT": {
+          "Id": "{{ModId}}_EGGFAULT",
+          "Triggers": [
+            {
+              "Trigger": "ItemPlacedInMachine",
+              "RequiredItemId": "{{ModId}}_EGGFAULT",
+              "RequiredCount": 1
+            }
+          ],
+          "OutputItem": [
+            {
+              "ItemId": "{{ModId}}_Erronnaise",
+              "Quality": 2
+            }
+          ],
+          "MinutesUntilReady": 180,
+        },
+      },
+      "MoveEntries": [
+        {
+          "Id": "{{ModId}}_Erregg",
+          "ToPosition": "Top"
+        },
+        {
+          "Id": "{{ModId}}_EGGFAULT",
+          "ToPosition": "Top"
+        }
+      ]
+    },
+    {
+      "Action": "EditData",
+      "Target": "Data/FarmAnimals",
+      "Entries": {
+        "{{ModId}}_ErrorChicken": {
+          "DisplayName": "{{i18n:ErrorChicken.DisplayName}}",
+          "House": "Coop",
+          "PurchasePrice": 400,
+          "SellPrice": 800,
+          "ShopTexture": "Animals/Error",
+          "ShopSourceRect": {
+            "X": 0,
+            "Y": 0,
+            "Width": 16,
+            "Height": 16
+          },
+          "ShopDisplayName": "{{i18n:ErrorChicken.ShopDisplayName}}",
+          "ShopDescription": "{{i18n:ErrorChicken.ShopDescription}}",
+          "EggItemIds": [
+            "{{ModId}}_Erregg",
+            "{{ModId}}_EGGFAULT"
+          ],
+          "BirthText": "{{i18n:ErrorChicken.BirthText}}",
+          "DaysToMature": 3,
+          "CanGetPregnant": false,
+          "DaysToProduce": 1,
+          "HarvestType": "DropOvernight",
+          "HarvestTool": null,
+          "ProduceItemIds": [
+            {
+              "Id": "Default",
+              "ItemId": "{{ModId}}_Erregg"
+            }
+          ],
+          "DeluxeProduceItemIds": [
+            {
+              "Id": "Default",
+              "ItemId": "{{ModId}}_EGGFAULT"
+            }
+          ],
+          "DeluxeProduceMinimumFriendship": 200,
+          "DeluxeProduceCareDivisor": 1200.0,
+          "CanEatGoldenCrackers": true,
+          "ProfessionForHappinessBoost": 2,
+          "ProfessionForQualityBoost": 2,
+          "ProfessionForFasterProduce": -1,
+          "Sound": "cluck",
+          "Texture": "Animals/Error",
+          "BabyTexture": "Mods/{{ModId}}/BabyErrorChicken",
+          "UseFlippedRightForLeft": false,
+          "SpriteWidth": 16,
+          "SpriteHeight": 16,
+          "UseDoubleUniqueAnimationFrames": true,
+          "SleepFrame": 16,
+          "EmoteOffset": {
+            "X": 0,
+            "Y": -16
+          },
+          "SwimOffset": {
+            "X": 0,
+            "Y": 112
+          },
+          "CanSwim": true,
+          "BabiesFollowAdults": true,
+          "GrassEatAmount": 2,
+          "HappinessDrain": 7,
+          "UpDownPetHitboxTileSize": "1, 1",
+          "LeftRightPetHitboxTileSize": "1, 1",
+          "BabyUpDownPetHitboxTileSize": "1, 1",
+          "BabyLeftRightPetHitboxTileSize": "1, 1",
+          "StatToIncrementOnProduce": [
+            {
+              "Id": "ChickenEggsLayed",
+              "RequiredItemId": null,
+              "RequiredTags": [
+                "egg_item"
+              ],
+              "StatName": "ChickenEggsLayed"
+            }
+          ],
+          "ShowInSummitCredits": true,
+          "CustomFields": {
+            // prevent chicken from being bought from marnie
+            "mushymato.LivestockBazaar/BuyFrom.Marnie": false,
+            // allow chicken to be bought from Valgrind the debug shop
+            "mushymato.LivestockBazaar/BuyFrom.{{ModId}}_Valgrind": true
+          }
+        },
+      }
+    },
+  ]
+}

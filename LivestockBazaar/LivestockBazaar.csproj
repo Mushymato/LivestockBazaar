@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="$(MSBuildUserExtensionsPath)/sdv.props"
+    Condition="Exists('$(MSBuildUserExtensionsPath)/sdv.props')" />
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <EnableHarmony>true</EnableHarmony>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Name>Livestock Bazaar</Name>
+    <Authors>mushymato</Authors>
+    <Description>Allow custom animal sellers, revamp animal shop UI.</Description>
+    <UniqueId>mushymato.LivestockBazaar</UniqueId>
+    <UpdateKeys>Nexus:???</UpdateKeys>
+    <Version>0.1.0</Version>
+    <MinimumApiVersion_Behavior>UpdateFull</MinimumApiVersion_Behavior>
+    <MinimumGameVersion_Behavior>UpdateFull</MinimumGameVersion_Behavior>
+    <Dependencies_VersionBehavior>UpdateFull</Dependencies_VersionBehavior>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <SMAPIDependency Include="focustense.StardewUI" Required="true" />
+    <SMAPIDependency Include="spacechase0.GenericModConfigMenu" Required="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Leclair.Stardew.ModManifestBuilder" Version="2.3.1" />
+    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.3.1" />
+    <PackageReference Include="Pathoschild.Stardew.ModTranslationClassBuilder" Version="2.2.0" />
+  </ItemGroup>
+
+  <Target Name="SymlinkClean" BeforeTargets="AfterBuild" Condition="'$(Configuration)' ==
+  'Debug'">
+    <Exec Command="rm -rf '$(GameModsPath)/$(ModFolderName)/assets/views'/*" />
+  </Target>
+  <Target Name="SymlinkViews" AfterTargets="AfterBuild" Condition="'$(Configuration)' == 'Debug'">
+    <Exec Command="rm -rf '$(GameModsPath)/$(ModFolderName)/assets/views'/*" />
+    <Exec
+      Command="ln $(ProjectDir)assets/views/* '$(GameModsPath)/$(ModFolderName)/assets/views/'" />
+  </Target>
+
+</Project>

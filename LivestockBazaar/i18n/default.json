@@ -1,0 +1,6 @@
+{
+  "$schema": "https://smapi.io/schemas/i18n.json",
+  "shop.time-range": "Open from {{openTime}} to {{closeTime}}",
+  "shop.time-start": "Opened {{openTime}}",
+  "shop.time-end": "Closed {{closeTime}}"
+}

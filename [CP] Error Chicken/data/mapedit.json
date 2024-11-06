@@ -1,0 +1,32 @@
+{
+  "Changes": [
+    {
+      "Action": "EditMap",
+      "Target": "Maps/BusStop",
+      "MapTiles": [
+        {
+          "Position": {
+            "X": 13,
+            "Y": 21
+          },
+          "Layer": "Buildings",
+          "SetProperties": {
+            // "Action": "mushymato.LivestockBazaar_Shop {{ModId}}_Valgrind down 0800 2000"
+            "Action": "mushymato.LivestockBazaar_Shop {{ModId}}_Valgrind"
+          }
+        },
+        {
+          "Position": {
+            "X": 14,
+            "Y": 21
+          },
+          "Layer": "Buildings",
+          "SetProperties": {
+            // this will not open up the shop because marnie is not around.
+            "Action": "mushymato.LivestockBazaar_Shop Marnie down 0800 2000 13 20 3 3"
+          }
+        },
+      ]
+    },
+  ]
+}
