@@ -10,7 +10,7 @@
   "UniqueID": "mushymato.LivestockBazaar",
   "Name": "Livestock Bazaar",
   "Author": "mushymato",
-  "Version": "0.1.0-Debug",
+  "Version": "0.1.0",
   "Description": "Allow custom animal sellers, revamp animal shop UI.",
   "MinimumApiVersion": "4.1.4+4daed27628b4c1810433acdfdf158d87e6f3bef7",
   "MinimumGameVersion": "1.6.10",

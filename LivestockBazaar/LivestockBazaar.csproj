@@ -33,8 +33,7 @@
     <PackageReference Include="Pathoschild.Stardew.ModTranslationClassBuilder" Version="2.2.0" />
   </ItemGroup>
 
-  <Target Name="SymlinkClean" BeforeTargets="AfterBuild" Condition="'$(Configuration)' ==
-  'Debug'">
+  <Target Name="SymlinkClean" BeforeTargets="AfterBuild">
     <Exec Command="rm -rf '$(GameModsPath)/$(ModFolderName)/assets/views'/*" />
   </Target>
   <Target Name="SymlinkViews" AfterTargets="AfterBuild" Condition="'$(Configuration)' == 'Debug'">
