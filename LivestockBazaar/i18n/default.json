@@ -7,4 +7,6 @@
   // Config
   "config.VanillaMarnieStock.name": "Vanilla Marnie Stock",
   "config.VanillaMarnieStock.tooltip": "Do not override Marnie's vanilla stock or shop menu, allowing Marnie to sell all animals.",
+  "config.VanillaLivestockMenu.name": "Vanilla Livestock Menu",
+  "config.VanillaLivestockMenu.tooltip": "Use the vanilla livestock menu for custom livestock vendors.",
 }

@@ -23,7 +23,7 @@ internal static class BazaarMenu
 #endif
     }
 
-    internal static bool ShowFor(string shopName)
+    internal static bool ShowFor(GameLocation shopLocation, string shopName)
     {
 #if DEBUG
         ModEntry.Log($"Show Bazaar: {shopName}");
