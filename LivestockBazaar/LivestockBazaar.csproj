@@ -23,7 +23,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <SMAPIDependency Include="focustense.StardewUI" Required="true" />
+    <SMAPIDependency Include="focustense.StardewUI" Required="false" />
     <SMAPIDependency Include="spacechase0.GenericModConfigMenu" Required="false" />
   </ItemGroup>
 
@@ -31,15 +31,10 @@
     <PackageReference Include="Leclair.Stardew.ModManifestBuilder" Version="2.3.1" />
     <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.3.1" />
     <PackageReference Include="Pathoschild.Stardew.ModTranslationClassBuilder" Version="2.2.0" />
+    <PackageReference Include="PropertyChanged.SourceGenerator" Version="1.0.8">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
-
-  <Target Name="SymlinkClean" BeforeTargets="AfterBuild">
-    <Exec Command="rm -rf '$(GameModsPath)/$(ModFolderName)/assets/views'/*" />
-  </Target>
-  <Target Name="SymlinkViews" AfterTargets="AfterBuild" Condition="'$(Configuration)' == 'Debug'">
-    <Exec Command="rm -rf '$(GameModsPath)/$(ModFolderName)/assets/views'/*" />
-    <Exec
-      Command="ln $(ProjectDir)assets/views/* '$(GameModsPath)/$(ModFolderName)/assets/views/'" />
-  </Target>
 
 </Project>

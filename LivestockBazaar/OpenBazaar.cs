@@ -19,7 +19,9 @@ internal static class OpenBazaar
     internal static readonly string TileAction_Shop = $"{ModEntry.ModId}_Shop";
 
     /// <summary>Delegate for opening shop</summary>
-    internal static Func<GameLocation, string, bool> ShowShopDelegate => ModEntry.Config.VanillaLivestockMenu ? ShowVanillaAnimalShop : BazaarMenu.ShowFor;
+    internal static Func<GameLocation, string, bool> ShowShopDelegate =>
+        (!BazaarMenu.StardewUIEnabled || ModEntry.Config.VanillaLivestockMenu) ?
+        ShowVanillaAnimalShop : BazaarMenu.ShowFor;
 
     /// <summary>Location that opened the shop, used to warp back after buying animal.</summary>
     internal static string ShopLocationName { get; set; } = "AnimalShop";
@@ -38,10 +40,12 @@ internal static class OpenBazaar
 
         try
         {
+            // change Marnie's shop
             harmony.Patch(
                 original: AccessTools.DeclaredMethod(typeof(GameLocation), nameof(GameLocation.ShowAnimalShopMenu)),
                 prefix: new HarmonyMethod(typeof(OpenBazaar), nameof(GameLocation_ShowAnimalShopMenu_Prefix))
             );
+            // these 3 patches are needed if using vanilla menu
             harmony.Patch(
                 original: AccessTools.DeclaredMethod(typeof(PurchaseAnimalsMenu), nameof(PurchaseAnimalsMenu.setUpForReturnAfterPurchasingAnimal)),
                 transpiler: new HarmonyMethod(typeof(OpenBazaar), nameof(PurchaseAnimalsMenu_ReturnToPreviousLocation_Transpiler))
@@ -288,11 +292,13 @@ internal static class OpenBazaar
             if (locationFromName != null)
             {
                 Game1.activeClickableMenu = new PurchaseAnimalsMenu(
-                    AssetManager.GetAnimalStockData(shopName, location: locationFromName)
+                    AssetManager.GetAnimalStockData(shopName)
                         .Select((entry) => new SObject("100", 1, isRecipe: false, entry.Data.PurchasePrice)
                         {
                             Name = entry.Key,
-                            Type = entry.AvailableForLocation ? null : ((entry.Data.ShopMissingBuildingDescription == null) ? "" : TokenParser.ParseText(entry.Data.ShopMissingBuildingDescription)),
+                            Type = entry.AvailableForLocation(locationFromName) ?
+                                null : ((entry.Data.ShopMissingBuildingDescription == null) ?
+                                    "" : TokenParser.ParseText(entry.Data.ShopMissingBuildingDescription)),
                             displayNameFormat = entry.Data.ShopDisplayName
                         })
                         .ToList(),

@@ -10,7 +10,40 @@ namespace LivestockBazaar;
 /// <param name="Key">Data/FarmAnimals key</param>
 /// <param name="Data"></param>
 /// <param name="AvailableForLocation"></param>
-public sealed record FarmAnimalBuyEntry(string Key, FarmAnimalData Data, bool AvailableForLocation);
+public sealed record FarmAnimalBuyEntry(string Key, FarmAnimalData Data)
+{
+    /// <summary>Check that a animal has a place to live in a particular location</summary>
+    /// <param name="location">game location or null</param>
+    /// <returns>True if animal has place to live</returns>
+    public bool AvailableForLocation(GameLocation? location)
+    {
+        if (location != null && Data.RequiredBuilding != null)
+            return HasBuildingOrUpgrade(location, Data.RequiredBuilding);
+        return true;
+    }
+
+    /// <summary>Why is Utility._HasBuildingOrUpgrade protected...</summary>
+    /// <param name="location"></param>
+    /// <param name="buildingId"></param>
+    /// <returns></returns>
+    public static bool HasBuildingOrUpgrade(GameLocation location, string buildingId)
+    {
+        if (location.getNumberBuildingsConstructed(buildingId) > 0)
+        {
+            return true;
+        }
+        foreach (KeyValuePair<string, BuildingData> buildingDatum in Game1.buildingData)
+        {
+            string key = buildingDatum.Key;
+            BuildingData value = buildingDatum.Value;
+            if (!(key == buildingId) && value.BuildingToUpgrade == buildingId && HasBuildingOrUpgrade(location, key))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+};
 
 /// <summary>How to check whether the shop should ignore</summary>
 public enum OpenFlagType
@@ -82,6 +115,8 @@ internal static class AssetManager
             _bazaarData = null;
     }
 
+    /// <summary>Make a copy of AnimalShop to use as <see cref="MARNIE"/>'s bazaar data.</summary>
+    /// <returns></returns>
     internal static Dictionary<string, BazaarData> DefaultBazaarData()
     {
         Dictionary<string, BazaarData> bazaarData = [];
@@ -112,7 +147,7 @@ internal static class AssetManager
     /// <param name="shopName"></param>
     /// <param name="location"></param>
     /// <returns></returns>
-    public static IEnumerable<FarmAnimalBuyEntry> GetAnimalStockData(string shopName, GameLocation? location = null)
+    public static IEnumerable<FarmAnimalBuyEntry> GetAnimalStockData(string shopName)
     {
         string buyFromKey = Field_BuyFrom + shopName;
         foreach (KeyValuePair<string, FarmAnimalData> datum in Game1.farmAnimalData)
@@ -126,34 +161,7 @@ internal static class AssetManager
             }
             else if (shopName != MARNIE)
                 continue;
-            bool available = true;
-            if (datum.Value.RequiredBuilding != null && location != null)
-            {
-                available = HasBuildingOrUpgrade(location, datum.Value.RequiredBuilding);
-            }
-            yield return new(datum.Key, datum.Value, available);
+            yield return new(datum.Key, datum.Value);
         }
-    }
-
-    /// <summary>Why is Utility._HasBuildingOrUpgrade protected...</summary>
-    /// <param name="location"></param>
-    /// <param name="buildingId"></param>
-    /// <returns></returns>
-    public static bool HasBuildingOrUpgrade(GameLocation location, string buildingId)
-    {
-        if (location.getNumberBuildingsConstructed(buildingId) > 0)
-        {
-            return true;
-        }
-        foreach (KeyValuePair<string, BuildingData> buildingDatum in Game1.buildingData)
-        {
-            string key = buildingDatum.Key;
-            BuildingData value = buildingDatum.Value;
-            if (!(key == buildingId) && value.BuildingToUpgrade == buildingId && HasBuildingOrUpgrade(location, key))
-            {
-                return true;
-            }
-        }
-        return false;
     }
 }

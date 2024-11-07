@@ -261,7 +261,7 @@
           "Height": 16
         },
         "CustomFields": {
-          // allow chicken to be bought from Shane's shop
+          // allow chicken to be bought from Shane's shop (doesn't ban it from Marnie's)
           "mushymato.LivestockBazaar/BuyFrom.{{ModId}}_Shane": true
         }
       }
