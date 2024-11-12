@@ -1,0 +1,9 @@
+{
+  "Texture": "LooseSprites/Cursors",
+  "Sprites": {
+    "Portrait": {
+      "SourceRect": "603, 414, 74, 74",
+      "Scale": 4
+    }
+  }
+}

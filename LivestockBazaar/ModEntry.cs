@@ -1,6 +1,6 @@
 global using SObject = StardewValley.Object;
-using LivestockBazaar.GUI;
 using HarmonyLib;
+using LivestockBazaar.GUI;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 

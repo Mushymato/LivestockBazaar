@@ -1,4 +1,3 @@
-
 using StardewValley;
 
 namespace LivestockBazaar;
@@ -23,7 +22,10 @@ internal static class Wheels
     {
         string shopClosed;
         if (openTime > -1 && closeTime > 1)
-            shopClosed = I18n.Shop_TimeRange(openTime: FormatTime(openTime), closeTime: FormatTime(closeTime));
+            shopClosed = I18n.Shop_TimeRange(
+                openTime: FormatTime(openTime),
+                closeTime: FormatTime(closeTime)
+            );
         else if (openTime > -1)
             shopClosed = I18n.Shop_TimeStart(openTime: FormatTime(openTime));
         else if (closeTime > 1)

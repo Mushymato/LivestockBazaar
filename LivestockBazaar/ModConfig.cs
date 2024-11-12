@@ -6,6 +6,7 @@ internal sealed class ModConfig
 {
     /// <summary>Do not override marnie's stock and shop menu</summary>
     public bool VanillaMarnieStock { get; set; } = false;
+
     /// <summary>Use vanilla livestock shop menu for custom shops</summary>
     public bool VanillaLivestockMenu { get; set; } = false;
 
@@ -21,7 +22,10 @@ internal sealed class ModConfig
     /// <param name="mod"></param>
     public void Register(IModHelper helper, IManifest mod)
     {
-        Integration.IGenericModConfigMenuApi? GMCM = helper.ModRegistry.GetApi<Integration.IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+        Integration.IGenericModConfigMenuApi? GMCM =
+            helper.ModRegistry.GetApi<Integration.IGenericModConfigMenuApi>(
+                "spacechase0.GenericModConfigMenu"
+            );
         if (GMCM == null)
         {
             helper.WriteConfig(this);
@@ -29,8 +33,15 @@ internal sealed class ModConfig
         }
         GMCM.Register(
             mod: mod,
-            reset: () => { Reset(); helper.WriteConfig(this); },
-            save: () => { helper.WriteConfig(this); },
+            reset: () =>
+            {
+                Reset();
+                helper.WriteConfig(this);
+            },
+            save: () =>
+            {
+                helper.WriteConfig(this);
+            },
             titleScreenOnly: false
         );
         GMCM.AddBoolOption(

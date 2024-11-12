@@ -36,7 +36,11 @@ public sealed record FarmAnimalBuyEntry(string Key, FarmAnimalData Data)
         {
             string key = buildingDatum.Key;
             BuildingData value = buildingDatum.Value;
-            if (!(key == buildingId) && value.BuildingToUpgrade == buildingId && HasBuildingOrUpgrade(location, key))
+            if (
+                !(key == buildingId)
+                && value.BuildingToUpgrade == buildingId
+                && HasBuildingOrUpgrade(location, key)
+            )
             {
                 return true;
             }
@@ -50,18 +54,23 @@ public enum OpenFlagType
 {
     /// <summary>Shop always follows open/close times + npc nearby</summary>
     None,
+
     /// <summary>Shop is always open after a stat is set (usually by reading a book)</summary>
     Stat,
+
     /// <summary>Shop is always open after a mail flag is set</summary>
-    Mail
+    Mail,
 }
+
 /// <summary>Extend vanilla ShopData with some extra fields for use in this mod</summary>
 public sealed class BazaarData : ShopData
 {
     /// <summary>Which type of shop open check to follow.</summary>
     public OpenFlagType BazaarOpenFlag { get; set; } = OpenFlagType.Stat;
+
     /// <summary>Which type of shop open check to follow.</summary>
     public string? BazaarOpenKey { get; set; } = "Book_AnimalCatalogue";
+
     /// <summary>
     /// Check if shop should check the open-close and shop owner in rect conditions.
     /// </summary>
@@ -75,7 +84,7 @@ public sealed class BazaarData : ShopData
             OpenFlagType.None => true,
             OpenFlagType.Stat => player.stats.Get(BazaarOpenKey) == 0,
             OpenFlagType.Mail => !player.mailReceived.Contains(BazaarOpenKey),
-            _ => throw new NotImplementedException()
+            _ => throw new NotImplementedException(),
         };
     }
 }
@@ -85,12 +94,16 @@ internal static class AssetManager
 {
     /// <summary>The animal tycoon herself</summary>
     internal const string MARNIE = "Marnie";
+
     /// <summary>Vanilla AnimalShop in Data/Shops, for copying into Bazaar data.</summary>
     internal const string ANIMAL_SHOP = "AnimalShop";
+
     /// <summary>Shop asset target</summary>
     private static string BazaarAsset => $"{ModEntry.ModId}/Shops";
+
     /// <summary>Backing field</summary>
     private static Dictionary<string, BazaarData>? _bazaarData = null;
+
     /// <summary>Shop data lazy loader</summary>
     internal static Dictionary<string, BazaarData> BazaarData
     {
@@ -100,6 +113,7 @@ internal static class AssetManager
             return _bazaarData;
         }
     }
+
     /// <summary>Buy from animal data CustomField</summary>
     internal static readonly string Field_BuyFrom = $"{ModEntry.ModId}/BuyFrom.";
 
@@ -142,6 +156,11 @@ internal static class AssetManager
         return bazaarData;
     }
 
+    public static BazaarData? GetBazaarData(string shopName)
+    {
+        BazaarData.TryGetValue(shopName, out BazaarData? data);
+        return data;
+    }
 
     /// <summary>Get animal data and whether the animal is fit for a given location</summary>
     /// <param name="shopName"></param>
@@ -152,7 +171,10 @@ internal static class AssetManager
         string buyFromKey = Field_BuyFrom + shopName;
         foreach (KeyValuePair<string, FarmAnimalData> datum in Game1.farmAnimalData)
         {
-            if (datum.Value.PurchasePrice <= 0 || !GameStateQuery.CheckConditions(datum.Value.UnlockCondition))
+            if (
+                datum.Value.PurchasePrice <= 0
+                || !GameStateQuery.CheckConditions(datum.Value.UnlockCondition)
+            )
                 continue;
             if (datum.Value.CustomFields?.TryGetValue(buyFromKey, out string? buyFrom) ?? false)
             {
