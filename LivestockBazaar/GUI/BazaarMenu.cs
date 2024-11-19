@@ -17,10 +17,7 @@ internal static class BazaarMenu
     {
         if (!helper.ModRegistry.IsLoaded("focustense.StardewUI"))
         {
-            ModEntry.Log(
-                "focustense.StardewUI not available, will use vanilla menu.",
-                LogLevel.Info
-            );
+            ModEntry.Log("focustense.StardewUI not available, will use vanilla menu.", LogLevel.Info);
             return;
         }
         viewEngine = helper.ModRegistry.GetApi<IViewEngine>("focustense.StardewUI")!;
@@ -33,11 +30,7 @@ internal static class BazaarMenu
 #endif
     }
 
-    internal static bool ShowFor(
-        GameLocation shopLocation,
-        string shopName,
-        ShopOwnerData? ownerData = null
-    )
+    internal static bool ShowFor(GameLocation shopLocation, string shopName, ShopOwnerData? ownerData = null)
     {
 #if DEBUG
         ModEntry.Log($"Show Bazaar: {shopName}");

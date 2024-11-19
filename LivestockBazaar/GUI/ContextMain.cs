@@ -52,20 +52,12 @@ public sealed class ContextMain
             {
                 portraitTexture = Game1.content.Load<Texture2D>(ownerData.Portrait);
             }
-            else if (
-                Game1.getCharacterFromName(ownerData.Portrait) is NPC ownerNPC
-                && ownerNPC.Portrait != null
-            )
+            else if (Game1.getCharacterFromName(ownerData.Portrait) is NPC ownerNPC && ownerNPC.Portrait != null)
             {
                 portraitTexture = ownerNPC.Portrait;
             }
         }
-        else if (
-            ownerData.Type == ShopOwnerType.NamedNpc
-            && !string.IsNullOrWhiteSpace(ownerData.Name)
-            && Game1.getCharacterFromName(ownerData.Name) is NPC ownerNPC
-            && ownerNPC.Portrait != null
-        )
+        else if (ownerData.Type == ShopOwnerType.NamedNpc && !string.IsNullOrWhiteSpace(ownerData.Name) && Game1.getCharacterFromName(ownerData.Name) is NPC ownerNPC && ownerNPC.Portrait != null)
         {
             portraitTexture = ownerNPC.Portrait;
         }
@@ -82,19 +74,12 @@ public sealed class ContextMain
 
         if (ownerData.Dialogues != null)
         {
-            Random random = ownerData.RandomizeDialogueOnOpen
-                ? Game1.random
-                : Utility.CreateRandom(Game1.uniqueIDForThisGame, Game1.stats.DaysPlayed);
+            Random random = ownerData.RandomizeDialogueOnOpen ? Game1.random : Utility.CreateRandom(Game1.uniqueIDForThisGame, Game1.stats.DaysPlayed);
             foreach (ShopDialogueData sdd in ownerData.Dialogues)
             {
                 if (
                     GameStateQuery.CheckConditions(sdd.Condition)
-                    && (
-                        (sdd.RandomDialogue != null && sdd.RandomDialogue.Any())
-                            ? random.ChooseFrom(sdd.RandomDialogue)
-                            : sdd.Dialogue
-                    )
-                        is string rawDialog
+                    && ((sdd.RandomDialogue != null && sdd.RandomDialogue.Any()) ? random.ChooseFrom(sdd.RandomDialogue) : sdd.Dialogue) is string rawDialog
                 )
                 {
                     OwnerDialog = TokenParser.ParseText(rawDialog);

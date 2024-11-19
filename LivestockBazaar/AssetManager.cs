@@ -36,11 +36,7 @@ public sealed record FarmAnimalBuyEntry(string Key, FarmAnimalData Data)
         {
             string key = buildingDatum.Key;
             BuildingData value = buildingDatum.Value;
-            if (
-                !(key == buildingId)
-                && value.BuildingToUpgrade == buildingId
-                && HasBuildingOrUpgrade(location, key)
-            )
+            if (!(key == buildingId) && value.BuildingToUpgrade == buildingId && HasBuildingOrUpgrade(location, key))
             {
                 return true;
             }
@@ -171,10 +167,7 @@ internal static class AssetManager
         string buyFromKey = Field_BuyFrom + shopName;
         foreach (KeyValuePair<string, FarmAnimalData> datum in Game1.farmAnimalData)
         {
-            if (
-                datum.Value.PurchasePrice <= 0
-                || !GameStateQuery.CheckConditions(datum.Value.UnlockCondition)
-            )
+            if (datum.Value.PurchasePrice <= 0 || !GameStateQuery.CheckConditions(datum.Value.UnlockCondition))
                 continue;
             if (datum.Value.CustomFields?.TryGetValue(buyFromKey, out string? buyFrom) ?? false)
             {
