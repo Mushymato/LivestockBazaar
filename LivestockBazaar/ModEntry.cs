@@ -1,5 +1,3 @@
-global using SObject = StardewValley.Object;
-using HarmonyLib;
 using LivestockBazaar.GUI;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -28,8 +26,7 @@ public sealed class ModEntry : Mod
         helper.Events.Content.AssetRequested += AssetManager.OnAssetRequested;
         helper.Events.Content.AssetsInvalidated += AssetManager.OnAssetInvalidated;
         // setup bazaar actions
-        Harmony harmony = new(ModId);
-        OpenBazaar.Register(Helper, harmony);
+        OpenBazaar.Register(helper);
     }
 
     /// <summary>Setup config menu</summary>

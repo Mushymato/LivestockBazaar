@@ -1,89 +1,9 @@
+using LivestockBazaar.Model;
 using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.GameData.Buildings;
 using StardewValley.GameData.FarmAnimals;
-using StardewValley.GameData.Shops;
 
 namespace LivestockBazaar;
-
-/// <summary>Hold info about animal that can be bought</summary>
-/// <param name="Key">Data/FarmAnimals key</param>
-/// <param name="Data"></param>
-/// <param name="AvailableForLocation"></param>
-public sealed record FarmAnimalBuyEntry(string Key, FarmAnimalData Data)
-{
-    /// <summary>Check that a animal has a place to live in a particular location</summary>
-    /// <param name="location">game location or null</param>
-    /// <returns>True if animal has place to live</returns>
-    public bool AvailableForLocation(GameLocation? location)
-    {
-        if (location != null && Data.RequiredBuilding != null)
-            return HasBuildingOrUpgrade(location, Data.RequiredBuilding);
-        return true;
-    }
-
-    /// <summary>Why is Utility._HasBuildingOrUpgrade protected...</summary>
-    /// <param name="location"></param>
-    /// <param name="buildingId"></param>
-    /// <returns></returns>
-    public static bool HasBuildingOrUpgrade(GameLocation location, string buildingId)
-    {
-        if (location.getNumberBuildingsConstructed(buildingId) > 0)
-        {
-            return true;
-        }
-        foreach (KeyValuePair<string, BuildingData> buildingDatum in Game1.buildingData)
-        {
-            string key = buildingDatum.Key;
-            BuildingData value = buildingDatum.Value;
-            if (!(key == buildingId) && value.BuildingToUpgrade == buildingId && HasBuildingOrUpgrade(location, key))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-};
-
-/// <summary>How to check whether the shop should ignore</summary>
-public enum OpenFlagType
-{
-    /// <summary>Shop always follows open/close times + npc nearby</summary>
-    None,
-
-    /// <summary>Shop is always open after a stat is set (usually by reading a book)</summary>
-    Stat,
-
-    /// <summary>Shop is always open after a mail flag is set</summary>
-    Mail,
-}
-
-/// <summary>Extend vanilla ShopData with some extra fields for use in this mod</summary>
-public sealed class BazaarData : ShopData
-{
-    /// <summary>Which type of shop open check to follow.</summary>
-    public OpenFlagType BazaarOpenFlag { get; set; } = OpenFlagType.Stat;
-
-    /// <summary>Which type of shop open check to follow.</summary>
-    public string? BazaarOpenKey { get; set; } = "Book_AnimalCatalogue";
-
-    /// <summary>
-    /// Check if shop should check the open-close and shop owner in rect conditions.
-    /// </summary>
-    /// <param name="player"></param>
-    /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
-    public bool ShouldCheckShopOpen(Farmer player)
-    {
-        return BazaarOpenFlag switch
-        {
-            OpenFlagType.None => true,
-            OpenFlagType.Stat => player.stats.Get(BazaarOpenKey) == 0,
-            OpenFlagType.Mail => !player.mailReceived.Contains(BazaarOpenKey),
-            _ => throw new NotImplementedException(),
-        };
-    }
-}
 
 /// <summary>Handles caching of custom target.</summary>
 internal static class AssetManager
@@ -130,25 +50,7 @@ internal static class AssetManager
     internal static Dictionary<string, BazaarData> DefaultBazaarData()
     {
         Dictionary<string, BazaarData> bazaarData = [];
-        if (DataLoader.Shops(Game1.content).TryGetValue(ANIMAL_SHOP, out ShopData? animalShop))
-        {
-            bazaarData[MARNIE] = new()
-            {
-                Currency = animalShop.Currency,
-                StackSizeVisibility = animalShop.StackSizeVisibility,
-                OpenSound = animalShop.OpenSound,
-                PurchaseSound = animalShop.PurchaseSound,
-                PurchaseRepeatSound = animalShop.PurchaseRepeatSound,
-                ApplyProfitMargins = animalShop.ApplyProfitMargins,
-                PriceModifiers = animalShop.PriceModifiers,
-                PriceModifierMode = animalShop.PriceModifierMode,
-                Owners = animalShop.Owners,
-                VisualTheme = animalShop.VisualTheme,
-                SalableItemTags = animalShop.SalableItemTags,
-                Items = animalShop.Items,
-                CustomFields = animalShop.CustomFields,
-            };
-        }
+        bazaarData[MARNIE] = new() { ShopId = ANIMAL_SHOP };
         return bazaarData;
     }
 
@@ -162,7 +64,7 @@ internal static class AssetManager
     /// <param name="shopName"></param>
     /// <param name="location"></param>
     /// <returns></returns>
-    public static IEnumerable<FarmAnimalBuyEntry> GetAnimalStockData(string shopName)
+    public static IEnumerable<LivestockBuyEntry> GetAnimalStockData(string shopName)
     {
         string buyFromKey = Field_BuyFrom + shopName;
         foreach (KeyValuePair<string, FarmAnimalData> datum in Game1.farmAnimalData)

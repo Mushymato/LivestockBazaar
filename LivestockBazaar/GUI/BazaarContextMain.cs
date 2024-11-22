@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using LivestockBazaar.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
@@ -10,7 +11,7 @@ namespace LivestockBazaar.GUI;
 
 /// <summary>Context for bazaar menu</summary>
 /// <param name="shopName"></param>
-public sealed class ContextMain
+public sealed class BazaarContextMain
 {
     // fields
     private readonly GameLocation shopLocation;
@@ -18,7 +19,7 @@ public sealed class ContextMain
     private readonly ShopOwnerData? ownerData;
 
     // derived
-    public readonly ImmutableList<FarmAnimalBuyEntry> FarmAnimalBuy;
+    public readonly ImmutableList<LivestockBuyEntry> LivestockBuy;
     public readonly BazaarData? Data;
 
     // Shop owner portrait
@@ -26,27 +27,21 @@ public sealed class ContextMain
     public readonly Tuple<Texture2D, Rectangle>? OwnerPortrait = null;
     public string OwnerDialog = I18n.Shop_DefaultDialog();
 
-    // Viewport dependent layout, just for testing
-    public readonly string MenuSize = "";
-
-    public ContextMain(GameLocation shopLocation, string shopName, ShopOwnerData? ownerData = null)
+    public BazaarContextMain(GameLocation shopLocation, string shopName, ShopOwnerData? ownerData = null)
     {
         this.shopLocation = shopLocation;
         this.shopName = shopName;
         this.ownerData = ownerData;
 
-        FarmAnimalBuy = AssetManager.GetAnimalStockData(shopName).ToImmutableList();
+        LivestockBuy = AssetManager.GetAnimalStockData(shopName).ToImmutableList();
         Data = AssetManager.GetBazaarData(shopName);
-
-        var viewportSize = Game1.viewport.Size;
-        MenuSize = $"{viewportSize.Width - 400}px {viewportSize.Height - 300}px";
 
         // Shop owner setup
         if (ownerData == null || ownerData.Type == ShopOwnerType.None)
             return;
 
         Texture2D? portraitTexture = null;
-        if (ownerData.Portrait != null && string.IsNullOrWhiteSpace(ownerData.Portrait))
+        if (ownerData.Portrait != null && !string.IsNullOrWhiteSpace(ownerData.Portrait))
         {
             if (Game1.content.DoesAssetExist<Texture2D>(ownerData.Portrait))
             {
@@ -57,7 +52,12 @@ public sealed class ContextMain
                 portraitTexture = ownerNPC.Portrait;
             }
         }
-        else if (ownerData.Type == ShopOwnerType.NamedNpc && !string.IsNullOrWhiteSpace(ownerData.Name) && Game1.getCharacterFromName(ownerData.Name) is NPC ownerNPC && ownerNPC.Portrait != null)
+        else if (
+            ownerData.Type == ShopOwnerType.NamedNpc
+            && !string.IsNullOrWhiteSpace(ownerData.Name)
+            && Game1.getCharacterFromName(ownerData.Name) is NPC ownerNPC
+            && ownerNPC.Portrait != null
+        )
         {
             portraitTexture = ownerNPC.Portrait;
         }

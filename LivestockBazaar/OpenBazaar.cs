@@ -1,6 +1,7 @@
 using System.Reflection.Emit;
 using HarmonyLib;
 using LivestockBazaar.GUI;
+using LivestockBazaar.Model;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
@@ -18,46 +19,30 @@ internal static class OpenBazaar
     /// <summary>Tile action to open FAB shop</summary>
     internal static readonly string TileAction_Shop = $"{ModEntry.ModId}_Shop";
 
-    /// <summary>Delegate for opening shop</summary>
-    internal static Func<GameLocation, string, ShopOwnerData?, bool> ShowShopDelegate =>
-        (!BazaarMenu.StardewUIEnabled || ModEntry.Config.VanillaLivestockMenu) ? ShowVanillaAnimalShop : BazaarMenu.ShowFor;
-
     /// <summary>Location that opened the shop, used to warp back after buying animal.</summary>
     internal static string ShopLocationName { get; set; } = "AnimalShop";
 
-    /// <summary>NPC that owns the shop, if applicable, used to show message.</summary>
-    internal static string? ShopOwnerNPCName { get; set; } = null;
-
-    internal static void Register(IModHelper helper, Harmony harmony)
+    internal static void Register(IModHelper helper)
     {
         GameLocation.RegisterTileAction(TileAction_Shop, TileAction_ShowLivestockShop);
-        helper.ConsoleCommands.Add("lb-shop", "Triggers sowing (planting of seed and fertilizer from attachment) on all sprinklers with applicable attachment.", Console_ShowLivestockShop);
+        helper.ConsoleCommands.Add(
+            "lb-shop",
+            "Triggers sowing (planting of seed and fertilizer from attachment) on all sprinklers with applicable attachment.",
+            Console_ShowLivestockShop
+        );
 
-        try
-        {
-            // change Marnie's shop
-            harmony.Patch(
-                original: AccessTools.DeclaredMethod(typeof(GameLocation), nameof(GameLocation.ShowAnimalShopMenu)),
-                prefix: new HarmonyMethod(typeof(OpenBazaar), nameof(GameLocation_ShowAnimalShopMenu_Prefix))
-            );
-            // these 3 patches are needed if using vanilla menu
-            harmony.Patch(
-                original: AccessTools.DeclaredMethod(typeof(PurchaseAnimalsMenu), nameof(PurchaseAnimalsMenu.setUpForReturnAfterPurchasingAnimal)),
-                transpiler: new HarmonyMethod(typeof(OpenBazaar), nameof(PurchaseAnimalsMenu_ReturnToPreviousLocation_Transpiler))
-            );
-            harmony.Patch(
-                original: AccessTools.DeclaredMethod(typeof(PurchaseAnimalsMenu), nameof(PurchaseAnimalsMenu.setUpForReturnToShopMenu)),
-                transpiler: new HarmonyMethod(typeof(OpenBazaar), nameof(PurchaseAnimalsMenu_ReturnToPreviousLocation_Transpiler))
-            );
-            harmony.Patch(
-                original: AccessTools.DeclaredMethod(typeof(PurchaseAnimalsMenu), nameof(PurchaseAnimalsMenu.marnieAnimalPurchaseMessage)),
-                transpiler: new HarmonyMethod(typeof(OpenBazaar), nameof(PurchaseAnimalsMenu_marnieAnimalPurchaseMessage_Transpiler))
-            );
-        }
-        catch (Exception err)
-        {
-            ModEntry.Log($"Failed to patch LivestockBazaar:\n{err}", LogLevel.Error);
-        }
+        // try
+        // {
+        //     // change Marnie's shop
+        //     harmony.Patch(
+        //         original: AccessTools.DeclaredMethod(typeof(GameLocation), nameof(GameLocation.ShowAnimalShopMenu)),
+        //         prefix: new HarmonyMethod(typeof(OpenBazaar), nameof(GameLocation_ShowAnimalShopMenu_Prefix))
+        //     );
+        // }
+        // catch (Exception err)
+        // {
+        //     ModEntry.Log($"Failed to patch LivestockBazaar:\n{err}", LogLevel.Error);
+        // }
     }
 
     /// <summary>Show specific livestock shop, using vanilla menu</summary>
@@ -75,8 +60,60 @@ internal static class OpenBazaar
             ModEntry.Log(error, LogLevel.Error);
         }
         ModEntry.Log($"Show animal shop '{shopName}'", LogLevel.Info);
-        ShopOwnerNPCName = null;
-        ShowShopDelegate(Game1.currentLocation, shopName, null);
+        BazaarMenu.ShowFor(Game1.currentLocation, shopName, null);
+    }
+
+    private static bool CheckShopOpen(
+        GameLocation location,
+        IEnumerable<ShopOwnerData> shopOwnerDatas,
+        int openTime,
+        int closeTime,
+        int shopAreaX,
+        int shopAreaY,
+        int shopAreaWidth,
+        int shopAreaHeight,
+        out ShopOwnerData? foundOwnerData
+    )
+    {
+        foundOwnerData = null;
+        // check opening and closing times
+        if ((openTime >= 0 && Game1.timeOfDay < openTime) || (closeTime >= 0 && Game1.timeOfDay >= closeTime))
+        {
+            // shop closed
+            Wheels.DisplayShopTimes(openTime, closeTime);
+            return false;
+        }
+
+        // check owner is within rect
+        if (shopAreaX != -1 || shopAreaY != -1 || shopAreaWidth != -1 || shopAreaHeight != -1)
+        {
+            if (shopAreaX == -1 || shopAreaY == -1 || shopAreaWidth == -1 || shopAreaHeight == -1)
+            {
+                // invalid rect
+                ModEntry.Log("when specifying any of the shop area 'x y width height' arguments (indexes 5-8), all four must be specified", LogLevel.Error);
+                return false;
+            }
+            Rectangle ownerRect = new(shopAreaX, shopAreaY, shopAreaWidth, shopAreaHeight);
+            IList<NPC>? locNPCs = location.currentEvent?.actors;
+            locNPCs ??= location.characters;
+
+            foreach (ShopOwnerData ownerData in shopOwnerDatas)
+            {
+                foreach (NPC npc in locNPCs)
+                {
+                    if (ownerRect.Contains(npc.TilePoint) && ownerData.IsValid(npc.Name))
+                    {
+                        // found npc
+                        foundOwnerData = ownerData;
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        // either didnt need to check check, or passed both
+        return true;
     }
 
     /// <summary>Tile Action show shop, do checks for open/close time and owner present as required</summary>
@@ -90,12 +127,12 @@ internal static class OpenBazaar
         if (
             !ArgUtility.TryGet(action, 1, out var shopName, out string error, allowBlank: true, "string shopId")
             || !ArgUtility.TryGetOptional(action, 2, out var direction, out error, null, allowBlank: true, "string direction")
-            || !ArgUtility.TryGetOptionalInt(action, 3, out var openTime, out error, -1, "int openTime")
-            || !ArgUtility.TryGetOptionalInt(action, 4, out var closeTime, out error, -1, "int closeTime")
-            || !ArgUtility.TryGetOptionalInt(action, 5, out var shopAreaX, out error, -1, "int shopAreaX")
-            || !ArgUtility.TryGetOptionalInt(action, 6, out var shopAreaY, out error, -1, "int shopAreaY")
-            || !ArgUtility.TryGetOptionalInt(action, 7, out var shopAreaWidth, out error, -1, "int shopAreaWidth")
-            || !ArgUtility.TryGetOptionalInt(action, 8, out var shopAreaHeight, out error, -1, "int shopAreaHeight")
+            || !ArgUtility.TryGetOptionalInt(action, 3, out int openTime, out error, -1, "int openTime")
+            || !ArgUtility.TryGetOptionalInt(action, 4, out int closeTime, out error, -1, "int closeTime")
+            || !ArgUtility.TryGetOptionalInt(action, 5, out int shopAreaX, out error, -1, "int shopAreaX")
+            || !ArgUtility.TryGetOptionalInt(action, 6, out int shopAreaY, out error, -1, "int shopAreaY")
+            || !ArgUtility.TryGetOptionalInt(action, 7, out int shopAreaWidth, out error, -1, "int shopAreaWidth")
+            || !ArgUtility.TryGetOptionalInt(action, 8, out int shopAreaHeight, out error, -1, "int shopAreaHeight")
         )
         {
             ModEntry.Log(error, LogLevel.Error);
@@ -122,55 +159,29 @@ internal static class OpenBazaar
                 break;
         }
         ShopOwnerData? foundOwnerData = null;
-        if (AssetManager.BazaarData.TryGetValue(shopName, out BazaarData? shopData) && shopData.ShouldCheckShopOpen(who))
+        if (AssetManager.BazaarData.TryGetValue(shopName, out BazaarData? bazaarData))
         {
-            // check opening and closing times
-            if ((openTime >= 0 && Game1.timeOfDay < openTime) || (closeTime >= 0 && Game1.timeOfDay >= closeTime))
+            var shopOwnerDatas = bazaarData.GetCurrentOwners();
+            bool shouldCheck = bazaarData.ShouldCheckShopOpen(who);
+            if (
+                CheckShopOpen(location, shopOwnerDatas, openTime, closeTime, shopAreaX, shopAreaY, shopAreaWidth, shopAreaHeight, out foundOwnerData)
+                || !shouldCheck
+            )
             {
-                Wheels.DisplayShopTimes(openTime, closeTime);
-                return false;
-            }
-            var shopOwnerDatas = ShopBuilder.GetCurrentOwners(shopData);
-
-            // check owner is within rect
-            if (shopAreaX != -1 || shopAreaY != -1 || shopAreaWidth != -1 || shopAreaHeight != -1)
-            {
-                if (shopAreaX == -1 || shopAreaY == -1 || shopAreaWidth == -1 || shopAreaHeight == -1)
-                {
-                    ModEntry.Log("when specifying any of the shop area 'x y width height' arguments (indexes 5-8), all four must be specified", LogLevel.Error);
-                    return false;
-                }
-                Rectangle ownerRect = new(shopAreaX, shopAreaY, shopAreaWidth, shopAreaHeight);
-                IList<NPC>? locNPCs = location.currentEvent?.actors;
-                locNPCs ??= location.characters;
-
-                foreach (ShopOwnerData ownerData in shopOwnerDatas)
-                {
-                    foreach (NPC npc in locNPCs)
-                    {
-                        if (ownerRect.Contains(npc.TilePoint) && ownerData.IsValid(npc.Name))
-                        {
-                            foundOwnerData = ownerData;
-                            break;
-                        }
-                    }
-                }
+                foundOwnerData ??= BazaarData.GetAwayOwner(shopOwnerDatas) ?? shopOwnerDatas.FirstOrDefault();
             }
             else
             {
-                foundOwnerData = shopOwnerDatas.FirstOrDefault();
-            }
-            if (foundOwnerData == null)
                 return false;
-            else if (foundOwnerData.ClosedMessage != null)
+            }
+            if (foundOwnerData?.ClosedMessage != null)
             {
                 Game1.drawObjectDialogue(TokenParser.ParseText(foundOwnerData.ClosedMessage));
                 return false;
             }
-            ShopOwnerNPCName = foundOwnerData.Name;
         }
         // show shop
-        return ShowShopDelegate(location, shopName, foundOwnerData);
+        return BazaarMenu.ShowFor(location, shopName, foundOwnerData);
     }
 
     /// <summary>Override marnie shop and menu, if enabled in config</summary>
@@ -184,9 +195,8 @@ internal static class OpenBazaar
             // if ModEntry.Config.VanillaMarnieShop is true or if this menu uses the PurchaseAnimalsMenu delegate, use vanilla
             if (ModEntry.Config.VanillaMarnieStock || onMenuOpened != null)
                 return true;
-            // use custom stock and maybe menu
-            ShopOwnerNPCName = AssetManager.MARNIE;
-            ShowShopDelegate(__instance, AssetManager.MARNIE, null);
+            // use custom stock and menu
+            BazaarMenu.ShowFor(__instance, AssetManager.MARNIE, null);
             return false;
         }
         catch (Exception err)
@@ -194,123 +204,5 @@ internal static class OpenBazaar
             ModEntry.Log($"Error in GameLocation_ShowAnimalShopMenu_Prefix:\n{err}", LogLevel.Error);
             return false;
         }
-    }
-
-    /// <summary>Swap</summary>
-    /// <param name="instructions"></param>
-    /// <param name="generator"></param>
-    /// <returns></returns>
-    private static IEnumerable<CodeInstruction> PurchaseAnimalsMenu_ReturnToPreviousLocation_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
-    {
-        try
-        {
-            CodeMatcher matcher = new(instructions, generator);
-            // ldstr "AnimalShop"
-            // ldc.i4.0
-            // call class StardewValley.LocationRequest StardewValley.Game1::getLocationRequest(string, bool)
-
-            matcher.Start().MatchStartForward([new(OpCodes.Ldstr, "AnimalShop"), new(OpCodes.Ldc_I4_0), new(OpCodes.Call, AccessTools.Method(typeof(Game1), nameof(Game1.getLocationRequest)))]);
-            matcher.Opcode = OpCodes.Call;
-            matcher.Operand = AccessTools.PropertyGetter(typeof(OpenBazaar), nameof(ShopLocationName));
-
-            return matcher.Instructions();
-        }
-        catch (Exception err)
-        {
-            ModEntry.Log($"Error in PurchaseAnimalsMenu_ReturnToPreviousLocation_Transpiler:\n{err}", LogLevel.Error);
-            return instructions;
-        }
-    }
-
-    private static IEnumerable<CodeInstruction> PurchaseAnimalsMenu_marnieAnimalPurchaseMessage_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
-    {
-        try
-        {
-            CodeMatcher matcher = new(instructions, generator);
-            // IL_0018: ldstr "Marnie"
-            // IL_001d: ldc.i4.1
-            // IL_001e: ldc.i4.0
-            // IL_001f: call class StardewValley.NPC StardewValley.Game1::getCharacterFromName(string, bool, bool)
-
-            matcher
-                .Start()
-                .MatchEndForward(
-                    [
-                        new(OpCodes.Ldstr, "Marnie"),
-                        new(OpCodes.Ldc_I4_1),
-                        new(OpCodes.Ldc_I4_0),
-                        // magic knowledge about this method, strangely hard to match for
-                        new(OpCodes.Call),
-                    ]
-                );
-            matcher.Operand = AccessTools.DeclaredMethod(typeof(OpenBazaar), nameof(GetShopOwnerNPC));
-
-            return matcher.Instructions();
-        }
-        catch (Exception err)
-        {
-            ModEntry.Log($"Error in PurchaseAnimalsMenu_marnieAnimalPurchaseMessage_Transpiler:\n{err}", LogLevel.Error);
-            return instructions;
-        }
-    }
-
-    private static NPC GetShopOwnerNPC(string _name, bool mustBeVillager = true, bool includeEventActors = false)
-    {
-        if (ShopOwnerNPCName != null)
-        {
-            return Game1.getCharacterFromName(ShopOwnerNPCName, mustBeVillager, includeEventActors);
-        }
-        return null!;
-    }
-
-    /// <summary>Show the vanilla animal shop, but with custom stock rules</summary>
-    /// <param name="shopName"></param>
-    /// <returns></returns>
-    public static bool ShowVanillaAnimalShop(GameLocation shopLocation, string shopName, ShopOwnerData? _owner)
-    {
-        ShopLocationName = shopLocation.Name;
-        List<KeyValuePair<string, string>> list = [];
-        foreach (GameLocation location in Game1.locations)
-        {
-            if (location.buildings.Any((Building p) => p.GetIndoors() is AnimalHouse) && (!Game1.IsClient || location.CanBeRemotedlyViewed()))
-            {
-                list.Add(new KeyValuePair<string, string>(location.NameOrUniqueName, location.DisplayName));
-            }
-        }
-        if (!list.Any())
-        {
-            Farm farm = Game1.getFarm();
-            list.Add(new KeyValuePair<string, string>(farm.NameOrUniqueName, farm.DisplayName));
-        }
-        Game1.currentLocation.ShowPagedResponses(
-            Game1.content.LoadString("Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.ChooseLocation"),
-            list,
-            delegate(string value)
-            {
-                GameLocation locationFromName = Game1.getLocationFromName(value);
-                if (locationFromName != null)
-                {
-                    Game1.activeClickableMenu = new PurchaseAnimalsMenu(
-                        AssetManager
-                            .GetAnimalStockData(shopName)
-                            .Select(
-                                (entry) =>
-                                    new SObject("100", 1, isRecipe: false, entry.Data.PurchasePrice)
-                                    {
-                                        Name = entry.Key,
-                                        Type = entry.AvailableForLocation(locationFromName)
-                                            ? null
-                                            : ((entry.Data.ShopMissingBuildingDescription == null) ? "" : TokenParser.ParseText(entry.Data.ShopMissingBuildingDescription)),
-                                        displayNameFormat = entry.Data.ShopDisplayName,
-                                    }
-                            )
-                            .ToList(),
-                        locationFromName
-                    );
-                }
-            },
-            auto_select_single_choice: true
-        );
-        return true;
     }
 }

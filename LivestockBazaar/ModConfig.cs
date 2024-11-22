@@ -14,7 +14,6 @@ internal sealed class ModConfig
     private void Reset()
     {
         VanillaMarnieStock = false;
-        VanillaLivestockMenu = false;
     }
 
     /// <summary>Add mod config to GMCM if available</summary>
@@ -47,13 +46,6 @@ internal sealed class ModConfig
             setValue: (value) => VanillaMarnieStock = value,
             name: I18n.Config_VanillaMarnieStock_Name,
             tooltip: I18n.Config_VanillaMarnieStock_Tooltip
-        );
-        GMCM.AddBoolOption(
-            mod: mod,
-            getValue: () => VanillaLivestockMenu,
-            setValue: (value) => VanillaLivestockMenu = value,
-            name: I18n.Config_VanillaLivestockMenu_Name,
-            tooltip: I18n.Config_VanillaLivestockMenu_Tooltip
         );
     }
 }

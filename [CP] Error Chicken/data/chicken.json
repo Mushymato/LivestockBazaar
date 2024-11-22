@@ -237,7 +237,7 @@
           ],
           "ShowInSummitCredits": true,
           "CustomFields": {
-            // prevent chicken from being bought from marnie
+            // prevent chicken from being in marnie's shop
             "mushymato.LivestockBazaar/BuyFrom.Marnie": false,
             // allow chicken to be bought from Valgrind the debug shop
             "mushymato.LivestockBazaar/BuyFrom.{{ModId}}_Valgrind": true

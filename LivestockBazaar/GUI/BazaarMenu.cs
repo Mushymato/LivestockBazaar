@@ -35,7 +35,7 @@ internal static class BazaarMenu
 #if DEBUG
         ModEntry.Log($"Show Bazaar: {shopName}");
 #endif
-        ContextMain context = new(shopLocation, shopName, ownerData);
+        BazaarContextMain context = new(shopLocation, shopName, ownerData);
         Game1.activeClickableMenu = viewEngine.CreateMenuFromAsset(VIEW_ASSET_MENU, context);
         return true;
     }
