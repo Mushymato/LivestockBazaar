@@ -6,10 +6,9 @@
           item-layout="length: 160"
           horizontal-item-alignment="middle">
       <frame *repeat={:LivestockData} padding="16" background={@mushymato.LivestockBazaar/sprites/cursors:ShopBg}>
-        <lane layout="128px 128px" orientation="vertical" horizontal-content-alignment="middle">
+        <panel layout="128px 128px" tooltip={:ShopDisplayName} horizontal-content-alignment="middle">
           <image layout="content 64px" sprite={:ShopIcon} />
-          <label layout="content 64px" text={:ShopDisplayName} />
-        </lane>
+        </panel>
       </frame>
     </grid>
   </scrollable>
