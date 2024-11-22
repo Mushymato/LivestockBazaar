@@ -23,7 +23,8 @@
           "Layer": "Buildings",
           "SetProperties": {
             // this will not open up the shop because marnie is not around.
-            "Action": "mushymato.LivestockBazaar_Shop Marnie down 0800 2000 13 20 3 3"
+            // "Action": "mushymato.LivestockBazaar_Shop Marnie down 0800 2000 13 20 3 3"
+            "Action": "mushymato.LivestockBazaar_Shop Marnie down"
           }
         },
         {

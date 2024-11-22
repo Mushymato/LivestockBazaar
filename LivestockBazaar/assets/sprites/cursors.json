@@ -4,6 +4,11 @@
     "Portrait": {
       "SourceRect": "603, 414, 74, 74",
       "Scale": 4
+    },
+    "ShopBg": {
+      "SourceRect": "384, 396, 15, 15",
+      "FixedEdges": "5",
+      "Scale": 4
     }
   }
 }

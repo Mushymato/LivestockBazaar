@@ -64,12 +64,12 @@ internal static class AssetManager
     /// <param name="shopName"></param>
     /// <param name="location"></param>
     /// <returns></returns>
-    public static IEnumerable<LivestockBuyEntry> GetAnimalStockData(string shopName)
+    public static IEnumerable<FarmAnimalData> GetAnimalStockData(string shopName)
     {
         string buyFromKey = Field_BuyFrom + shopName;
         foreach (KeyValuePair<string, FarmAnimalData> datum in Game1.farmAnimalData)
         {
-            if (datum.Value.PurchasePrice <= 0 || !GameStateQuery.CheckConditions(datum.Value.UnlockCondition))
+            if (datum.Value.PurchasePrice <= 0 || string.IsNullOrEmpty(datum.Value.ShopTexture) || !GameStateQuery.CheckConditions(datum.Value.UnlockCondition))
                 continue;
             if (datum.Value.CustomFields?.TryGetValue(buyFromKey, out string? buyFrom) ?? false)
             {
@@ -78,7 +78,7 @@ internal static class AssetManager
             }
             else if (shopName != MARNIE)
                 continue;
-            yield return new(datum.Key, datum.Value);
+            yield return datum.Value;
         }
     }
 }

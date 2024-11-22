@@ -19,8 +19,11 @@ public sealed class BazaarContextMain
     private readonly ShopOwnerData? ownerData;
 
     // derived
-    public readonly ImmutableList<LivestockBuyEntry> LivestockBuy;
+    public readonly ImmutableList<BazaarLivestockEntry> LivestockData;
     public readonly BazaarData? Data;
+
+    // layout based on "70%[1204..] 80%[648..]"
+    public readonly string ForSaleLayout;
 
     // Shop owner portrait
     public bool DisplayOwner => OwnerPortrait != null;
@@ -33,8 +36,11 @@ public sealed class BazaarContextMain
         this.shopName = shopName;
         this.ownerData = ownerData;
 
-        LivestockBuy = AssetManager.GetAnimalStockData(shopName).ToImmutableList();
+        LivestockData = AssetManager.GetAnimalStockData(shopName).Select((data) => new BazaarLivestockEntry(data)).ToImmutableList();
         Data = AssetManager.GetBazaarData(shopName);
+
+        var viewport = Game1.viewport;
+        ForSaleLayout = $"{(int)(MathF.Max(viewport.Width * 0.7f, 1204) / 160) * 160}px {(int)(MathF.Max(viewport.Height * 0.8f, 648) / 160) * 160}px";
 
         // Shop owner setup
         if (ownerData == null || ownerData.Type == ShopOwnerType.None)
