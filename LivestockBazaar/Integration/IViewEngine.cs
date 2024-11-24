@@ -314,7 +314,10 @@ internal static class ViewEngineExtensions
     /// <param name="viewEngine">The view engine API.</param>
     /// <param name="callerFilePath">Do not pass in this argument, so that <see cref="CallerFilePathAttribute"/> can
     /// provide the correct value on build.</param>
-    public static void EnableHotReloadingWithSourceSync(this IViewEngine viewEngine, [CallerFilePath] string? callerFilePath = null)
+    public static void EnableHotReloadingWithSourceSync(
+        this IViewEngine viewEngine,
+        [CallerFilePath] string? callerFilePath = null
+    )
     {
         viewEngine.EnableHotReloading(FindProjectDirectory(callerFilePath));
     }

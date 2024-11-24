@@ -90,7 +90,10 @@ internal static class OpenBazaar
             if (shopAreaX == -1 || shopAreaY == -1 || shopAreaWidth == -1 || shopAreaHeight == -1)
             {
                 // invalid rect
-                ModEntry.Log("when specifying any of the shop area 'x y width height' arguments (indexes 5-8), all four must be specified", LogLevel.Error);
+                ModEntry.Log(
+                    "when specifying any of the shop area 'x y width height' arguments (indexes 5-8), all four must be specified",
+                    LogLevel.Error
+                );
                 return false;
             }
             Rectangle ownerRect = new(shopAreaX, shopAreaY, shopAreaWidth, shopAreaHeight);
@@ -126,7 +129,15 @@ internal static class OpenBazaar
     {
         if (
             !ArgUtility.TryGet(action, 1, out var shopName, out string error, allowBlank: true, "string shopId")
-            || !ArgUtility.TryGetOptional(action, 2, out var direction, out error, null, allowBlank: true, "string direction")
+            || !ArgUtility.TryGetOptional(
+                action,
+                2,
+                out var direction,
+                out error,
+                null,
+                allowBlank: true,
+                "string direction"
+            )
             || !ArgUtility.TryGetOptionalInt(action, 3, out int openTime, out error, -1, "int openTime")
             || !ArgUtility.TryGetOptionalInt(action, 4, out int closeTime, out error, -1, "int closeTime")
             || !ArgUtility.TryGetOptionalInt(action, 5, out int shopAreaX, out error, -1, "int shopAreaX")
@@ -164,8 +175,17 @@ internal static class OpenBazaar
             var shopOwnerDatas = bazaarData.GetCurrentOwners();
             bool shouldCheck = bazaarData.ShouldCheckShopOpen(who);
             if (
-                CheckShopOpen(location, shopOwnerDatas, openTime, closeTime, shopAreaX, shopAreaY, shopAreaWidth, shopAreaHeight, out foundOwnerData)
-                || !shouldCheck
+                CheckShopOpen(
+                    location,
+                    shopOwnerDatas,
+                    openTime,
+                    closeTime,
+                    shopAreaX,
+                    shopAreaY,
+                    shopAreaWidth,
+                    shopAreaHeight,
+                    out foundOwnerData
+                ) || !shouldCheck
             )
             {
                 foundOwnerData ??= BazaarData.GetAwayOwner(shopOwnerDatas) ?? shopOwnerDatas.FirstOrDefault();
@@ -188,7 +208,10 @@ internal static class OpenBazaar
     /// <param name="__instance"></param>
     /// <param name="onMenuOpened"></param>
     /// <returns></returns>
-    public static bool GameLocation_ShowAnimalShopMenu_Prefix(GameLocation __instance, Action<PurchaseAnimalsMenu> onMenuOpened)
+    public static bool GameLocation_ShowAnimalShopMenu_Prefix(
+        GameLocation __instance,
+        Action<PurchaseAnimalsMenu> onMenuOpened
+    )
     {
         try
         {
@@ -196,7 +219,7 @@ internal static class OpenBazaar
             if (ModEntry.Config.VanillaMarnieStock || onMenuOpened != null)
                 return true;
             // use custom stock and menu
-            BazaarMenu.ShowFor(__instance, AssetManager.MARNIE, null);
+            BazaarMenu.ShowFor(__instance, Wheels.MARNIE, null);
             return false;
         }
         catch (Exception err)

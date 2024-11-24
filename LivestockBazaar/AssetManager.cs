@@ -8,9 +8,6 @@ namespace LivestockBazaar;
 /// <summary>Handles caching of custom target.</summary>
 internal static class AssetManager
 {
-    /// <summary>The animal tycoon herself</summary>
-    internal const string MARNIE = "Marnie";
-
     /// <summary>Vanilla AnimalShop in Data/Shops, for copying into Bazaar data.</summary>
     internal const string ANIMAL_SHOP = "AnimalShop";
 
@@ -30,9 +27,6 @@ internal static class AssetManager
         }
     }
 
-    /// <summary>Buy from animal data CustomField</summary>
-    internal static readonly string Field_BuyFrom = $"{ModEntry.ModId}/BuyFrom.";
-
     internal static void OnAssetRequested(object? sender, AssetRequestedEventArgs e)
     {
         if (e.Name.IsEquivalentTo(BazaarAsset))
@@ -50,7 +44,7 @@ internal static class AssetManager
     internal static Dictionary<string, BazaarData> DefaultBazaarData()
     {
         Dictionary<string, BazaarData> bazaarData = [];
-        bazaarData[MARNIE] = new() { ShopId = ANIMAL_SHOP };
+        bazaarData[Wheels.MARNIE] = new() { ShopId = ANIMAL_SHOP };
         return bazaarData;
     }
 
@@ -66,19 +60,17 @@ internal static class AssetManager
     /// <returns></returns>
     public static IEnumerable<FarmAnimalData> GetAnimalStockData(string shopName)
     {
-        string buyFromKey = Field_BuyFrom + shopName;
-        foreach (KeyValuePair<string, FarmAnimalData> datum in Game1.farmAnimalData)
+        foreach ((string _key, FarmAnimalData data) in Game1.farmAnimalData)
         {
-            if (datum.Value.PurchasePrice <= 0 || string.IsNullOrEmpty(datum.Value.ShopTexture) || !GameStateQuery.CheckConditions(datum.Value.UnlockCondition))
+            if (
+                data.PurchasePrice <= 0
+                || string.IsNullOrEmpty(data.ShopTexture)
+                || !GameStateQuery.CheckConditions(data.UnlockCondition)
+            )
                 continue;
-            if (datum.Value.CustomFields?.TryGetValue(buyFromKey, out string? buyFrom) ?? false)
-            {
-                if (bool.Parse(buyFrom) == false)
-                    continue;
-            }
-            else if (shopName != MARNIE)
+            if (data.CanByFrom(shopName))
                 continue;
-            yield return datum.Value;
+            yield return data;
         }
     }
 }

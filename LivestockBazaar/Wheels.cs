@@ -4,6 +4,9 @@ namespace LivestockBazaar;
 
 internal static class Wheels
 {
+    /// <summary>The animal tycoon herself</summary>
+    internal const string MARNIE = "Marnie";
+
     /// <summary>24hr time format, make it better later</summary>
     /// <param name="timeCode"></param>
     /// <returns></returns>

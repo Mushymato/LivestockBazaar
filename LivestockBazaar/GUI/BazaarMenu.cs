@@ -21,7 +21,7 @@ internal static class BazaarMenu
             return;
         }
         viewEngine = helper.ModRegistry.GetApi<IViewEngine>("focustense.StardewUI")!;
-        viewEngine.RegisterSprites($"{ModEntry.ModId}/sprites", "assets/sprites");
+        // viewEngine.RegisterSprites($"{ModEntry.ModId}/sprites", "assets/sprites");
         VIEW_ASSET_PREFIX = $"{ModEntry.ModId}/views";
         VIEW_ASSET_MENU = $"{VIEW_ASSET_PREFIX}/bazaar-menu";
         viewEngine.RegisterViews(VIEW_ASSET_PREFIX, "assets/views");

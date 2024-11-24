@@ -1,21 +1,31 @@
+using LivestockBazaar.Integration;
+using LivestockBazaar.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PropertyChanged.SourceGenerator;
 using StardewValley;
 using StardewValley.GameData.Buildings;
 using StardewValley.GameData.FarmAnimals;
+using StardewValley.ItemTypeDefinitions;
+using StardewValley.Menus;
 using StardewValley.TokenizableStrings;
 
 namespace LivestockBazaar.GUI;
 
-public partial class BazaarLivestockEntry(FarmAnimalData Data)
+public partial class BazaarLivestockEntry(FarmAnimalData Data, ShopMenu.ShopCachedTheme Theme)
 {
-    // layout="70%[1204..] 80%[648..]"
-    public readonly Tuple<Texture2D, Rectangle>? ShopIcon = new(Game1.content.Load<Texture2D>(Data.ShopTexture), Data.ShopSourceRect);
+    public readonly SDUISprite? ShopIcon = new(Game1.content.Load<Texture2D>(Data.ShopTexture), Data.ShopSourceRect);
     public string ShopDisplayName => TokenParser.ParseText(Data.ShopDisplayName ?? Data.DisplayName) ?? "???";
 
+    public ParsedItemData TradeItem = Data.GetTradeItem();
+    public int Price = Data.PurchasePrice;
+
     [Notify]
-    private int buyCount = 0;
+    private Color backgroundTint = Color.White;
+
+    public void PointerEnter() => BackgroundTint = Theme.ItemRowBackgroundHoverColor;
+
+    public void PointerLeave() => BackgroundTint = Color.White;
 
     /// <summary>Check that a animal has a place to live in a particular location</summary>
     /// <param name="location">game location or null</param>
