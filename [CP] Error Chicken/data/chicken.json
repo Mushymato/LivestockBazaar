@@ -240,7 +240,9 @@
             // prevent chicken from being in marnie's shop
             "mushymato.LivestockBazaar/BuyFrom.Marnie": false,
             // allow chicken to be bought from Valgrind the debug shop
-            "mushymato.LivestockBazaar/BuyFrom.{{ModId}}_Valgrind": true
+            "mushymato.LivestockBazaar/BuyFrom.{{ModId}}_Valgrind": true,
+            "mushymato.LivestockBazaar/TradeItemId.{{ModId}}_Shane": "(O)858",
+            "mushymato.LivestockBazaar/TradeItemAmount.{{ModId}}_Shane": 30,
           }
         },
       }
@@ -262,7 +264,10 @@
         },
         "CustomFields": {
           // allow chicken to be bought from Shane's shop (doesn't ban it from Marnie's)
-          "mushymato.LivestockBazaar/BuyFrom.{{ModId}}_Shane": true
+          "mushymato.LivestockBazaar/BuyFrom.{{ModId}}_Shane": true,
+          // buy chiqn with 30 qi gems in shane's shop
+          "mushymato.LivestockBazaar/TradeItemId.{{ModId}}_Shane": "(O)858",
+          "mushymato.LivestockBazaar/TradeItemAmount.{{ModId}}_Shane": 30,
         }
       }
     }

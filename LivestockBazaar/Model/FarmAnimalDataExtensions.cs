@@ -37,17 +37,52 @@ public static class FarmAnimalDataExtensions
     }
 
     /// <summary>
-    /// Get the trade item
+    /// Get the trade item, if it's not gold coin
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    public static ParsedItemData GetTradeItem(this FarmAnimalData data)
+    public static ParsedItemData GetTradeItem(this FarmAnimalData data, string shopName = Wheels.MARNIE)
+    {
+        // hm yes this is at least 3.2 bad
+        if (
+            (
+                (
+                    data.CustomFields?.TryGetValue(
+                        string.Concat(ModEntry.ModId, "/TradeItemId.", shopName),
+                        out string? tradeItemId
+                    ) ?? false
+                )
+                || (
+                    data.CustomFields?.TryGetValue(string.Concat(ModEntry.ModId, "/TradeItemId"), out tradeItemId)
+                    ?? false
+                )
+            ) && ItemRegistry.GetData(tradeItemId) is ParsedItemData itemData
+        )
+        {
+            return itemData;
+        }
+        return goldCoin;
+    }
+
+    /// <summary>
+    /// Get the trade item, if it's not gold coin
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    public static int GetTradePrice(this FarmAnimalData data, string shopName = Wheels.MARNIE)
     {
         if (
-            data.CustomFields?.TryGetValue(string.Concat(ModEntry.ModId, "/TradeItemId"), out string? tradeItem)
+            data.CustomFields?.TryGetValue(
+                string.Concat(ModEntry.ModId, "/TradeItemAmount.", shopName),
+                out string? tradeItemPrice
+            ) ?? false
+        )
+            return int.Parse(tradeItemPrice);
+        if (
+            data.CustomFields?.TryGetValue(string.Concat(ModEntry.ModId, "/TradeItemAmount"), out tradeItemPrice)
             ?? false
         )
-            return ItemRegistry.GetData(tradeItem);
-        return goldCoin;
+            return int.Parse(tradeItemPrice);
+        return data.PurchasePrice;
     }
 }

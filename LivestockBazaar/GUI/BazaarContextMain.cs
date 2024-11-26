@@ -15,6 +15,8 @@ namespace LivestockBazaar.GUI;
 /// <param name="shopName"></param>
 public sealed class BazaarContextMain
 {
+    private const int CELL_WIDTH = 192;
+
     // fields
     private readonly GameLocation shopLocation;
     private readonly string shopName;
@@ -81,12 +83,12 @@ public sealed class BazaarContextMain
         );
         LivestockData = AssetManager
             .GetAnimalStockData(shopName)
-            .Select((data) => new BazaarLivestockEntry(data, Theme))
+            .Select((data) => new BazaarLivestockEntry(shopName, data, Theme))
             .ToImmutableList();
 
         var viewport = Game1.viewport;
         ForSaleLayout =
-            $"{(int)(MathF.Max(viewport.Width * 0.7f, 1204) / 160) * 160}px {(int)(MathF.Max(viewport.Height * 0.7f, 648) / 160) * 160}px";
+            $"{(int)(MathF.Max(viewport.Width * 0.7f, 1204) / CELL_WIDTH) * CELL_WIDTH}px {(int)(MathF.Max(viewport.Height * 0.7f, 648) / CELL_WIDTH) * CELL_WIDTH}px";
 
         // Shop owner setup
         if (ownerData == null || ownerData.Type == ShopOwnerType.None)

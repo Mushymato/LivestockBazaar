@@ -12,7 +12,7 @@
   <!-- Main Panel -->
   <frame layout={:ForSaleLayout} border={:Theme_WindowBorder} border-thickness={:Theme_WindowBorderThickness} margin="8">
     <scrollable layout="stretch stretch" peeking="128">
-      <grid layout="stretch content" item-layout="length: 160"
+      <grid layout="stretch content" item-layout="length: 192"
             horizontal-item-alignment="middle">
         <frame *repeat={:LivestockData}
           padding="16"
@@ -20,11 +20,11 @@
           pointer-enter=|PointerEnter()|
           pointer-leave=|PointerLeave()|
         >
-          <panel layout="128px 128px" tooltip={:ShopDisplayName} horizontal-content-alignment="middle">
+          <panel layout="160px 144px" tooltip={:ShopDisplayName} horizontal-content-alignment="middle">
             <image layout="content 64px" sprite={:ShopIcon} />
-            <lane layout="content 64px" margin="0,64" orientation="horizontal"  horizontal-content-alignment="middle">
+            <lane layout="content 80px" margin="0,64" padding="0,16" orientation="horizontal">
               <image layout="48px 48px" sprite={:TradeItem} />
-              <label layout="content 48px" font="small" text={:Price} />
+              <label layout="content 48px" text={:TradePrice} font={:TradeDisplayFont}/>
             </lane>
           </panel>
         </frame>

@@ -68,7 +68,7 @@ internal static class AssetManager
                 || !GameStateQuery.CheckConditions(data.UnlockCondition)
             )
                 continue;
-            if (data.CanByFrom(shopName))
+            if (!data.CanByFrom(shopName))
                 continue;
             yield return data;
         }

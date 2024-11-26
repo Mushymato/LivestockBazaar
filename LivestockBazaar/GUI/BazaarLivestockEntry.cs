@@ -12,13 +12,14 @@ using StardewValley.TokenizableStrings;
 
 namespace LivestockBazaar.GUI;
 
-public partial class BazaarLivestockEntry(FarmAnimalData Data, ShopMenu.ShopCachedTheme Theme)
+public partial class BazaarLivestockEntry(string shopName, FarmAnimalData Data, ShopMenu.ShopCachedTheme Theme)
 {
     public readonly SDUISprite? ShopIcon = new(Game1.content.Load<Texture2D>(Data.ShopTexture), Data.ShopSourceRect);
     public string ShopDisplayName => TokenParser.ParseText(Data.ShopDisplayName ?? Data.DisplayName) ?? "???";
 
-    public ParsedItemData TradeItem = Data.GetTradeItem();
-    public int Price = Data.PurchasePrice;
+    public ParsedItemData TradeItem = Data.GetTradeItem(shopName);
+    public int TradePrice = Data.GetTradePrice(shopName);
+    public string TradeDisplayFont => TradePrice > 999999 ? "small" : "dialogue";
 
     [Notify]
     private Color backgroundTint = Color.White;
@@ -40,7 +41,7 @@ public partial class BazaarLivestockEntry(FarmAnimalData Data, ShopMenu.ShopCach
     /// <summary>Why is Utility._HasBuildingOrUpgrade protected...</summary>
     /// <param name="location"></param>
     /// <param name="buildingId"></param>
-    /// <returns></returns>
+    /// <returns>True if the location has a building or its upgrade</returns>
     public static bool HasBuildingOrUpgrade(GameLocation location, string buildingId)
     {
         if (location.getNumberBuildingsConstructed(buildingId) > 0)
