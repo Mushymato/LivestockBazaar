@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StardewValley;
 
 namespace LivestockBazaar.Integration;
 
@@ -49,3 +50,20 @@ public record SDUISprite(
     public SDUISprite(Texture2D Texture, Rectangle SourceRect)
         : this(Texture, SourceRect, SDUIEdges.NONE, new()) { }
 };
+
+// TODO: doesn't work atm, hopefully fix
+// public record SDUITooltipData(
+//     string Text,
+//     string? Title,
+//     // Item? Item = null,
+//     // int? CurrencyAmount = null,
+//     // int CurrencySymbol = 0,
+//     string? RequiredItemId,
+//     int RequiredItemAmount
+// // CraftingRecipe? CraftingRecipe = null,
+// // IList<Item>? AdditionalCraftingMaterials = null
+// )
+// {
+//     public SDUITooltipData(string Text)
+//         : this(Text, null, null, 0) { }
+// }

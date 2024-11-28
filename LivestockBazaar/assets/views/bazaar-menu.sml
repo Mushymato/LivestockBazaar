@@ -20,7 +20,7 @@
           pointer-enter=|PointerEnter()|
           pointer-leave=|PointerLeave()|
         >
-          <panel layout="160px 144px" tooltip={:ShopDisplayName} horizontal-content-alignment="middle">
+          <panel layout="160px 144px" tooltip={:ShopTooltip} horizontal-content-alignment="middle">
             <image layout="content 64px" sprite={:ShopIcon} />
             <lane layout="content 80px" margin="0,64" padding="0,16" orientation="horizontal">
               <image layout="48px 48px" sprite={:TradeItem} />

@@ -32,9 +32,7 @@ internal static class BazaarMenu
 
     internal static bool ShowFor(GameLocation shopLocation, string shopName, ShopOwnerData? ownerData = null)
     {
-#if DEBUG
-        ModEntry.Log($"Show Bazaar: {shopName}");
-#endif
+        ModEntry.Log($"Show bazaar shop '{shopName}'");
         BazaarContextMain context = new(shopLocation, shopName, ownerData);
         Game1.activeClickableMenu = viewEngine.CreateMenuFromAsset(VIEW_ASSET_MENU, context);
         return true;

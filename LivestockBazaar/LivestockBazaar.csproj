@@ -23,7 +23,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <SMAPIDependency Include="focustense.StardewUI" Required="false" />
+    <SMAPIDependency Include="focustense.StardewUI" Required="true" />
     <SMAPIDependency Include="spacechase0.GenericModConfigMenu" Required="false" />
   </ItemGroup>
 
