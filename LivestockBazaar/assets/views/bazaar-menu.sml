@@ -14,7 +14,13 @@
     <lane layout="stretch content" orientation="horizontal">
       <!-- for sale -->
       <scrollable layout={:ForSaleLayout} peeking="128"
-                  scrollbar-margin="0,0,0,-8">
+                  scrollbar-margin="0,0,0,-8"
+                  scrollbar-override-visibility="visible"
+                  scrollbar-up-sprite={:Theme_ScrollUp}
+                  scrollbar-down-sprite={:Theme_ScrollDown}
+                  scrollbar-down-sprite={:Theme_ScrollDown}
+                  scrollbar-thumb-sprite={:Theme_ScrollBarFront}
+                  scrollbar-track-sprite={:Theme_ScrollBarBack}>
         <grid layout="stretch content" item-layout="length: 192"
               horizontal-item-alignment="middle">
           <frame *repeat={:LivestockData}
@@ -23,7 +29,7 @@
             pointer-enter=|GridCell_PointerEnter()|
             pointer-leave=|GridCell_PointerLeave()|
           >
-            <panel layout="160px 144px" horizontal-content-alignment="middle">
+            <panel layout="160px 144px" horizontal-content-alignment="middle" focusable="true">
               <image layout="content 64px" margin="0,8" sprite={:ShopIcon} />
               <lane layout="stretch 64px" margin="8,88" orientation="horizontal">
                 <image layout="48px 48px" sprite={:TradeItem} />
@@ -34,11 +40,8 @@
         </grid>
       </scrollable>
       <!-- info bot -->
-      <lane *if={HasLivestock} layout="192px stretch" margin="64,0,0,0" padding="0,32" orientation="vertical" horizontal-content-alignment="middle">
-        <!-- <frame layout="content[128..] content[192..]" background={:AnimBg}> -->
-        <panel layout="stretch stretch" *context={HoveredLivestock}>
-          <image z-index="1" layout={:AnimLayout} sprite={AnimSprite}/>
-        </panel>
+      <lane *context={HoveredLivestock} layout="192px stretch" margin="64,0,0,0" padding="0,32" orientation="vertical" horizontal-content-alignment="middle">
+        <image layout={:AnimLayout} sprite={AnimSprite}/>
         <!-- </frame> -->
       </lane>
     </lane>

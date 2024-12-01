@@ -33,8 +33,6 @@ public sealed partial class BazaarContextMain
 
     // theme
     public readonly ShopMenu.ShopCachedTheme Theme;
-
-    // SDUI style sprites
     public SDUISprite Theme_WindowBorder =>
         new(
             Theme.WindowBorderTexture,
@@ -61,8 +59,12 @@ public sealed partial class BazaarContextMain
         );
     public SDUISprite Theme_ItemIconBackground =>
         new(Theme.ItemIconBackgroundTexture, Theme.ItemIconBackgroundSourceRect);
+    public SDUISprite Theme_ScrollUp => new(Theme.ScrollUpTexture, Theme.ScrollUpSourceRect);
+    public SDUISprite Theme_ScrollDown => new(Theme.ScrollDownTexture, Theme.ScrollDownSourceRect);
+    public SDUISprite Theme_ScrollBarFront => new(Theme.ScrollBarFrontTexture, Theme.ScrollBarFrontSourceRect);
+    public SDUISprite Theme_ScrollBarBack =>
+        new(Theme.ScrollBarBackTexture, Theme.ScrollBarBackSourceRect, new(2), new(Scale: 4));
 
-    // Forwarded props
     public Color? Theme_DialogueColor => Theme.DialogueColor ?? Game1.textColor;
     public Color? Theme_DialogueShadowColor => Theme.DialogueShadowColor ?? Game1.textShadowColor;
 

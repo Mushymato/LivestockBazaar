@@ -45,7 +45,8 @@ public sealed partial class BazaarLivestockEntry(BazaarContextMain Main, string 
 
     // infobox
     private readonly int TotalFrames = Data.UseFlippedRightForLeft ? 12 : 16;
-    public SDUISprite AnimBackground => new(Game1.timeOfDay >= 1900 ? Game1.nightbg : Game1.daybg);
+
+    // public SDUISprite AnimBackground => new(Game1.timeOfDay >= 1900 ? Game1.nightbg : Game1.daybg);
     private Texture2D SpriteSheet => Game1.content.Load<Texture2D>(Data.Texture);
     public readonly string AnimLayout = $"{Data.SpriteWidth * 4}px {Data.SpriteHeight * 4}px";
 
