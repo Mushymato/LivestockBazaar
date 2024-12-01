@@ -16,7 +16,7 @@ namespace LivestockBazaar.GUI;
 /// <param name="shopName"></param>
 public sealed partial class BazaarContextMain
 {
-    private const int CELL_WIDTH = 192;
+    private const int CELL_W = 192;
 
     // viewport size, could change but ppl should just reopen menu
     // public bool IsWidescreen => Game1.viewport.Width >= 1920 * Game1.options.uiScale;
@@ -66,6 +66,8 @@ public sealed partial class BazaarContextMain
     public Color? Theme_DialogueColor => Theme.DialogueColor ?? Game1.textColor;
     public Color? Theme_DialogueShadowColor => Theme.DialogueShadowColor ?? Game1.textShadowColor;
 
+    // layouts
+    public readonly string MainBodyLayout;
     public readonly string ForSaleLayout;
 
     // Shop owner portrait
@@ -95,9 +97,11 @@ public sealed partial class BazaarContextMain
             .Select((data) => new BazaarLivestockEntry(this, shopName, data))
             .ToImmutableList();
 
+        // layout shenanigans
         var viewport = Game1.viewport;
-        ForSaleLayout =
-            $"{(int)(MathF.Max(viewport.Width * 0.6f, 1280) / CELL_WIDTH) * CELL_WIDTH}px {(int)(MathF.Max(viewport.Height * 0.7f, 720) / CELL_WIDTH) * CELL_WIDTH}px";
+        int desiredWidth = (int)((MathF.Max(viewport.Width * 0.6f, 1280) - 256) / CELL_W) * CELL_W;
+        ForSaleLayout = $"{desiredWidth}px 70%[688..]";
+        MainBodyLayout = $"{desiredWidth + 256}px content";
 
         // Shop owner setup
         if (ownerData == null || ownerData.Type == ShopOwnerType.None)
@@ -159,9 +163,16 @@ public sealed partial class BazaarContextMain
         }
     }
 
+    private TimeSpan animTimer;
+    private readonly TimeSpan animInterval = TimeSpan.FromMilliseconds(175);
+
     public void Update(TimeSpan elapsed)
     {
-        if (elapsed.TotalMilliseconds > 100)
+        animTimer += elapsed;
+        if (animTimer >= animInterval)
+        {
             HoveredLivestock?.NextFrame();
+            animTimer = TimeSpan.Zero;
+        }
     }
 }
