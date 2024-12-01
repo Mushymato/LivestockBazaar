@@ -1,15 +1,15 @@
 <lane orientation="horizontal">
   <!-- Shop Owner Portrait -->
-  <lane *if={:ShouldDisplayOwner} layout="320px content" padding="0,36,0,0" orientation="vertical" horizontal-content-alignment="end">
-    <frame padding="20" background={:Theme_PortraitBackground}>
+  <lane *if={:IsWidescreen} layout="320px content" padding="0,8,0,0" orientation="vertical" horizontal-content-alignment="end">
+    <frame *if={:ShowPortraitBox} padding="20" background={:Theme_PortraitBackground}>
       <image layout="256px 256px" sprite={:OwnerPortrait} />
     </frame>
-    <frame layout="320px content[..320]" padding="20" margin="0,10" border={:Theme_DialogueBackground}>
+    <frame layout="256px content[..320]" padding="20" margin="0,10" border={:Theme_DialogueBackground}>
       <label font="dialogue" text={:OwnerDialog} color={:Theme_DialogueColor} shadow-color={:Theme_DialogueShadowColor}/>
     </frame>
   </lane>
 
-  <!-- Main Panel -->
+  <!-- Main Panel, width is 192 * 6 -->
   <frame layout={:ForSaleLayout} border={:Theme_WindowBorder} border-thickness={:Theme_WindowBorderThickness} margin="8">
     <scrollable layout="stretch stretch" peeking="128">
       <grid layout="stretch content" item-layout="length: 192"
@@ -21,8 +21,8 @@
           pointer-leave=|PointerLeave()|
         >
           <panel layout="160px 144px" tooltip={:ShopTooltip} horizontal-content-alignment="middle">
-            <image layout="content 64px" sprite={:ShopIcon} />
-            <lane layout="content 80px" margin="0,64" padding="0,16" orientation="horizontal">
+            <image layout="content 64px" margin="0,8" sprite={:ShopIcon} />
+            <lane layout="stretch 64px" margin="8,88" orientation="horizontal">
               <image layout="48px 48px" sprite={:TradeItem} />
               <label layout="content 48px" text={:TradePrice} font={:TradeDisplayFont}/>
             </lane>
@@ -32,7 +32,7 @@
     </scrollable>
   </frame>
 
-  <!-- spacer for centering -->
-  <spacer *if={:ShouldDisplayOwner} layout="296px 0px"/>
+  <!-- spacer to counterbalance the portrait -->
+  <spacer *if={:IsWidescreen} layout="192px 0px"/>
 
 </lane>
