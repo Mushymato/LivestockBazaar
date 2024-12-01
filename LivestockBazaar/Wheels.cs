@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using StardewValley;
 
 namespace LivestockBazaar;
@@ -6,6 +7,8 @@ internal static class Wheels
 {
     /// <summary>The animal tycoon herself</summary>
     internal const string MARNIE = "Marnie";
+
+    internal static readonly HashSet<string> GSQRandomKeys = ["RANDOM", "SYNCED_RANDOM"];
 
     /// <summary>24hr time format, make it better later</summary>
     /// <param name="timeCode"></param>
@@ -33,5 +36,15 @@ internal static class Wheels
         else
             return;
         Game1.drawObjectDialogue(shopClosed);
+    }
+
+    /// <summary>
+    /// Check the condition but ignore random (<see cref="GSQRandomKeys"/>).
+    /// </summary>
+    /// <param name="condition"></param>
+    /// <returns></returns>
+    internal static bool GSQCheckNoRandom(string condition, GameLocation? location = null)
+    {
+        return GameStateQuery.CheckConditions(condition, location: location, ignoreQueryKeys: GSQRandomKeys);
     }
 }

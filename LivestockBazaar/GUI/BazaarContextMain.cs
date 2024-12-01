@@ -4,6 +4,7 @@ using LivestockBazaar.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PropertyChanged.SourceGenerator;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Extensions;
 using StardewValley.GameData.Shops;
@@ -20,7 +21,7 @@ public sealed partial class BazaarContextMain
 
     // viewport size, could change but ppl should just reopen menu
     // public bool IsWidescreen => Game1.viewport.Width >= 1920 * Game1.options.uiScale;
-    public bool IsWidescreen => Game1.viewport.Width >= 1920 * Game1.options.uiScale;
+    public bool IsWidescreen = Game1.viewport.Width >= 1920 * Game1.options.uiScale;
 
     // fields
     private readonly GameLocation shopLocation;
@@ -72,15 +73,20 @@ public sealed partial class BazaarContextMain
     public readonly string MainBodyLayout;
     public readonly string ForSaleLayout;
 
-    // Shop owner portrait
+    // shop owner portrait
     public bool ShowPortraitBox => IsWidescreen && OwnerPortrait != null;
     public readonly SDUISprite? OwnerPortrait = null;
     public string OwnerDialog = I18n.Shop_DefaultDialog();
 
-    // Hovered livestock entry
+    // hovered livestock entry
     [Notify]
     private BazaarLivestockEntry? hoveredLivestock = null;
     public bool HasLivestock => HoveredLivestock != null;
+
+    // selected livestock entry
+    [Notify]
+    private BazaarLivestockEntry? selectedLivestock = null;
+    public int CurrentPage => SelectedLivestock == null ? 1 : 2;
 
     public BazaarContextMain(GameLocation shopLocation, string shopName, ShopOwnerData? ownerData = null)
     {
@@ -102,10 +108,10 @@ public sealed partial class BazaarContextMain
         // layout shenanigans
         var viewport = Game1.viewport;
         int desiredWidth = (int)((MathF.Max(viewport.Width * 0.6f, 1280) - 256) / CELL_W) * CELL_W;
-        ForSaleLayout = $"{desiredWidth}px 70%[688..]";
+        ForSaleLayout = $"{desiredWidth}px 70%[676..]";
         MainBodyLayout = $"{desiredWidth + 256}px content";
 
-        // Shop owner setup
+        // shop owner setup
         if (ownerData == null || ownerData.Type == ShopOwnerType.None)
             return;
 
@@ -176,5 +182,10 @@ public sealed partial class BazaarContextMain
             HoveredLivestock?.NextFrame();
             animTimer = TimeSpan.Zero;
         }
+    }
+
+    public void ClearSelectedLivestock()
+    {
+        SelectedLivestock = null;
     }
 }

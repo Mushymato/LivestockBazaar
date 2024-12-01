@@ -10,12 +10,14 @@
   </lane>
 
   <!-- main body -->
-  <frame layout={:MainBodyLayout} border={:Theme_WindowBorder} border-thickness={:Theme_WindowBorderThickness} margin="8">
-    <lane layout="stretch content" orientation="horizontal">
+  <frame *switch={CurrentPage}
+         layout={:MainBodyLayout} border={:Theme_WindowBorder}
+         border-thickness={:Theme_WindowBorderThickness} margin="8">
+    <!-- page 1 -->
+    <lane *case="1" layout="stretch content" orientation="horizontal">
       <!-- for sale -->
       <scrollable layout={:ForSaleLayout} peeking="128"
-                  scrollbar-margin="0,0,0,-8"
-                  scrollbar-override-visibility="visible"
+                  scrollbar-margin="278,0,0,-8"
                   scrollbar-up-sprite={:Theme_ScrollUp}
                   scrollbar-down-sprite={:Theme_ScrollDown}
                   scrollbar-down-sprite={:Theme_ScrollDown}
@@ -28,6 +30,7 @@
             background={:^Theme_ItemRowBackground} background-tint={BackgroundTint}
             pointer-enter=|GridCell_PointerEnter()|
             pointer-leave=|GridCell_PointerLeave()|
+            left-click=|GridCell_LeftClick()|
           >
             <panel layout="160px 144px" horizontal-content-alignment="middle" focusable="true">
               <image layout="content 64px" margin="0,8" sprite={:ShopIcon} />
@@ -39,15 +42,31 @@
           </frame>
         </grid>
       </scrollable>
-      <!-- info bot -->
-      <lane *context={HoveredLivestock} layout="192px stretch" margin="64,0,0,0" padding="0,32" orientation="vertical" horizontal-content-alignment="middle">
-        <image layout={:AnimLayout} sprite={AnimSprite}/>
-        <!-- </frame> -->
-      </lane>
+      <!-- info box -->
+      <infobox *context={HoveredLivestock} />
+    </lane>
+    <!-- page 2 -->
+    <lane *case="2" layout="stretch 70%[676..]" orientation="horizontal">
+      <infobox *context={SelectedLivestock}>
+        <button margin="16"
+                text="BACK"
+                hover-background={@Mods/StardewUI/Sprites/ButtonLight}
+                left-click=|^ClearSelectedLivestock()| />
+      </infobox>
     </lane>
   </frame>
 
   <!-- spacer to counterbalance the portrait -->
   <spacer *if={:IsWidescreen} layout="192px 0px"/>
-
 </lane>
+
+<template name="infobox">
+  <lane layout="256px stretch"  orientation="vertical" horizontal-content-alignment="middle">
+    <panel layout="content content[128..]" margin="8,8,0,0" horizontal-content-alignment="middle" vertical-content-alignment="end">
+      <image layout={:AnimLayout} sprite={AnimSprite}/>
+    </panel>
+    <label text={:DisplayName} font="dialogue"/>
+    <label text={:Description} font="small" margin="8,0" />
+    <outlet/>
+  </lane>
+</template>

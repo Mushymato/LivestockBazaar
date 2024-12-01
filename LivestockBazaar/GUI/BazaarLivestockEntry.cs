@@ -3,6 +3,7 @@ using LivestockBazaar.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PropertyChanged.SourceGenerator;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.GameData.Buildings;
 using StardewValley.GameData.FarmAnimals;
@@ -31,6 +32,13 @@ public sealed partial class BazaarLivestockEntry(BazaarContextMain Main, string 
             Main.HoveredLivestock = null;
     }
 
+    public void GridCell_LeftClick()
+    {
+        BackgroundTint = Color.White;
+        if (Main.SelectedLivestock != this)
+            Main.SelectedLivestock = this;
+    }
+
     // icon
     public readonly SDUISprite? ShopIcon = new(Game1.content.Load<Texture2D>(Data.ShopTexture), Data.ShopSourceRect);
 
@@ -44,30 +52,40 @@ public sealed partial class BazaarLivestockEntry(BazaarContextMain Main, string 
     private Color backgroundTint = Color.White;
 
     // infobox
-    private readonly int TotalFrames = Data.UseFlippedRightForLeft ? 12 : 16;
-
-    // public SDUISprite AnimBackground => new(Game1.timeOfDay >= 1900 ? Game1.nightbg : Game1.daybg);
+    public readonly string DisplayName = TokenParser.ParseText(Data.ShopDisplayName ?? Data.DisplayName ?? "???");
+    public readonly string Description = TokenParser.ParseText(Data.ShopDescription ?? "");
     private Texture2D SpriteSheet => Game1.content.Load<Texture2D>(Data.Texture);
-    public readonly string AnimLayout = $"{Data.SpriteWidth * 4}px {Data.SpriteHeight * 4}px";
+    public readonly string AnimLayout = $"content[{Data.SpriteWidth * 4}..] content[{Data.SpriteHeight * 4}..]";
 
     [Notify]
     private int animFrame = 0;
-    public SDUISprite AnimSprite =>
-        new(
-            SpriteSheet,
-            new(
-                AnimFrame * Data.SpriteWidth % SpriteSheet.Width,
-                AnimFrame * Data.SpriteWidth / SpriteSheet.Width * Data.SpriteHeight,
-                Data.SpriteWidth,
-                Data.SpriteHeight
-            ),
-            SDUIEdges.NONE,
-            new(Scale: 4)
-        );
+    public SDUISprite AnimSprite
+    {
+        get
+        {
+            // TODO: flip the sprite too
+            int adjAnimFrame = AnimFrame;
+            if (Data.UseFlippedRightForLeft && adjAnimFrame >= 12)
+            {
+                adjAnimFrame -= 8;
+            }
+            return new(
+                SpriteSheet,
+                new(
+                    adjAnimFrame * Data.SpriteWidth % SpriteSheet.Width,
+                    adjAnimFrame * Data.SpriteWidth / SpriteSheet.Width * Data.SpriteHeight,
+                    Data.SpriteWidth,
+                    Data.SpriteHeight
+                ),
+                SDUIEdges.NONE,
+                new(Scale: 4)
+            );
+        }
+    }
 
     public void NextFrame()
     {
-        AnimFrame = (AnimFrame + 1) % TotalFrames;
+        AnimFrame = (AnimFrame + 1) % 16;
     }
 
     /// <summary>Check that
