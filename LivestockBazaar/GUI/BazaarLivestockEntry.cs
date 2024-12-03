@@ -3,7 +3,6 @@ using LivestockBazaar.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PropertyChanged.SourceGenerator;
-using StardewModdingAPI;
 using StardewValley;
 using StardewValley.GameData.Buildings;
 using StardewValley.GameData.FarmAnimals;
@@ -12,7 +11,7 @@ using StardewValley.TokenizableStrings;
 
 namespace LivestockBazaar.GUI;
 
-public sealed partial class BazaarLivestockEntry(BazaarContextMain Main, string shopName, FarmAnimalData Data)
+public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string ShopName, FarmAnimalData Data)
 {
     // events
     public void GridCell_PointerEnter()
@@ -36,15 +35,18 @@ public sealed partial class BazaarLivestockEntry(BazaarContextMain Main, string 
     {
         BackgroundTint = Color.White;
         if (Main.SelectedLivestock != this)
+        {
+            // Main.canClose = false;
             Main.SelectedLivestock = this;
+        }
     }
 
     // icon
     public readonly SDUISprite? ShopIcon = new(Game1.content.Load<Texture2D>(Data.ShopTexture), Data.ShopSourceRect);
 
     // trade cost
-    public ParsedItemData TradeItem = Data.GetTradeItem(shopName);
-    public int TradePrice = Data.GetTradePrice(shopName);
+    public ParsedItemData TradeItem = Data.GetTradeItem(ShopName);
+    public int TradePrice = Data.GetTradePrice(ShopName);
     public string TradeDisplayFont => TradePrice > 999999 ? "small" : "dialogue";
 
     // hover color
@@ -52,7 +54,7 @@ public sealed partial class BazaarLivestockEntry(BazaarContextMain Main, string 
     private Color backgroundTint = Color.White;
 
     // infobox
-    public readonly string DisplayName = TokenParser.ParseText(Data.ShopDisplayName ?? Data.DisplayName ?? "???");
+    public readonly string LivestockName = TokenParser.ParseText(Data.ShopDisplayName ?? Data.DisplayName ?? "???");
     public readonly string Description = TokenParser.ParseText(Data.ShopDescription ?? "");
     private Texture2D SpriteSheet => Game1.content.Load<Texture2D>(Data.Texture);
     public readonly string AnimLayout = $"content[{Data.SpriteWidth * 4}..] content[{Data.SpriteHeight * 4}..]";

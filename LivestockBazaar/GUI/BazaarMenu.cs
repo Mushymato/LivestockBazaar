@@ -1,7 +1,9 @@
 using LivestockBazaar.Integration;
 using StardewModdingAPI;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.GameData.Shops;
+using StardewValley.Menus;
 
 namespace LivestockBazaar.GUI;
 
@@ -13,13 +15,22 @@ internal static class BazaarMenu
     internal static string VIEW_ASSET_PREFIX = null!;
     internal static string VIEW_ASSET_MENU = null!;
 
+    private static readonly PerScreen<IMenuController?> menuCtrl = new();
+    private static readonly PerScreen<BazaarContextMain?> context = new();
+
+    private static IMenuController? MenuCtrl
+    {
+        get => menuCtrl.Value;
+        set => menuCtrl.Value = value;
+    }
+    private static BazaarContextMain? Context
+    {
+        get => context.Value;
+        set => context.Value = value;
+    }
+
     internal static void Register(IModHelper helper)
     {
-        if (!helper.ModRegistry.IsLoaded("focustense.StardewUI"))
-        {
-            ModEntry.Log("focustense.StardewUI not available, will use vanilla menu.", LogLevel.Info);
-            return;
-        }
         viewEngine = helper.ModRegistry.GetApi<IViewEngine>("focustense.StardewUI")!;
         // viewEngine.RegisterSprites($"{ModEntry.ModId}/sprites", "assets/sprites");
         VIEW_ASSET_PREFIX = $"{ModEntry.ModId}/views";
@@ -33,8 +44,29 @@ internal static class BazaarMenu
     internal static bool ShowFor(GameLocation shopLocation, string shopName, ShopOwnerData? ownerData = null)
     {
         ModEntry.Log($"Show bazaar shop '{shopName}'");
-        BazaarContextMain context = new(shopLocation, shopName, ownerData);
-        Game1.activeClickableMenu = viewEngine.CreateMenuFromAsset(VIEW_ASSET_MENU, context);
+        Context = new(shopLocation, shopName, ownerData);
+        MenuCtrl = viewEngine.CreateMenuControllerFromAsset(VIEW_ASSET_MENU, Context);
+        MenuCtrl.CloseAction = CloseAction;
+        Game1.activeClickableMenu = MenuCtrl.Menu;
         return true;
+    }
+
+    public static void CloseAction()
+    {
+        IClickableMenu menu = MenuCtrl!.Menu;
+        if (
+            Context!.SelectedLivestock != null
+            && (Context!.justPressed == SButton.ControllerB || Context!.justPressed == SButton.Escape)
+        )
+        {
+            Context!.SelectedLivestock = null;
+        }
+        else if (menu == Game1.activeClickableMenu)
+        {
+            Game1.exitActiveMenu();
+            Context = null;
+            MenuCtrl = null;
+        }
+        // this menu will never be child menu, no need to handle other cases for now
     }
 }

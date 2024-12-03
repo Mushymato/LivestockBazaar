@@ -28,9 +28,10 @@ public sealed partial class BazaarContextMain
     private readonly string shopName;
     private readonly ShopOwnerData? ownerData;
 
-    // derived
+    // data
     public readonly BazaarData? Data;
-    public readonly ImmutableList<BazaarLivestockEntry> LivestockData;
+    public readonly ImmutableList<BazaarLivestockEntry> LivestockEntries;
+    public readonly ImmutableList<BazaarLocationEntry> TargetLocations;
 
     // theme
     public readonly ShopMenu.ShopCachedTheme Theme;
@@ -69,6 +70,9 @@ public sealed partial class BazaarContextMain
     public Color? Theme_DialogueColor => Theme.DialogueColor ?? Game1.textColor;
     public Color? Theme_DialogueShadowColor => Theme.DialogueShadowColor ?? Game1.textShadowColor;
 
+    // button text
+    public readonly string BtnCancel = TokenParser.ParseText("[LocalizedText Strings\\UI:Cancel]");
+
     // layouts
     public readonly string MainBodyLayout;
     public readonly string ForSaleLayout;
@@ -94,15 +98,35 @@ public sealed partial class BazaarContextMain
         this.shopName = shopName;
         this.ownerData = ownerData;
 
+        // bazaar data
         Data = AssetManager.GetBazaarData(shopName);
         Theme = new ShopMenu.ShopCachedTheme(
             Data?.ShopData?.VisualTheme?.FirstOrDefault(
                 (ShopThemeData theme) => GameStateQuery.CheckConditions(theme.Condition)
             )
         );
-        LivestockData = AssetManager
+        // livestock data
+        LivestockEntries = AssetManager
             .GetAnimalStockData(shopName)
             .Select((data) => new BazaarLivestockEntry(this, shopName, data))
+            .ToImmutableList();
+
+        Dictionary<GameLocation, List<BazaarBuildingEntry>> locationToBuildings = [];
+        Utility.ForEachBuilding(
+            (building) =>
+            {
+                if (building.GetIndoors() is not AnimalHouse)
+                    return true;
+                GameLocation parentLocation = building.GetParentLocation();
+                if (locationToBuildings.ContainsKey(building.GetParentLocation()))
+                    locationToBuildings[parentLocation].Add(new(building));
+                else
+                    locationToBuildings[parentLocation] = [new(building)];
+                return true;
+            }
+        );
+        TargetLocations = locationToBuildings
+            .Select((kv) => new BazaarLocationEntry(this, kv.Key, kv.Value))
             .ToImmutableList();
 
         // layout shenanigans
@@ -112,67 +136,62 @@ public sealed partial class BazaarContextMain
         MainBodyLayout = $"{desiredWidth + 256}px content";
 
         // shop owner setup
-        if (ownerData == null || ownerData.Type == ShopOwnerType.None)
-            return;
-
-        Texture2D? portraitTexture = null;
-        if (ownerData.Portrait != null && !string.IsNullOrWhiteSpace(ownerData.Portrait))
+        if (ownerData != null && ownerData.Type != ShopOwnerType.None)
         {
-            if (Game1.content.DoesAssetExist<Texture2D>(ownerData.Portrait))
+            Texture2D? portraitTexture = null;
+            if (ownerData.Portrait != null && !string.IsNullOrWhiteSpace(ownerData.Portrait))
             {
-                portraitTexture = Game1.content.Load<Texture2D>(ownerData.Portrait);
+                if (Game1.content.DoesAssetExist<Texture2D>(ownerData.Portrait))
+                {
+                    portraitTexture = Game1.content.Load<Texture2D>(ownerData.Portrait);
+                }
+                else if (Game1.getCharacterFromName(ownerData.Portrait) is NPC ownerNPC && ownerNPC.Portrait != null)
+                {
+                    portraitTexture = ownerNPC.Portrait;
+                }
             }
-            else if (Game1.getCharacterFromName(ownerData.Portrait) is NPC ownerNPC && ownerNPC.Portrait != null)
+            else if (
+                ownerData.Type == ShopOwnerType.NamedNpc
+                && !string.IsNullOrWhiteSpace(ownerData.Name)
+                && Game1.getCharacterFromName(ownerData.Name) is NPC ownerNPC
+                && ownerNPC.Portrait != null
+            )
             {
                 portraitTexture = ownerNPC.Portrait;
             }
-        }
-        else if (
-            ownerData.Type == ShopOwnerType.NamedNpc
-            && !string.IsNullOrWhiteSpace(ownerData.Name)
-            && Game1.getCharacterFromName(ownerData.Name) is NPC ownerNPC
-            && ownerNPC.Portrait != null
-        )
-        {
-            portraitTexture = ownerNPC.Portrait;
-        }
+            OwnerPortrait = portraitTexture != null ? new(portraitTexture, new(0, 0, 64, 64)) : null;
 
-        if (portraitTexture != null)
-        {
-            OwnerPortrait = new(portraitTexture, new(0, 0, 64, 64));
-        }
-        else
-        {
-            OwnerPortrait = null;
-            return;
-        }
-
-        if (ownerData.Dialogues != null)
-        {
-            Random random = ownerData.RandomizeDialogueOnOpen
-                ? Game1.random
-                : Utility.CreateRandom(Game1.uniqueIDForThisGame, Game1.stats.DaysPlayed);
-            foreach (ShopDialogueData sdd in ownerData.Dialogues)
+            if (ownerData.Dialogues != null)
             {
-                if (
-                    GameStateQuery.CheckConditions(sdd.Condition)
-                    && (
-                        (sdd.RandomDialogue != null && sdd.RandomDialogue.Any())
-                            ? random.ChooseFrom(sdd.RandomDialogue)
-                            : sdd.Dialogue
-                    )
-                        is string rawDialog
-                )
+                Random random = ownerData.RandomizeDialogueOnOpen
+                    ? Game1.random
+                    : Utility.CreateRandom(Game1.uniqueIDForThisGame, Game1.stats.DaysPlayed);
+                foreach (ShopDialogueData sdd in ownerData.Dialogues)
                 {
-                    OwnerDialog = TokenParser.ParseText(rawDialog);
-                    return;
+                    if (
+                        GameStateQuery.CheckConditions(sdd.Condition)
+                        && (
+                            (sdd.RandomDialogue != null && sdd.RandomDialogue.Any())
+                                ? random.ChooseFrom(sdd.RandomDialogue)
+                                : sdd.Dialogue
+                        )
+                            is string rawDialog
+                    )
+                    {
+                        OwnerDialog = TokenParser.ParseText(rawDialog);
+                        return;
+                    }
                 }
             }
         }
     }
 
-    private TimeSpan animTimer;
+    private TimeSpan animTimer = TimeSpan.Zero;
     private readonly TimeSpan animInterval = TimeSpan.FromMilliseconds(175);
+    public SButton? justPressed = null;
+
+    // private TimeSpan canCloseTimer = TimeSpan.Zero;
+    // public bool canClose = false;
 
     public void Update(TimeSpan elapsed)
     {
@@ -182,10 +201,19 @@ public sealed partial class BazaarContextMain
             HoveredLivestock?.NextFrame();
             animTimer = TimeSpan.Zero;
         }
+        // if (canCloseTimer > TimeSpan.Zero)
+        // {
+        //     canCloseTimer -= elapsed;
+        //     if (canCloseTimer <= TimeSpan.Zero)
+        //     {
+        //         canClose = true;
+        //     }
+        // }
     }
 
-    public void ClearSelectedLivestock()
+    public bool HandleButtonPress(SButton button)
     {
-        SelectedLivestock = null;
+        justPressed = button;
+        return false;
     }
 }
