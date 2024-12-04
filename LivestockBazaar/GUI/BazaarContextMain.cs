@@ -92,6 +92,10 @@ public sealed partial class BazaarContextMain
     private BazaarLivestockEntry? selectedLivestock = null;
     public int CurrentPage => SelectedLivestock == null ? 1 : 2;
 
+    // hovered building entry
+    [Notify]
+    private BazaarBuildingEntry? hoveredBuilding = null;
+
     public BazaarContextMain(GameLocation shopLocation, string shopName, ShopOwnerData? ownerData = null)
     {
         this.shopLocation = shopLocation;
@@ -119,9 +123,9 @@ public sealed partial class BazaarContextMain
                     return true;
                 GameLocation parentLocation = building.GetParentLocation();
                 if (locationToBuildings.ContainsKey(building.GetParentLocation()))
-                    locationToBuildings[parentLocation].Add(new(building));
+                    locationToBuildings[parentLocation].Add(new(this, building));
                 else
-                    locationToBuildings[parentLocation] = [new(building)];
+                    locationToBuildings[parentLocation] = [new(this, building)];
                 return true;
             }
         );
@@ -186,12 +190,10 @@ public sealed partial class BazaarContextMain
         }
     }
 
+    // events
     private TimeSpan animTimer = TimeSpan.Zero;
     private readonly TimeSpan animInterval = TimeSpan.FromMilliseconds(175);
     public SButton? justPressed = null;
-
-    // private TimeSpan canCloseTimer = TimeSpan.Zero;
-    // public bool canClose = false;
 
     public void Update(TimeSpan elapsed)
     {
@@ -201,14 +203,6 @@ public sealed partial class BazaarContextMain
             HoveredLivestock?.NextFrame();
             animTimer = TimeSpan.Zero;
         }
-        // if (canCloseTimer > TimeSpan.Zero)
-        // {
-        //     canCloseTimer -= elapsed;
-        //     if (canCloseTimer <= TimeSpan.Zero)
-        //     {
-        //         canClose = true;
-        //     }
-        // }
     }
 
     public bool HandleButtonPress(SButton button)
@@ -216,4 +210,47 @@ public sealed partial class BazaarContextMain
         justPressed = button;
         return false;
     }
+
+    // page 1 (shop grid) hover and select
+    public void HandleHoverLivestock(BazaarLivestockEntry livestock)
+    {
+        if (HoveredLivestock != null)
+            HoveredLivestock.BackgroundTint = Color.White;
+        livestock.BackgroundTint = Theme.ItemRowBackgroundHoverColor;
+        if (HoveredLivestock != livestock)
+        {
+            livestock.ResetAnim();
+            HoveredLivestock = livestock;
+        }
+    }
+
+    public void HandleSelectLivestock(BazaarLivestockEntry livestock)
+    {
+        livestock.BackgroundTint = Color.White;
+        if (SelectedLivestock != livestock)
+        {
+            SelectedLivestock = livestock;
+        }
+    }
+
+    // page 1 (shop grid) hover and select
+    public void HandleHoverBuilding(BazaarBuildingEntry house)
+    {
+        if (HoveredBuilding != null)
+            HoveredBuilding.BackgroundTint = Color.White;
+        house.BackgroundTint = Theme.ItemRowBackgroundHoverColor;
+        if (HoveredBuilding != house)
+        {
+            HoveredBuilding = house;
+        }
+    }
+
+    // public void HandleSelectLivestock(BazaarLivestockEntry livestock)
+    // {
+    //     livestock.BackgroundTint = Color.White;
+    //     if (SelectedLivestock != livestock)
+    //     {
+    //         SelectedLivestock = livestock;
+    //     }
+    // }
 }

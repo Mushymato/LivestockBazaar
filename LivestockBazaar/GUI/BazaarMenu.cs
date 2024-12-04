@@ -1,4 +1,5 @@
 using LivestockBazaar.Integration;
+using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
@@ -53,13 +54,26 @@ internal static class BazaarMenu
 
     public static void CloseAction()
     {
+        var justPressed = Context!.justPressed;
         IClickableMenu menu = MenuCtrl!.Menu;
+        if (justPressed == null)
+            return;
         if (
             Context!.SelectedLivestock != null
-            && (Context!.justPressed == SButton.ControllerB || Context!.justPressed == SButton.Escape)
+            && (
+                justPressed == SButton.ControllerB
+                || justPressed == SButton.ControllerY
+                || justPressed == SButton.Escape
+            )
         )
         {
+            if (Context!.HoveredBuilding != null)
+            {
+                Context!.HoveredBuilding.BackgroundTint = Color.White;
+                Context!.HoveredBuilding = null;
+            }
             Context!.SelectedLivestock = null;
+            Context!.justPressed = null;
         }
         else if (menu == Game1.activeClickableMenu)
         {

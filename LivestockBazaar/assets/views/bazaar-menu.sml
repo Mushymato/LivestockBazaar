@@ -20,12 +20,17 @@
       <scrollable-styled>
         <grid layout="stretch content" item-layout="length: 192"
               horizontal-item-alignment="middle">
-          <frame *repeat={:LivestockEntries}
+          <!-- <frame *repeat={:LivestockEntries}
             padding="16"
             background={:^Theme_ItemRowBackground} background-tint={BackgroundTint}
             pointer-enter=|GridCell_PointerEnter()|
             pointer-leave=|GridCell_PointerLeave()|
-            left-click=|GridCell_LeftClick()| >
+            left-click=|GridCell_LeftClick()| > -->
+          <frame *repeat={:LivestockEntries}
+            padding="16"
+            background={:^Theme_ItemRowBackground} background-tint={BackgroundTint}
+            pointer-enter=|^HandleHoverLivestock(this)|
+            left-click=|^HandleSelectLivestock(this)| >
             <panel layout="160px 144px" horizontal-content-alignment="middle" focusable="true">
               <image layout="content 64px" margin="0,8" sprite={:ShopIcon} />
               <lane layout="stretch 64px" margin="8,88" orientation="horizontal">
@@ -40,13 +45,20 @@
       <infobox *context={HoveredLivestock} />
     </lane>
     <!-- page 2 -->
-    <lane *case="2" layout="stretch 70%[676..]" orientation="horizontal">
+    <lane *case="2" layout="stretch content" orientation="horizontal">
       <scrollable-styled>
         <lane layout="stretch content" orientation="vertical">
           <lane *repeat={:TargetLocations} layout="stretch content" orientation="vertical">
-              <banner *outlet="header" padding="8" text={:LocationName} />
-              <lane margin="48,0,0,0" layout="stretch content" orientation="vertical">
-                <label *repeat={:LivestockBuildings} padding="8" focusable="true" font="dialogue" text={:BuildingName}/>
+              <banner padding="8" text={:LocationName} />
+              <lane orientation="vertical">
+                <frame *repeat={:LivestockBuildings}
+                  focusable="true" padding="12" layout="stretch content"
+                  background={:^^Theme_ItemRowBackground} background-tint={BackgroundTint}
+                  pointer-enter=|LaneEntry_PointerEnter()|
+                  pointer-leave=|LaneEntry_PointerLeave()|
+                  left-click=|LaneEntry_LeftClick()| >
+                  <label padding="8" font="dialogue" text={:BuildingName}/>
+                </frame>
               </lane>
           </lane>
         </lane>
@@ -66,6 +78,7 @@
     </panel>
     <label text={:LivestockName} font="dialogue"/>
     <label text={:Description} font="small" margin="8,0" />
+    <outlet/>
   </lane>
 </template>
 

@@ -10,18 +10,7 @@ public static class FarmAnimalDataExtensions
 
     /// <summary>
     /// Check if the animal can be bought from a particular shop.
-    /// Marnie can always sell an animal, unless explictly banned like this:
-    /// <code>
-    /// "CustomFields": {
-    ///     "mushymato.LivestockBazaar/BuyFrom.Marnie": false
-    /// }
-    /// </code>
-    /// Custom shops must be explicitly allowed to sell an animal:
-    /// <code>
-    /// "CustomFields": {
-    ///     "mushymato.LivestockBazaar/BuyFrom.<CUSTOM SHOP NAME>": true
-    /// }
-    /// </code>
+    /// Marnie can always sell an animal, unless explictly banned.
     /// </summary>
     /// <param name="data"></param>
     /// <param name="shopName"></param>
@@ -29,11 +18,18 @@ public static class FarmAnimalDataExtensions
     public static bool CanByFrom(this FarmAnimalData data, string shopName)
     {
         if (
-            data.CustomFields?.TryGetValue(string.Concat(ModEntry.ModId, "/BuyFrom.", shopName), out string? buyFrom)
-            ?? false
+            data.CustomFields is not Dictionary<string, string> customFields
+            || !customFields.TryGetValue(string.Concat(ModEntry.ModId, "/BuyFrom.", shopName), out string? buyFrom)
         )
-            return bool.Parse(buyFrom);
-        return shopName == Wheels.MARNIE;
+            return shopName == Wheels.MARNIE;
+        if (!bool.Parse(buyFrom))
+            return false;
+        return (
+            !customFields.TryGetValue(
+                string.Concat(ModEntry.ModId, "/BuyFrom.", shopName, ".Condition"),
+                out string? buyFromCond
+            ) || GameStateQuery.CheckConditions(buyFromCond)
+        );
     }
 
     /// <summary>
@@ -43,7 +39,6 @@ public static class FarmAnimalDataExtensions
     /// <returns></returns>
     public static ParsedItemData GetTradeItem(this FarmAnimalData data, string shopName = Wheels.MARNIE)
     {
-        // hm yes this is at least 3.2 bad
         if (
             (
                 (

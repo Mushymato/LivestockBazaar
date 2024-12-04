@@ -13,34 +13,6 @@ namespace LivestockBazaar.GUI;
 
 public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string ShopName, FarmAnimalData Data)
 {
-    // events
-    public void GridCell_PointerEnter()
-    {
-        BackgroundTint = Main.Theme.ItemRowBackgroundHoverColor;
-        if (Main.HoveredLivestock != this)
-        {
-            animFrame = 0;
-            Main.HoveredLivestock = this;
-        }
-    }
-
-    public void GridCell_PointerLeave()
-    {
-        BackgroundTint = Color.White;
-        if (Main.HoveredLivestock == this)
-            Main.HoveredLivestock = null;
-    }
-
-    public void GridCell_LeftClick()
-    {
-        BackgroundTint = Color.White;
-        if (Main.SelectedLivestock != this)
-        {
-            // Main.canClose = false;
-            Main.SelectedLivestock = this;
-        }
-    }
-
     // icon
     public readonly SDUISprite? ShopIcon = new(Game1.content.Load<Texture2D>(Data.ShopTexture), Data.ShopSourceRect);
 
@@ -49,7 +21,7 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
     public int TradePrice = Data.GetTradePrice(ShopName);
     public string TradeDisplayFont => TradePrice > 999999 ? "small" : "dialogue";
 
-    // hover color
+    // hover color, controlled by main context
     [Notify]
     private Color backgroundTint = Color.White;
 
@@ -61,6 +33,12 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
 
     [Notify]
     private int animFrame = 0;
+
+    public void ResetAnim()
+    {
+        AnimFrame = 0;
+    }
+
     public SDUISprite AnimSprite
     {
         get

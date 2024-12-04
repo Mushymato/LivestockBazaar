@@ -241,8 +241,8 @@
             "mushymato.LivestockBazaar/BuyFrom.Marnie": false,
             // allow chicken to be bought from Valgrind the debug shop
             "mushymato.LivestockBazaar/BuyFrom.{{ModId}}_Valgrind": true,
-            "mushymato.LivestockBazaar/TradeItemId.{{ModId}}_Shane": "(O)858",
-            "mushymato.LivestockBazaar/TradeItemAmount.{{ModId}}_Shane": 30,
+            "mushymato.LivestockBazaar/TradeItemId.{{ModId}}_Valgrind": "(O)246",
+            "mushymato.LivestockBazaar/TradeItemAmount.{{ModId}}_Valgrind": 297,
           }
         },
       }
@@ -256,6 +256,7 @@
       "Entries": {
         "PurchasePrice": 2000,
         "ShopTexture": "Animals/Blue Chicken",
+        "ShopDescription": "I'm blue, da ba dee da ba di\nDa ba dee da ba di, da ba dee da ba di\nDa ba dee da ba di, da ba dee da ba di\nDa ba dee da ba di, da ba dee da ba di",
         "ShopSourceRect": {
           "X": 0,
           "Y": 0,
@@ -269,6 +270,28 @@
           "mushymato.LivestockBazaar/TradeItemId.{{ModId}}_Shane": "(O)858",
           "mushymato.LivestockBazaar/TradeItemAmount.{{ModId}}_Shane": 30,
         }
+      }
+    },
+    {
+      "Action": "EditData",
+      "Target": "Data/FarmAnimals",
+      "TargetField": [
+        "Mizu.Quail_PlumedQuail"
+      ],
+      // this should be depedent on Mizu.Quail in the manifest instead, slacc
+      "Priority": "Late",
+      "Entries": {
+        "CustomFields": {
+          // can only buy the 🤏 from marnie's shop on friday
+          "mushymato.LivestockBazaar/BuyFrom.Marnie": true,
+          "mushymato.LivestockBazaar/BuyFrom.Marnie.Condition": "DAY_OF_WEEK Friday",
+          // cannot buy the 🤏 from marnie's shop on friday
+          "mushymato.LivestockBazaar/BuyFrom.{{ModId}}_Valgrind": true,
+          "mushymato.LivestockBazaar/BuyFrom.{{ModId}}_Valgrind.Condition": "!DAY_OF_WEEK Friday",
+        }
+      },
+      "When": {
+        "HasMod": "Mizu.Quail"
       }
     }
   ]
