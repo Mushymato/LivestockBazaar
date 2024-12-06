@@ -6,7 +6,9 @@ using Microsoft.Xna.Framework.Graphics;
 using PropertyChanged.SourceGenerator;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Buildings;
 using StardewValley.Extensions;
+using StardewValley.GameData.Buildings;
 using StardewValley.GameData.Shops;
 using StardewValley.Menus;
 using StardewValley.TokenizableStrings;
@@ -31,7 +33,44 @@ public sealed partial class BazaarContextMain
     // data
     public readonly BazaarData? Data;
     public readonly ImmutableList<BazaarLivestockEntry> LivestockEntries;
-    public readonly ImmutableList<BazaarLocationEntry> TargetLocations;
+    public ImmutableDictionary<GameLocation, BazaarLocationEntry> AllAnimalHouseLocations;
+
+    /// <summary>
+    /// Rebuild <see cref="AllAnimalHouseLocations"/>
+    /// </summary>
+    /// <param name="e"></param>
+    public IDictionary<GameLocation, BazaarLocationEntry> BuildAllAnimalHouseLocations()
+    {
+        Dictionary<GameLocation, BazaarLocationEntry> allAnimalHouseLocations = [];
+        Utility.ForEachBuilding(
+            (building) =>
+            {
+                AddToAllAnimalHouseLocations(allAnimalHouseLocations, building);
+                return true;
+            }
+        );
+        return allAnimalHouseLocations;
+    }
+
+    public void AddToAllAnimalHouseLocations(
+        Dictionary<GameLocation, BazaarLocationEntry> allAnimalHouseLocations,
+        Building building
+    )
+    {
+        BuildingData buildingData = building.GetData();
+        if (buildingData?.ValidOccupantTypes == null || building.GetIndoors() is not AnimalHouse)
+            return;
+        GameLocation parentLocation = building.GetParentLocation();
+        if (!allAnimalHouseLocations.ContainsKey(building.GetParentLocation()))
+            allAnimalHouseLocations[parentLocation] = new(this, parentLocation, []);
+        var occToBld = allAnimalHouseLocations[parentLocation];
+        foreach (var occupentType in buildingData.ValidOccupantTypes)
+        {
+            if (!occToBld.LivestockBuildings.ContainsKey(occupentType))
+                occToBld.LivestockBuildings[occupentType] = [];
+            occToBld.LivestockBuildings[occupentType].Add(new(this, occToBld, building, buildingData));
+        }
+    }
 
     // theme
     public readonly ShopMenu.ShopCachedTheme Theme;
@@ -109,28 +148,11 @@ public sealed partial class BazaarContextMain
                 (ShopThemeData theme) => GameStateQuery.CheckConditions(theme.Condition)
             )
         );
+        AllAnimalHouseLocations = BuildAllAnimalHouseLocations().ToImmutableDictionary();
         // livestock data
         LivestockEntries = AssetManager
             .GetAnimalStockData(shopName)
             .Select((data) => new BazaarLivestockEntry(this, shopName, data))
-            .ToImmutableList();
-
-        Dictionary<GameLocation, List<BazaarBuildingEntry>> locationToBuildings = [];
-        Utility.ForEachBuilding(
-            (building) =>
-            {
-                if (building.GetIndoors() is not AnimalHouse)
-                    return true;
-                GameLocation parentLocation = building.GetParentLocation();
-                if (locationToBuildings.ContainsKey(building.GetParentLocation()))
-                    locationToBuildings[parentLocation].Add(new(this, building));
-                else
-                    locationToBuildings[parentLocation] = [new(this, building)];
-                return true;
-            }
-        );
-        TargetLocations = locationToBuildings
-            .Select((kv) => new BazaarLocationEntry(this, kv.Key, kv.Value))
             .ToImmutableList();
 
         // layout shenanigans
@@ -212,10 +234,12 @@ public sealed partial class BazaarContextMain
     }
 
     // page 1 (shop grid) hover and select
-    public void HandleHoverLivestock(BazaarLivestockEntry livestock)
+    public void HandleHoverLivestock(BazaarLivestockEntry? livestock = null)
     {
         if (HoveredLivestock != null)
             HoveredLivestock.BackgroundTint = Color.White;
+        if (livestock == null)
+            return;
         livestock.BackgroundTint = Theme.ItemRowBackgroundHoverColor;
         if (HoveredLivestock != livestock)
         {
@@ -233,11 +257,13 @@ public sealed partial class BazaarContextMain
         }
     }
 
-    // page 1 (shop grid) hover and select
-    public void HandleHoverBuilding(BazaarBuildingEntry house)
+    // page 2 (building list) hover and select
+    public void HandleHoverBuilding(BazaarBuildingEntry? house = null)
     {
         if (HoveredBuilding != null)
             HoveredBuilding.BackgroundTint = Color.White;
+        if (house == null)
+            return;
         house.BackgroundTint = Theme.ItemRowBackgroundHoverColor;
         if (HoveredBuilding != house)
         {

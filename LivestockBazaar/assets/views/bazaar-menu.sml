@@ -30,9 +30,10 @@
             padding="16"
             background={:^Theme_ItemRowBackground} background-tint={BackgroundTint}
             pointer-enter=|^HandleHoverLivestock(this)|
+            pointer-leave=|^HandleHoverLivestock()|
             left-click=|^HandleSelectLivestock(this)| >
             <panel layout="160px 144px" horizontal-content-alignment="middle" focusable="true">
-              <image layout="content 64px" margin="0,8" sprite={:ShopIcon} />
+              <image layout="content 64px" margin="0,8" sprite={:ShopIcon} tint={:ShopIconTint}/>
               <lane layout="stretch 64px" margin="8,88" orientation="horizontal">
                 <image layout="48px 48px" sprite={:TradeItem} />
                 <label layout="content 48px" text={:TradePrice} font={:TradeDisplayFont}/>
@@ -47,23 +48,24 @@
     <!-- page 2 -->
     <lane *case="2" layout="stretch content" orientation="horizontal">
       <scrollable-styled>
-        <lane layout="stretch content" orientation="vertical">
-          <lane *repeat={:TargetLocations} layout="stretch content" orientation="vertical">
+        <lane *context={SelectedLivestock} layout="stretch content" orientation="vertical">
+          <lane *repeat={:ValidAnimalHouseLocations} layout="stretch content" orientation="vertical">
               <banner padding="8" text={:LocationName} />
               <lane orientation="vertical">
-                <frame *repeat={:LivestockBuildings}
+                <frame *repeat={:ValidLivestockBuildings}
                   focusable="true" padding="12" layout="stretch content"
-                  background={:^^Theme_ItemRowBackground} background-tint={BackgroundTint}
-                  pointer-enter=|LaneEntry_PointerEnter()|
-                  pointer-leave=|LaneEntry_PointerLeave()|
-                  left-click=|LaneEntry_LeftClick()| >
+                  background={:^^^Theme_ItemRowBackground}
+                  background-tint={BackgroundTint}
+                  pointer-enter=|^^^HandleHoverBuilding(this)|
+                  pointer-leave=|^^^HandleHoverBuilding()|
+                  >
                   <label padding="8" font="dialogue" text={:BuildingName}/>
                 </frame>
               </lane>
           </lane>
         </lane>
       </scrollable-styled>
-      <infobox *context={SelectedLivestock} />
+      <infobox *context={SelectedLivestock}/>
     </lane>
   </frame>
 
@@ -74,10 +76,10 @@
 <template name="infobox">
   <lane layout="256px stretch"  orientation="vertical" horizontal-content-alignment="middle">
     <panel layout="content content[128..]" margin="8,8,0,0" horizontal-content-alignment="middle" vertical-content-alignment="end">
-      <image layout={:AnimLayout} sprite={AnimSprite}/>
+      <image layout={:AnimLayout} sprite={AnimSprite} tint={ShopIconTint} />
     </panel>
-    <label text={:LivestockName} font="dialogue"/>
-    <label text={:Description} font="small" margin="8,0" />
+    <label *if={CanPurchase} text={:LivestockName} font="dialogue"/>
+    <label *if={CanPurchase} text={:Description} font="small" margin="8,0" />
     <outlet/>
   </lane>
 </template>
