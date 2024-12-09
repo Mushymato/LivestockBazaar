@@ -21,11 +21,12 @@
               horizontal-item-alignment="middle">
           <frame *repeat={:LivestockEntries}
             padding="16"
-            background={:^Theme_ItemRowBackground} background-tint={BackgroundTint}
+            background={:^Theme_ItemRowBackground}
+            background-tint={BackgroundTint}
             pointer-enter=|^HandleHoverLivestock(this)|
             pointer-leave=|^HandleHoverLivestock()|
             left-click=|^HandleSelectLivestock(this)| >
-            <panel layout="160px 144px" horizontal-content-alignment="middle" focusable="true">
+            <panel opacity={:ShopIconOpacity} layout="160px 144px" horizontal-content-alignment="middle" focusable="true">
               <image layout="content 64px" margin="0,8" sprite={:ShopIcon} tint={:ShopIconTint}/>
               <lane layout="stretch 64px" margin="0,88" orientation="horizontal">
                 <image layout="48px 48px" sprite={:TradeItem} />
@@ -72,8 +73,8 @@
       <image layout={:AnimLayout} sprite={AnimSprite} flip={AnimFlip} tint={ShopIconTint} />
       <!-- <image layout={:AnimLayout} sprite={AnimSprite} tint={ShopIconTint} /> -->
     </panel>
-    <label *if={CanPurchase} text={:LivestockName} font="dialogue"/>
-    <label *if={CanPurchase} text={:Description} font="small" margin="8,0" />
+    <label *if={HasValidHouse} text={:LivestockName} font="dialogue"/>
+    <label *if={HasValidHouse} text={:Description} font="small" margin="8,0" />
     <outlet/>
   </lane>
 </template>

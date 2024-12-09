@@ -249,10 +249,13 @@ public sealed partial class BazaarContextMain
 
     public void HandleSelectLivestock(BazaarLivestockEntry livestock)
     {
-        livestock.BackgroundTint = Color.White;
-        if (SelectedLivestock != livestock)
+        if (livestock.HasEnoughCurrency)
         {
-            SelectedLivestock = livestock;
+            livestock.BackgroundTint = Color.White;
+            if (SelectedLivestock != livestock)
+            {
+                SelectedLivestock = livestock;
+            }
         }
     }
 
@@ -277,7 +280,7 @@ public sealed partial class BazaarContextMain
 
     public void HandlePurchaseAnimal(BazaarBuildingEntry? building = null)
     {
-        if (building == null || SelectedLivestock == null || !building.CanAcceptLivestock(SelectedLivestock))
+        if (building == null || SelectedLivestock == null)
         {
             ErrorMessage($"Can't put '{SelectedLivestock?.LivestockName}' in '{building?.BuildingName}'");
             return;
@@ -288,9 +291,11 @@ public sealed partial class BazaarContextMain
             return;
         }
 
-        FarmAnimal animal = SelectedLivestock.GetNewFarmAnimal();
-        animal.Name = Dialogue.randomName();
-        building.AdoptAnimal(animal);
-        // TODO cost
+        building.AdoptAnimal(SelectedLivestock.GetNewFarmAnimal());
+
+        if (!SelectedLivestock.HasEnoughCurrency)
+        {
+            SelectedLivestock = null;
+        }
     }
 }
