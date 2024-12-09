@@ -4,7 +4,6 @@ using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.GameData.Shops;
-using StardewValley.Menus;
 
 namespace LivestockBazaar.GUI;
 
@@ -16,14 +15,8 @@ internal static class BazaarMenu
     internal static string VIEW_ASSET_PREFIX = null!;
     internal static string VIEW_ASSET_MENU = null!;
 
-    private static readonly PerScreen<IMenuController?> menuCtrl = new();
     private static readonly PerScreen<BazaarContextMain?> context = new();
 
-    private static IMenuController? MenuCtrl
-    {
-        get => menuCtrl.Value;
-        set => menuCtrl.Value = value;
-    }
     private static BazaarContextMain? Context
     {
         get => context.Value;
@@ -46,26 +39,16 @@ internal static class BazaarMenu
     {
         ModEntry.Log($"Show bazaar shop '{shopName}'");
         Context = new(shopLocation, shopName, ownerData);
-        MenuCtrl = viewEngine.CreateMenuControllerFromAsset(VIEW_ASSET_MENU, Context);
-        MenuCtrl.CloseAction = CloseAction;
-        Game1.activeClickableMenu = MenuCtrl.Menu;
+        var menuCtrl = viewEngine.CreateMenuControllerFromAsset(VIEW_ASSET_MENU, Context);
+        menuCtrl.CloseAction = CloseAction;
+        menuCtrl.EnableCloseButton();
+        Game1.activeClickableMenu = menuCtrl.Menu;
         return true;
     }
 
     public static void CloseAction()
     {
-        var justPressed = Context!.justPressed;
-        IClickableMenu menu = MenuCtrl!.Menu;
-        if (justPressed == null)
-            return;
-        if (
-            Context!.SelectedLivestock != null
-            && (
-                justPressed == SButton.ControllerB
-                || justPressed == SButton.ControllerY
-                || justPressed == SButton.Escape
-            )
-        )
+        if (Context!.SelectedLivestock != null)
         {
             if (Context!.HoveredBuilding != null)
             {
@@ -73,14 +56,11 @@ internal static class BazaarMenu
                 Context!.HoveredBuilding = null;
             }
             Context!.SelectedLivestock = null;
-            Context!.justPressed = null;
         }
-        else if (menu == Game1.activeClickableMenu)
+        else
         {
             Game1.exitActiveMenu();
             Context = null;
-            MenuCtrl = null;
         }
-        // this menu will never be child menu, no need to handle other cases for now
     }
 }

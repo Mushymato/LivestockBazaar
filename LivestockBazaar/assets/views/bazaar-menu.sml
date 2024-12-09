@@ -1,4 +1,4 @@
-<lane orientation="horizontal">
+<lane orientation="horizontal" >
   <!-- shop owner portrait -->
   <lane *if={:IsWidescreen} layout="320px content" padding="0,8,0,0" orientation="vertical" horizontal-content-alignment="end">
     <frame *if={:ShowPortraitBox} padding="20" background={:Theme_PortraitBackground}>
@@ -12,20 +12,13 @@
   <!-- main body -->
   <frame *switch={CurrentPage}
          layout={:MainBodyLayout} border={:Theme_WindowBorder}
-         border-thickness={:Theme_WindowBorderThickness} margin="8"
-         button-press=|HandleButtonPress($Button)| >
+         border-thickness={:Theme_WindowBorderThickness} margin="8">
     <!-- page 1 -->
     <lane *case="1" layout="stretch content" orientation="horizontal">
       <!-- for sale -->
       <scrollable-styled>
         <grid layout="stretch content" item-layout="length: 192"
               horizontal-item-alignment="middle">
-          <!-- <frame *repeat={:LivestockEntries}
-            padding="16"
-            background={:^Theme_ItemRowBackground} background-tint={BackgroundTint}
-            pointer-enter=|GridCell_PointerEnter()|
-            pointer-leave=|GridCell_PointerLeave()|
-            left-click=|GridCell_LeftClick()| > -->
           <frame *repeat={:LivestockEntries}
             padding="16"
             background={:^Theme_ItemRowBackground} background-tint={BackgroundTint}
@@ -34,9 +27,9 @@
             left-click=|^HandleSelectLivestock(this)| >
             <panel layout="160px 144px" horizontal-content-alignment="middle" focusable="true">
               <image layout="content 64px" margin="0,8" sprite={:ShopIcon} tint={:ShopIconTint}/>
-              <lane layout="stretch 64px" margin="8,88" orientation="horizontal">
+              <lane layout="stretch 64px" margin="0,88" orientation="horizontal">
                 <image layout="48px 48px" sprite={:TradeItem} />
-                <label layout="content 48px" text={:TradePrice} font={:TradeDisplayFont}/>
+                <label layout="stretch 48px" text={:TradePrice} font={:TradeDisplayFont} />
               </lane>
             </panel>
           </frame>
@@ -58,8 +51,8 @@
                   background-tint={BackgroundTint}
                   pointer-enter=|^^^HandleHoverBuilding(this)|
                   pointer-leave=|^^^HandleHoverBuilding()|
-                  >
-                  <label padding="8" font="dialogue" text={:BuildingName}/>
+                  left-click=|^^^HandlePurchaseAnimal(this)| >
+                  <label padding="8" font="dialogue" text={BuildingName}/>
                 </frame>
               </lane>
           </lane>
@@ -76,7 +69,8 @@
 <template name="infobox">
   <lane layout="256px stretch"  orientation="vertical" horizontal-content-alignment="middle">
     <panel layout="content content[128..]" margin="8,8,0,0" horizontal-content-alignment="middle" vertical-content-alignment="end">
-      <image layout={:AnimLayout} sprite={AnimSprite} tint={ShopIconTint} />
+      <image layout={:AnimLayout} sprite={AnimSprite} flip={AnimFlip} tint={ShopIconTint} />
+      <!-- <image layout={:AnimLayout} sprite={AnimSprite} tint={ShopIconTint} /> -->
     </panel>
     <label *if={CanPurchase} text={:LivestockName} font="dialogue"/>
     <label *if={CanPurchase} text={:Description} font="small" margin="8,0" />

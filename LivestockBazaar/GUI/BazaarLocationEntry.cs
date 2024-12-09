@@ -14,9 +14,9 @@ public sealed partial record BazaarBuildingEntry(
     BuildingData Data
 )
 {
-    public AnimalHouse House = (AnimalHouse)Building.GetIndoors();
+    private readonly AnimalHouse House = (AnimalHouse)Building.GetIndoors();
     public string BuildingName =>
-        $"{Building.buildingType.Value} ({Building.currentOccupants.Value}/{Building.maxOccupants.Value})";
+        $"{Building.buildingType.Value} ({House.animalsThatLiveHere.Count}/{House.animalLimit.Value})";
 
     public bool IsBuildingOrUpgrade(string buildingId) =>
         Building.buildingType.Value == buildingId || IsBuildingOrUpgrade(buildingId, Data);
@@ -37,10 +37,18 @@ public sealed partial record BazaarBuildingEntry(
 
     public bool CanAcceptLivestock(BazaarLivestockEntry livestock)
     {
-        if (Building.isUnderConstruction() || House.isFull())
+        if (Building.isUnderConstruction())
             return false;
-        return livestock.Data.RequiredBuilding == null || IsBuildingOrUpgrade(livestock.Data.RequiredBuilding);
+        return livestock.Ls.Data.RequiredBuilding == null || IsBuildingOrUpgrade(livestock.Ls.Data.RequiredBuilding);
     }
+
+    internal void AdoptAnimal(FarmAnimal animal)
+    {
+        House.adoptAnimal(animal);
+        OnPropertyChanged(new(nameof(BuildingName)));
+    }
+
+    public bool IsFull => House.isFull();
 
     // hover color
     [Notify]
@@ -59,7 +67,7 @@ public sealed partial record class BazaarLocationEntry(
     {
         if (livestock == null)
             return false;
-        if (!LivestockBuildings.TryGetValue(livestock.Data.House, out List<BazaarBuildingEntry>? buildings))
+        if (!LivestockBuildings.TryGetValue(livestock.Ls.Data.House, out List<BazaarBuildingEntry>? buildings))
             return false;
         return buildings.Any((bld) => bld.CanAcceptLivestock(livestock));
     }
@@ -72,7 +80,7 @@ public sealed partial record class BazaarLocationEntry(
             var livestock = Main.SelectedLivestock;
             if (
                 livestock != null
-                && LivestockBuildings.TryGetValue(livestock.Data.House, out List<BazaarBuildingEntry>? buildings)
+                && LivestockBuildings.TryGetValue(livestock.Ls.Data.House, out List<BazaarBuildingEntry>? buildings)
             )
                 return buildings.Where((bld) => bld.CanAcceptLivestock(livestock)).ToList();
             return [];

@@ -58,9 +58,9 @@ internal static class AssetManager
     /// <param name="shopName"></param>
     /// <param name="location"></param>
     /// <returns></returns>
-    public static IEnumerable<FarmAnimalData> GetAnimalStockData(string shopName)
+    public static IEnumerable<LivestockEntry> GetAnimalStockData(string shopName)
     {
-        foreach ((string _key, FarmAnimalData data) in Game1.farmAnimalData)
+        foreach ((string key, FarmAnimalData data) in Game1.farmAnimalData)
         {
             if (
                 data.PurchasePrice <= 0
@@ -68,9 +68,10 @@ internal static class AssetManager
                 || !GameStateQuery.CheckConditions(data.UnlockCondition)
             )
                 continue;
-            if (!data.CanByFrom(shopName))
+            LivestockEntry entry = new(key, data);
+            if (!entry.CanByFrom(shopName))
                 continue;
-            yield return data;
+            yield return entry;
         }
     }
 }

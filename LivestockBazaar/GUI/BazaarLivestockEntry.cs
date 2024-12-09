@@ -4,23 +4,23 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PropertyChanged.SourceGenerator;
 using StardewValley;
-using StardewValley.GameData.FarmAnimals;
 using StardewValley.ItemTypeDefinitions;
 using StardewValley.TokenizableStrings;
 
 namespace LivestockBazaar.GUI;
 
-public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string ShopName, FarmAnimalData Data)
+public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string ShopName, LivestockEntry Ls)
 {
     // BazaarContextMain.AllAnimalHouseLocations.Select((kv) => kv.Value.CanAcceptLivestock(this))
     // icon
-    public readonly SDUISprite? ShopIcon = new(Game1.content.Load<Texture2D>(Data.ShopTexture), Data.ShopSourceRect);
+    public readonly SDUISprite? ShopIcon =
+        new(Game1.content.Load<Texture2D>(Ls.Data.ShopTexture), Ls.Data.ShopSourceRect);
     public bool CanPurchase => ValidAnimalHouseLocations?.Any() ?? false;
     public Color ShopIconTint => CanPurchase ? Color.White : (Color.Black * 0.4f);
 
     // trade cost
-    public ParsedItemData TradeItem = Data.GetTradeItem(ShopName);
-    public int TradePrice = Data.GetTradePrice(ShopName);
+    public ParsedItemData TradeItem = Ls.GetTradeItem(ShopName);
+    public int TradePrice = Ls.GetTradePrice(ShopName);
     public string TradeDisplayFont => TradePrice > 999999 ? "small" : "dialogue";
 
     // valid animal locations
@@ -41,13 +41,17 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
     private Color backgroundTint = Color.White;
 
     // infobox anim
-    public readonly string LivestockName = TokenParser.ParseText(Data.ShopDisplayName ?? Data.DisplayName ?? "???");
-    public readonly string Description = TokenParser.ParseText(Data.ShopDescription ?? "");
-    private Texture2D SpriteSheet => Game1.content.Load<Texture2D>(Data.Texture);
-    public readonly string AnimLayout = $"content[{Data.SpriteWidth * 4}..] content[{Data.SpriteHeight * 4}..]";
+    public readonly string LivestockName = TokenParser.ParseText(
+        Ls.Data.ShopDisplayName ?? Ls.Data.DisplayName ?? "???"
+    );
+    public readonly string Description = TokenParser.ParseText(Ls.Data.ShopDescription ?? "");
+    private Texture2D SpriteSheet => Game1.content.Load<Texture2D>(Ls.Data.Texture);
+    public readonly string AnimLayout = $"content[{Ls.Data.SpriteWidth * 4}..] content[{Ls.Data.SpriteHeight * 4}..]";
 
     [Notify]
     private int animFrame = 0;
+    public SpriteEffects AnimFlip =>
+        Ls.Data.UseFlippedRightForLeft && AnimFrame >= 12 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
     public void ResetAnim()
     {
@@ -58,19 +62,16 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
     {
         get
         {
-            // TODO: flip the sprite too
             int adjAnimFrame = AnimFrame;
-            if (Data.UseFlippedRightForLeft && adjAnimFrame >= 12)
-            {
+            if (Ls.Data.UseFlippedRightForLeft && adjAnimFrame >= 12)
                 adjAnimFrame -= 8;
-            }
             return new(
                 SpriteSheet,
                 new(
-                    adjAnimFrame * Data.SpriteWidth % SpriteSheet.Width,
-                    adjAnimFrame * Data.SpriteWidth / SpriteSheet.Width * Data.SpriteHeight,
-                    Data.SpriteWidth,
-                    Data.SpriteHeight
+                    adjAnimFrame * Ls.Data.SpriteWidth % SpriteSheet.Width,
+                    adjAnimFrame * Ls.Data.SpriteWidth / SpriteSheet.Width * Ls.Data.SpriteHeight,
+                    Ls.Data.SpriteWidth,
+                    Ls.Data.SpriteHeight
                 ),
                 SDUIEdges.NONE,
                 new(Scale: 4)
@@ -81,5 +82,10 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
     public void NextFrame()
     {
         AnimFrame = (AnimFrame + 1) % 16;
+    }
+
+    public FarmAnimal GetNewFarmAnimal()
+    {
+        return new FarmAnimal(Ls.Key, Game1.Multiplayer.getNewID(), Game1.player.UniqueMultiplayerID);
     }
 }

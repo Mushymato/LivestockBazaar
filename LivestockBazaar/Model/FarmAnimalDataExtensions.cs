@@ -1,12 +1,16 @@
+using LivestockBazaar.Integration;
+using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.GameData.FarmAnimals;
 using StardewValley.ItemTypeDefinitions;
 
 namespace LivestockBazaar.Model;
 
-public static class FarmAnimalDataExtensions
+public record LivestockEntry(string Key, FarmAnimalData Data)
 {
     static readonly ParsedItemData goldCoin = ItemRegistry.GetData("GoldCoin");
+
+    public readonly SDUISprite? ShopIcon = new(Game1.content.Load<Texture2D>(Data.ShopTexture), Data.ShopSourceRect);
 
     /// <summary>
     /// Check if the animal can be bought from a particular shop.
@@ -15,10 +19,10 @@ public static class FarmAnimalDataExtensions
     /// <param name="data"></param>
     /// <param name="shopName"></param>
     /// <returns></returns>
-    public static bool CanByFrom(this FarmAnimalData data, string shopName)
+    public bool CanByFrom(string shopName)
     {
         if (
-            data.CustomFields is not Dictionary<string, string> customFields
+            Data.CustomFields is not Dictionary<string, string> customFields
             || !customFields.TryGetValue(string.Concat(ModEntry.ModId, "/BuyFrom.", shopName), out string? buyFrom)
         )
             return shopName == Wheels.MARNIE;
@@ -37,18 +41,18 @@ public static class FarmAnimalDataExtensions
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    public static ParsedItemData GetTradeItem(this FarmAnimalData data, string shopName = Wheels.MARNIE)
+    public ParsedItemData GetTradeItem(string shopName = Wheels.MARNIE)
     {
         if (
             (
                 (
-                    data.CustomFields?.TryGetValue(
+                    Data.CustomFields?.TryGetValue(
                         string.Concat(ModEntry.ModId, "/TradeItemId.", shopName),
                         out string? tradeItemId
                     ) ?? false
                 )
                 || (
-                    data.CustomFields?.TryGetValue(string.Concat(ModEntry.ModId, "/TradeItemId"), out tradeItemId)
+                    Data.CustomFields?.TryGetValue(string.Concat(ModEntry.ModId, "/TradeItemId"), out tradeItemId)
                     ?? false
                 )
             ) && ItemRegistry.GetData(tradeItemId) is ParsedItemData itemData
@@ -64,20 +68,20 @@ public static class FarmAnimalDataExtensions
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    public static int GetTradePrice(this FarmAnimalData data, string shopName = Wheels.MARNIE)
+    public int GetTradePrice(string shopName = Wheels.MARNIE)
     {
         if (
-            data.CustomFields?.TryGetValue(
+            Data.CustomFields?.TryGetValue(
                 string.Concat(ModEntry.ModId, "/TradeItemAmount.", shopName),
                 out string? tradeItemPrice
             ) ?? false
         )
             return int.Parse(tradeItemPrice);
         if (
-            data.CustomFields?.TryGetValue(string.Concat(ModEntry.ModId, "/TradeItemAmount"), out tradeItemPrice)
+            Data.CustomFields?.TryGetValue(string.Concat(ModEntry.ModId, "/TradeItemAmount"), out tradeItemPrice)
             ?? false
         )
             return int.Parse(tradeItemPrice);
-        return data.PurchasePrice;
+        return Data.PurchasePrice;
     }
 }

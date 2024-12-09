@@ -16,7 +16,6 @@ using StardewValley.TokenizableStrings;
 namespace LivestockBazaar.GUI;
 
 /// <summary>Context for bazaar menu</summary>
-/// <param name="shopName"></param>
 public sealed partial class BazaarContextMain
 {
     private const int CELL_W = 192;
@@ -227,10 +226,10 @@ public sealed partial class BazaarContextMain
         }
     }
 
-    public bool HandleButtonPress(SButton button)
+    public void HandleButtonPress(SButton button)
     {
+        Console.WriteLine($"HandleButtonPress: {button}");
         justPressed = button;
-        return false;
     }
 
     // page 1 (shop grid) hover and select
@@ -258,25 +257,40 @@ public sealed partial class BazaarContextMain
     }
 
     // page 2 (building list) hover and select
-    public void HandleHoverBuilding(BazaarBuildingEntry? house = null)
+    public void HandleHoverBuilding(BazaarBuildingEntry? building = null)
     {
         if (HoveredBuilding != null)
             HoveredBuilding.BackgroundTint = Color.White;
-        if (house == null)
+        if (building == null)
             return;
-        house.BackgroundTint = Theme.ItemRowBackgroundHoverColor;
-        if (HoveredBuilding != house)
+        building.BackgroundTint = Theme.ItemRowBackgroundHoverColor;
+        if (HoveredBuilding != building)
         {
-            HoveredBuilding = house;
+            HoveredBuilding = building;
         }
     }
 
-    // public void HandleSelectLivestock(BazaarLivestockEntry livestock)
-    // {
-    //     livestock.BackgroundTint = Color.White;
-    //     if (SelectedLivestock != livestock)
-    //     {
-    //         SelectedLivestock = livestock;
-    //     }
-    // }
+    private void ErrorMessage(string message)
+    {
+        ModEntry.Log(message, LogLevel.Error);
+    }
+
+    public void HandlePurchaseAnimal(BazaarBuildingEntry? building = null)
+    {
+        if (building == null || SelectedLivestock == null || !building.CanAcceptLivestock(SelectedLivestock))
+        {
+            ErrorMessage($"Can't put '{SelectedLivestock?.LivestockName}' in '{building?.BuildingName}'");
+            return;
+        }
+        if (building.IsFull)
+        {
+            ErrorMessage($"{building.BuildingName} is full");
+            return;
+        }
+
+        FarmAnimal animal = SelectedLivestock.GetNewFarmAnimal();
+        animal.Name = Dialogue.randomName();
+        building.AdoptAnimal(animal);
+        // TODO cost
+    }
 }
