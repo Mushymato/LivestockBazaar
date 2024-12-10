@@ -7,9 +7,6 @@ internal sealed class ModConfig
     /// <summary>Do not override marnie's stock and shop menu</summary>
     public bool VanillaMarnieStock { get; set; } = false;
 
-    /// <summary>Use vanilla livestock shop menu for custom shops</summary>
-    public bool VanillaLivestockMenu { get; set; } = false;
-
     /// <summary>Restore default config values</summary>
     private void Reset()
     {

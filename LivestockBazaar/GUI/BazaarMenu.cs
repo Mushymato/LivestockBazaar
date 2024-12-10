@@ -35,10 +35,10 @@ internal static class BazaarMenu
 #endif
     }
 
-    internal static bool ShowFor(GameLocation shopLocation, string shopName, ShopOwnerData? ownerData = null)
+    internal static bool ShowFor(string shopName, ShopOwnerData? ownerData = null)
     {
         ModEntry.Log($"Show bazaar shop '{shopName}'");
-        Context = new(shopLocation, shopName, ownerData);
+        Context = new(shopName, ownerData);
         var menuCtrl = viewEngine.CreateMenuControllerFromAsset(VIEW_ASSET_MENU, Context);
         menuCtrl.CloseAction = CloseAction;
         menuCtrl.EnableCloseButton();

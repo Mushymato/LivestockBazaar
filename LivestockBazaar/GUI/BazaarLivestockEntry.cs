@@ -17,25 +17,13 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
     public bool HasValidHouse => ValidAnimalHouseLocations?.Any() ?? false;
     public Color ShopIconTint => HasValidHouse ? Color.White : (Color.Black * 0.4f);
 
-    // trade cost
-    public ParsedItemData TradeItem = Ls.GetTradeItem(ShopName);
+    // currency
+    private readonly BaseCurrency currency = Ls.GetTradeCurrency(ShopName);
+    public ParsedItemData TradeItem => currency.TradeItem;
     public int TradePrice = Ls.GetTradePrice(ShopName);
     public string TradeDisplayFont => TradePrice > 999999 ? "small" : "dialogue";
-    public bool HasEnoughCurrency
-    {
-        get
-        {
-            if (TradeItem == LivestockEntry.goldCoin)
-                return Game1.player.Money >= TradePrice;
-            else if (TradeItem.QualifiedItemId == "(O)858") // Qi Gem
-                return Game1.player.QiGems >= TradePrice;
-            // else if (TradeItem.QualifiedItemId == "(O)73") // Golden Walnut
-            //     return Game1.netWorldState.Value.GoldenWalnuts >= TradePrice;
-            else
-                return Game1.player.Items.ContainsId(TradeItem.QualifiedItemId, TradePrice);
-        }
-    }
-    public float ShopIconOpacity => HasEnoughCurrency ? 1f : 0.5f;
+    public bool HasEnoughTradeItems => currency.HasEnough(TradePrice);
+    public float ShopIconOpacity => HasEnoughTradeItems ? 1f : 0.5f;
 
     // valid animal locations
     private IReadOnlyList<BazaarLocationEntry>? validAnimalHouseLocations = null;
@@ -98,25 +86,9 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
         AnimFrame = (AnimFrame + 1) % 16;
     }
 
-    public void DeductTradeItem()
-    {
-        if (TradeItem == LivestockEntry.goldCoin)
-        {
-            Game1.player.Money -= TradePrice;
-        }
-        else if (TradeItem.QualifiedItemId == "(O)858")
-        {
-            Game1.player.QiGems -= TradePrice;
-        }
-        else
-        {
-            Game1.player.Items.ReduceId(TradeItem.QualifiedItemId, TradePrice);
-        }
-    }
-
     public FarmAnimal GetNewFarmAnimal()
     {
-        DeductTradeItem();
+        currency.Deduct(TradePrice);
         FarmAnimal animal =
             new(Ls.Key, Game1.Multiplayer.getNewID(), Game1.player.UniqueMultiplayerID)
             {

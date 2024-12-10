@@ -5,9 +5,11 @@ using LivestockBazaar.Model;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Delegates;
 using StardewValley.GameData.Shops;
 using StardewValley.Menus;
 using StardewValley.TokenizableStrings;
+using StardewValley.Triggers;
 
 namespace LivestockBazaar;
 
@@ -15,19 +17,13 @@ namespace LivestockBazaar;
 internal static class OpenBazaar
 {
     /// <summary>Tile action to open FAB shop</summary>
-    internal static readonly string TileAction_Shop = $"{ModEntry.ModId}_Shop";
-
-    /// <summary>Location that opened the shop, used to warp back after buying animal.</summary>
-    internal static string ShopLocationName { get; set; } = "AnimalShop";
+    internal static string LivestockShop => $"{ModEntry.ModId}_Shop";
 
     internal static void Register(IModHelper helper)
     {
-        GameLocation.RegisterTileAction(TileAction_Shop, TileAction_ShowLivestockShop);
-        helper.ConsoleCommands.Add(
-            "lb-shop",
-            "Triggers sowing (planting of seed and fertilizer from attachment) on all sprinklers with applicable attachment.",
-            Console_ShowLivestockShop
-        );
+        GameLocation.RegisterTileAction(LivestockShop, TileAction_ShowLivestockShop);
+        TriggerActionManager.RegisterAction(LivestockShop, Action_ShowLivestockShop);
+        helper.ConsoleCommands.Add("lb-shop", "Open a custom livestock shop by id", Console_ShowLivestockShop);
 
         // try
         // {
@@ -43,9 +39,20 @@ internal static class OpenBazaar
         // }
     }
 
-    /// <summary>Show specific livestock shop, using vanilla menu</summary>
+    /// <summary>Show livestock bazaar menu</summary>
     /// <param name="command"></param>
     /// <param name="args"></param>
+    private static bool Args_ShowLivestockShop(string[] args, out string error)
+    {
+        if (!ArgUtility.TryGet(args, 0, out var shopName, out error, allowBlank: true, "string shopId"))
+        {
+            ModEntry.Log(error, LogLevel.Error);
+            return false;
+        }
+        ModEntry.Log($"Show animal shop '{shopName}'");
+        return BazaarMenu.ShowFor(shopName, null);
+    }
+
     private static void Console_ShowLivestockShop(string command, string[] args)
     {
         if (!Context.IsWorldReady)
@@ -53,12 +60,13 @@ internal static class OpenBazaar
             ModEntry.Log("Must load save first.", LogLevel.Error);
             return;
         }
-        if (!ArgUtility.TryGet(args, 0, out var shopName, out string error, allowBlank: true, "string shopId"))
-        {
+        if (!Args_ShowLivestockShop(args, out string error))
             ModEntry.Log(error, LogLevel.Error);
-        }
-        ModEntry.Log($"Show animal shop '{shopName}'", LogLevel.Info);
-        BazaarMenu.ShowFor(Game1.currentLocation, shopName, null);
+    }
+
+    private static bool Action_ShowLivestockShop(string[] args, TriggerActionContext context, out string error)
+    {
+        return Args_ShowLivestockShop(args, out error);
     }
 
     private static bool CheckShopOpen(
@@ -199,7 +207,7 @@ internal static class OpenBazaar
             }
         }
         // show shop
-        return BazaarMenu.ShowFor(location, shopName, foundOwnerData);
+        return BazaarMenu.ShowFor(shopName, foundOwnerData);
     }
 
     /// <summary>Override marnie shop and menu, if enabled in config</summary>
@@ -217,7 +225,7 @@ internal static class OpenBazaar
             if (ModEntry.Config.VanillaMarnieStock || onMenuOpened != null)
                 return true;
             // use custom stock and menu
-            BazaarMenu.ShowFor(__instance, Wheels.MARNIE, null);
+            BazaarMenu.ShowFor(Wheels.MARNIE, null);
             return false;
         }
         catch (Exception err)

@@ -37,6 +37,7 @@ internal static class AssetManager
     {
         if (e.NamesWithoutLocale.Any(an => an.IsEquivalentTo(BazaarAsset)))
             _bazaarData = null;
+        CurrencyFactory.OnAssetInvalidated(sender, e);
     }
 
     /// <summary>Make a copy of AnimalShop to use as <see cref="MARNIE"/>'s bazaar data.</summary>

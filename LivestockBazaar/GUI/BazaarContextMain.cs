@@ -25,7 +25,6 @@ public sealed partial class BazaarContextMain
     public bool IsWidescreen = Game1.viewport.Width >= 1920 * Game1.options.uiScale;
 
     // fields
-    private readonly GameLocation shopLocation;
     private readonly string shopName;
     private readonly ShopOwnerData? ownerData;
 
@@ -134,9 +133,8 @@ public sealed partial class BazaarContextMain
     [Notify]
     private BazaarBuildingEntry? hoveredBuilding = null;
 
-    public BazaarContextMain(GameLocation shopLocation, string shopName, ShopOwnerData? ownerData = null)
+    public BazaarContextMain(string shopName, ShopOwnerData? ownerData = null)
     {
-        this.shopLocation = shopLocation;
         this.shopName = shopName;
         this.ownerData = ownerData;
 
@@ -249,7 +247,7 @@ public sealed partial class BazaarContextMain
 
     public void HandleSelectLivestock(BazaarLivestockEntry livestock)
     {
-        if (livestock.HasEnoughCurrency)
+        if (livestock.HasEnoughTradeItems)
         {
             livestock.BackgroundTint = Color.White;
             if (SelectedLivestock != livestock)
@@ -293,7 +291,7 @@ public sealed partial class BazaarContextMain
 
         building.AdoptAnimal(SelectedLivestock.GetNewFarmAnimal());
 
-        if (!SelectedLivestock.HasEnoughCurrency)
+        if (!SelectedLivestock.HasEnoughTradeItems)
         {
             SelectedLivestock = null;
         }

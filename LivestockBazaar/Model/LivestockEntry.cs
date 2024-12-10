@@ -9,7 +9,6 @@ namespace LivestockBazaar.Model;
 
 public record LivestockEntry(string Key, FarmAnimalData Data)
 {
-    public static readonly ParsedItemData goldCoin = ItemRegistry.GetData("GoldCoin");
     public readonly SDUISprite? ShopIcon = new(Game1.content.Load<Texture2D>(Data.ShopTexture), Data.ShopSourceRect);
 
     public const string BUY_FROM = "BuyFrom";
@@ -49,7 +48,7 @@ public record LivestockEntry(string Key, FarmAnimalData Data)
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    public ParsedItemData GetTradeItem(string shopName = Wheels.MARNIE)
+    public BaseCurrency GetTradeCurrency(string shopName = Wheels.MARNIE)
     {
         if (Data.CustomFields is Dictionary<string, string> customFields)
         {
@@ -59,11 +58,11 @@ public record LivestockEntry(string Key, FarmAnimalData Data)
                         string.Concat(ModEntry.ModId, "/", TRADE_ITEM_ID, ".", shopName),
                         out string? tradeItemId
                     ) || customFields.TryGetValue(string.Concat(ModEntry.ModId, "/TradeItemId"), out tradeItemId)
-                ) && ItemRegistry.GetData(tradeItemId) is ParsedItemData itemData
+                ) && CurrencyFactory.Get(tradeItemId) is BaseCurrency currency
             )
-                return itemData;
+                return currency;
         }
-        return goldCoin;
+        return CurrencyFactory.Get("(O)GoldCoin")!;
     }
 
     /// <summary>
