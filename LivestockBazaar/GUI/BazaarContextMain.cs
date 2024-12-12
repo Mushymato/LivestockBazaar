@@ -289,7 +289,7 @@ public sealed partial class BazaarContextMain
             return;
         }
 
-        building.AdoptAnimal(SelectedLivestock.GetNewFarmAnimal());
+        building.AdoptAnimal(SelectedLivestock.BuyNewFarmAnimal());
 
         if (!SelectedLivestock.HasEnoughTradeItems)
         {

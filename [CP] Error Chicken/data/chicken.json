@@ -266,8 +266,10 @@
         "CustomFields": {
           // allow chicken to be bought from Shane's shop (doesn't ban it from Marnie's)
           "mushymato.LivestockBazaar/BuyFrom.{{ModId}}_Shane": true,
-          // buy chiqn with 30 qi gems in shane's shop
-          "mushymato.LivestockBazaar/TradeItemId.{{ModId}}_Shane": "(O)858",
+          // // buy chiqn with 30 qi gems in shane's shop
+          // "mushymato.LivestockBazaar/TradeItemId.{{ModId}}_Shane": "(O)858",
+          // "mushymato.LivestockBazaar/TradeItemAmount.{{ModId}}_Shane": 30,
+          "mushymato.LivestockBazaar/TradeItemId.{{ModId}}_Shane": "(O)Wildflour.AtelierGoods_Junimo_Gem",
           "mushymato.LivestockBazaar/TradeItemAmount.{{ModId}}_Shane": 30,
         }
       }

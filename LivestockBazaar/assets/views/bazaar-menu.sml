@@ -40,9 +40,17 @@
       <infobox *context={HoveredLivestock} />
     </lane>
     <!-- page 2 -->
-    <lane *case="2" layout="stretch content" orientation="horizontal">
-      <scrollable-styled>
-        <lane *context={SelectedLivestock} layout="stretch content" orientation="vertical">
+    <lane *case="2" *context={SelectedLivestock} layout="stretch content" orientation="horizontal">
+      <lane layout={:^ForSaleLayout} orientation="vertical">
+        <lane orientation="horizontal">
+          <image
+            sprite={@mushymato.LivestockBazaar/sprites/cursors:dice}
+            margin="12" left-click=|RandomizeBuyName()| 
+          />
+          <textinput layout="128px 64px" text={<>BuyName}/>
+        </lane>
+        <scrollable-styled>
+        <lane orientation="vertical">
           <lane *repeat={:ValidAnimalHouseLocations} layout="stretch content" orientation="vertical">
               <banner padding="8" text={:LocationName} />
               <lane orientation="vertical">
@@ -58,8 +66,9 @@
               </lane>
           </lane>
         </lane>
-      </scrollable-styled>
-      <infobox *context={SelectedLivestock}/>
+        </scrollable-styled>
+      </lane>
+      <infobox/>
     </lane>
   </frame>
 
@@ -70,7 +79,7 @@
 <template name="infobox">
   <lane layout="256px stretch"  orientation="vertical" horizontal-content-alignment="middle">
     <panel layout="content content[128..]" margin="8,8,0,0" horizontal-content-alignment="middle" vertical-content-alignment="end">
-      <image layout={:AnimLayout} sprite={AnimSprite} flip={AnimFlip} tint={ShopIconTint} />
+      <image layout={:AnimLayout} sprite={AnimSprite} sprite-effects={AnimFlip} tint={ShopIconTint} />
       <!-- <image layout={:AnimLayout} sprite={AnimSprite} tint={ShopIconTint} /> -->
     </panel>
     <label *if={HasValidHouse} text={:LivestockName} font="dialogue"/>
@@ -80,13 +89,13 @@
 </template>
 
 <template name="scrollable-styled">
-  <scrollable layout={:ForSaleLayout} peeking="128"
+  <scrollable layout={:~BazaarContextMain.ForSaleLayout} peeking="128"
               scrollbar-margin="278,0,0,-8"
-              scrollbar-up-sprite={:Theme_ScrollUp}
-              scrollbar-down-sprite={:Theme_ScrollDown}
-              scrollbar-down-sprite={:Theme_ScrollDown}
-              scrollbar-thumb-sprite={:Theme_ScrollBarFront}
-              scrollbar-track-sprite={:Theme_ScrollBarBack}>
+              scrollbar-up-sprite={:~BazaarContextMain.Theme_ScrollUp}
+              scrollbar-down-sprite={:~BazaarContextMain.Theme_ScrollDown}
+              scrollbar-down-sprite={:~BazaarContextMain.Theme_ScrollDown}
+              scrollbar-thumb-sprite={:~BazaarContextMain.Theme_ScrollBarFront}
+              scrollbar-track-sprite={:~BazaarContextMain.Theme_ScrollBarBack}>
     <outlet/>
   </scrollable>
 </template>

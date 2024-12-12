@@ -42,42 +42,36 @@ public sealed record ItemCurrency(ParsedItemData TradeItem) : BaseCurrency(Trade
     internal override void Deduct(int price) => Game1.player.Items.ReduceId(TradeItem.QualifiedItemId, price);
 }
 
-// public sealed record SpacecoreCurrency(ParsedItemData TradeItem) : BaseCurrency(TradeItem)
-// {
-//     // internal override bool HasEnough(int price) => Game1.player.Items.ContainsId(TradeItem.QualifiedItemId, price);
-//     // internal override void Deduct(int price) => Game1.player.Items.ReduceId(TradeItem.QualifiedItemId, price);
-// }
-
-// public sealed record UnlockableBundlesCurrency(ParsedItemData TradeItem) : BaseCurrency(TradeItem)
-// {
-//     // internal override bool HasEnough(int price) => Game1.player.Items.ContainsId(TradeItem.QualifiedItemId, price);
-//     // internal override void Deduct(int price) => Game1.player.Items.ReduceId(TradeItem.QualifiedItemId, price);
-// }
-
 /// <summary>Creates and holds different currency classes</summary>
 internal static class CurrencyFactory
 {
     private static readonly ConditionalWeakTable<string, BaseCurrency?> currencyCache = [];
 
-    internal static Integration.ISpaceCoreApi? scApi = null;
-    internal static List<string> scCurrency = null!;
+    // TODO: spacecore currency support
+    // internal static Integration.ISpaceCoreApi? scApi = null;
+    // internal static List<string> scCurrency = null!;
 
-    internal static void RegisterApi(IModRegistry registry)
-    {
-        scApi = registry.GetApi<Integration.ISpaceCoreApi>("spacechase0.SpaceCore");
-    }
+    // internal static void RegisterApi(IModRegistry registry)
+    // {
+    //     scApi = registry.GetApi<Integration.ISpaceCoreApi>("spacechase0.SpaceCore");
+    // }
 
+    // internal static void OnAssetInvalidated(object? sender, AssetsInvalidatedEventArgs e)
+    // {
+    //     if (
+    //         e.NamesWithoutLocale.Any(an =>
+    //             an.IsEquivalentTo("Data/Objects") || an.IsEquivalentTo("spacechase0.SpaceCore/VirtualCurrencyData")
+    //         )
+    //     )
+    //     {
+    //         scCurrency = null!;
+    //         currencyCache.Clear();
+    //     }
+    // }
     internal static void OnAssetInvalidated(object? sender, AssetsInvalidatedEventArgs e)
     {
-        if (
-            e.NamesWithoutLocale.Any(an =>
-                an.IsEquivalentTo("Data/Objects") || an.IsEquivalentTo("spacechase0.SpaceCore/VirtualCurrencyData")
-            )
-        )
-        {
-            scCurrency = null!;
+        if (e.NamesWithoutLocale.Any(an => an.IsEquivalentTo("Data/Objects")))
             currencyCache.Clear();
-        }
     }
 
     private static BaseCurrency? GetOrCreate(string tradeItemId)

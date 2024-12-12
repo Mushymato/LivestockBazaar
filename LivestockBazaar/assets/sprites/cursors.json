@@ -1,0 +1,9 @@
+{
+  "Texture": "LooseSprites/Cursors",
+  "Sprites": {
+    "dice": {
+      "SourceRect": "381,361,10,10",
+      "Scale": 4,
+    },
+  }
+}

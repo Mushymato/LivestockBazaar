@@ -81,19 +81,27 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
         }
     }
 
+    [Notify]
+    private string buyName = Dialogue.randomName();
+
     public void NextFrame()
     {
         AnimFrame = (AnimFrame + 1) % 16;
     }
 
-    public FarmAnimal GetNewFarmAnimal()
+    public FarmAnimal BuyNewFarmAnimal()
     {
         currency.Deduct(TradePrice);
+        Game1.playSound("sell");
+        Game1.playSound("purchase");
         FarmAnimal animal =
-            new(Ls.Key, Game1.Multiplayer.getNewID(), Game1.player.UniqueMultiplayerID)
-            {
-                Name = Dialogue.randomName(),
-            };
+            new(Ls.Key, Game1.Multiplayer.getNewID(), Game1.player.UniqueMultiplayerID) { Name = BuyName };
+        BuyName = Dialogue.randomName();
         return animal;
+    }
+
+    public void RandomizeBuyName()
+    {
+        BuyName = Dialogue.randomName();
     }
 }
