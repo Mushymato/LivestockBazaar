@@ -14,8 +14,7 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
     // icon
     public readonly SDUISprite? ShopIcon =
         new(Game1.content.Load<Texture2D>(Ls.Data.ShopTexture), Ls.Data.ShopSourceRect);
-    public bool HasValidHouse => ValidAnimalHouseLocations?.Any() ?? false;
-    public Color ShopIconTint => HasValidHouse ? Color.White : (Color.Black * 0.4f);
+    public Color ShopIconTint => HasRequiredBuilding ? Color.White : (Color.Black * 0.4f);
 
     // currency
     private readonly BaseCurrency currency = Ls.GetTradeCurrency(ShopName);
@@ -25,18 +24,18 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
     public bool HasEnoughTradeItems => currency.HasEnough(TradePrice);
     public float ShopIconOpacity => HasEnoughTradeItems ? 1f : 0.5f;
 
-    // valid animal locations
-    private IReadOnlyList<BazaarLocationEntry>? validAnimalHouseLocations = null;
-    public IReadOnlyList<BazaarLocationEntry>? ValidAnimalHouseLocations
+    // has required animal building
+    private bool? hasRequiredBuilding = null;
+    public bool HasRequiredBuilding
     {
         get
         {
-            validAnimalHouseLocations ??= Main
-                .AllAnimalHouseLocations.Values.Where((v) => v.CheckCanAcceptLivestock(this))
-                .ToList();
-            return validAnimalHouseLocations;
+            hasRequiredBuilding ??= Main.AnimalHouseByLocation.Any(bld => bld.Value.CheckHasRequiredBuilding(this));
+            return hasRequiredBuilding ?? false;
         }
     }
+
+    // alternate purchase
 
     // hover color, controlled by main context
     [Notify]
@@ -92,10 +91,11 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
     public FarmAnimal BuyNewFarmAnimal()
     {
         currency.Deduct(TradePrice);
-        Game1.playSound("sell");
-        Game1.playSound("purchase");
+        // Game1.playSound("sell");
+        // Game1.playSound("purchase");
         FarmAnimal animal =
             new(Ls.Key, Game1.Multiplayer.getNewID(), Game1.player.UniqueMultiplayerID) { Name = BuyName };
+        Game1.playSound(animal.GetSoundId() ?? "purchase", 1200 + Game1.random.Next(-200, 201));
         BuyName = Dialogue.randomName();
         return animal;
     }

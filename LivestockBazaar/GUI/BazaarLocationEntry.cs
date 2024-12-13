@@ -1,9 +1,10 @@
+using LivestockBazaar.Integration;
 using Microsoft.Xna.Framework;
 using PropertyChanged.SourceGenerator;
 using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.GameData.Buildings;
-using xTile;
+using StardewValley.TokenizableStrings;
 
 namespace LivestockBazaar.GUI;
 
@@ -15,12 +16,22 @@ public sealed partial record BazaarBuildingEntry(
 )
 {
     private readonly AnimalHouse House = (AnimalHouse)Building.GetIndoors();
-    public string BuildingName =>
-        $"{Building.buildingType.Value} ({House.animalsThatLiveHere.Count}/{House.animalLimit.Value})";
+    public int RemainingSpace => House.animalLimit.Value - House.animalsThatLiveHere.Count;
+    public string BuildingName
+    {
+        get
+        {
+            string name = Data.Name;
+            if (Building.GetSkin() is BuildingSkin skin)
+                name = skin.Name ?? name;
+            return $"{TokenParser.ParseText(name)} ({Building.tileX},{Building.tileY})";
+        }
+    }
+    public string BuildingOccupant => $"{House.animalsThatLiveHere.Count}/{House.animalLimit.Value}";
+    public SDUISprite BuildingSprite => new(Building.texture.Value, Building.getSourceRect());
+    public Color BuildingSpriteTint => Color.White * (RemainingSpace > 0 ? 1f : 0.5f);
 
-    public bool IsBuildingOrUpgrade(string buildingId) =>
-        Building.buildingType.Value == buildingId || IsBuildingOrUpgrade(buildingId, Data);
-
+    public bool IsBuildingOrUpgrade(string buildingId) => Building.buildingType.Value == buildingId || IsBuildingOrUpgrade(buildingId, Data);
     private static bool IsBuildingOrUpgrade(string buildingId, BuildingData? bldData)
     {
         if (bldData == null)
@@ -35,20 +46,12 @@ public sealed partial record BazaarBuildingEntry(
         return false;
     }
 
-    public bool CanAcceptLivestock(BazaarLivestockEntry livestock)
-    {
-        if (Building.isUnderConstruction())
-            return false;
-        return livestock.Ls.Data.RequiredBuilding == null || IsBuildingOrUpgrade(livestock.Ls.Data.RequiredBuilding);
-    }
-
     internal void AdoptAnimal(FarmAnimal animal)
     {
         House.adoptAnimal(animal);
-        OnPropertyChanged(new(nameof(BuildingName)));
+        OnPropertyChanged(new(nameof(BuildingOccupant)));
+        OnPropertyChanged(new(nameof(BuildingSpriteTint)));
     }
-
-    public bool IsFull => House.isFull();
 
     // hover color
     [Notify]
@@ -63,27 +66,31 @@ public sealed partial record class BazaarLocationEntry(
 {
     public string LocationName => Location.DisplayName;
 
-    public bool CheckCanAcceptLivestock(BazaarLivestockEntry? livestock)
+    public bool CheckHasRequiredBuilding(BazaarLivestockEntry? livestock)
     {
         if (livestock == null)
             return false;
         if (!LivestockBuildings.TryGetValue(livestock.Ls.Data.House, out List<BazaarBuildingEntry>? buildings))
             return false;
-        return buildings.Any((bld) => bld.CanAcceptLivestock(livestock));
+        return buildings.Any(
+            (bld) =>
+                livestock.Ls.Data.RequiredBuilding == null
+                || bld.IsBuildingOrUpgrade(livestock.Ls.Data.RequiredBuilding)
+        );
     }
 
-    public bool CanAcceptLivestock => CheckCanAcceptLivestock(Main.SelectedLivestock);
-    public IReadOnlyList<BazaarBuildingEntry> ValidLivestockBuildings
+    public IEnumerable<BazaarBuildingEntry> ValidLivestockBuildings
     {
         get
         {
-            var livestock = Main.SelectedLivestock;
             if (
-                livestock != null
+                Main.SelectedLivestock is BazaarLivestockEntry livestock
                 && LivestockBuildings.TryGetValue(livestock.Ls.Data.House, out List<BazaarBuildingEntry>? buildings)
             )
-                return buildings.Where((bld) => bld.CanAcceptLivestock(livestock)).ToList();
+                return buildings.OrderByDescending((bld) => bld.RemainingSpace);
             return [];
         }
     }
+
+    public int TotalRemainingSpaceCount => ValidLivestockBuildings.Sum(bld => bld.RemainingSpace);
 }

@@ -31,23 +31,28 @@ public sealed partial class BazaarContextMain
     // data
     public readonly BazaarData? Data;
     public readonly ImmutableList<BazaarLivestockEntry> LivestockEntries;
-    public ImmutableDictionary<GameLocation, BazaarLocationEntry> AllAnimalHouseLocations;
+    public ImmutableDictionary<GameLocation, BazaarLocationEntry> AnimalHouseByLocation;
+
+    public IEnumerable<BazaarLocationEntry> BazaarLocationEntries =>
+        AnimalHouseByLocation
+            .Values.Where((loc) => loc.ValidLivestockBuildings.Any())
+            .OrderByDescending((loc) => loc.TotalRemainingSpaceCount);
 
     /// <summary>
-    /// Rebuild <see cref="AllAnimalHouseLocations"/>
+    /// Rebuild <see cref="AnimalHouseByLocation"/>
     /// </summary>
     /// <param name="e"></param>
     public IDictionary<GameLocation, BazaarLocationEntry> BuildAllAnimalHouseLocations()
     {
-        Dictionary<GameLocation, BazaarLocationEntry> allAnimalHouseLocations = [];
+        Dictionary<GameLocation, BazaarLocationEntry> animalHouseByLocation = [];
         Utility.ForEachBuilding(
             (building) =>
             {
-                AddToAllAnimalHouseLocations(allAnimalHouseLocations, building);
+                AddToAllAnimalHouseLocations(animalHouseByLocation, building);
                 return true;
             }
         );
-        return allAnimalHouseLocations;
+        return animalHouseByLocation;
     }
 
     public void AddToAllAnimalHouseLocations(
@@ -55,6 +60,8 @@ public sealed partial class BazaarContextMain
         Building building
     )
     {
+        if (building.isUnderConstruction())
+            return;
         BuildingData buildingData = building.GetData();
         if (buildingData?.ValidOccupantTypes == null || building.GetIndoors() is not AnimalHouse)
             return;
@@ -145,7 +152,7 @@ public sealed partial class BazaarContextMain
                 (ShopThemeData theme) => GameStateQuery.CheckConditions(theme.Condition)
             )
         );
-        AllAnimalHouseLocations = BuildAllAnimalHouseLocations().ToImmutableDictionary();
+        AnimalHouseByLocation = BuildAllAnimalHouseLocations().ToImmutableDictionary();
         // livestock data
         LivestockEntries = AssetManager
             .GetAnimalStockData(shopName)
@@ -212,7 +219,6 @@ public sealed partial class BazaarContextMain
     // events
     private TimeSpan animTimer = TimeSpan.Zero;
     private readonly TimeSpan animInterval = TimeSpan.FromMilliseconds(175);
-    public SButton? justPressed = null;
 
     public void Update(TimeSpan elapsed)
     {
@@ -222,12 +228,6 @@ public sealed partial class BazaarContextMain
             HoveredLivestock?.NextFrame();
             animTimer = TimeSpan.Zero;
         }
-    }
-
-    public void HandleButtonPress(SButton button)
-    {
-        Console.WriteLine($"HandleButtonPress: {button}");
-        justPressed = button;
     }
 
     // page 1 (shop grid) hover and select
@@ -247,12 +247,13 @@ public sealed partial class BazaarContextMain
 
     public void HandleSelectLivestock(BazaarLivestockEntry livestock)
     {
-        if (livestock.HasEnoughTradeItems)
+        if (livestock.HasEnoughTradeItems && livestock.HasRequiredBuilding)
         {
             livestock.BackgroundTint = Color.White;
             if (SelectedLivestock != livestock)
             {
                 SelectedLivestock = livestock;
+                Game1.playSound("bigSelect");
             }
         }
     }
@@ -262,7 +263,7 @@ public sealed partial class BazaarContextMain
     {
         if (HoveredBuilding != null)
             HoveredBuilding.BackgroundTint = Color.White;
-        if (building == null)
+        if (building == null || building.RemainingSpace == 0)
             return;
         building.BackgroundTint = Theme.ItemRowBackgroundHoverColor;
         if (HoveredBuilding != building)
@@ -271,23 +272,15 @@ public sealed partial class BazaarContextMain
         }
     }
 
-    private void ErrorMessage(string message)
-    {
-        ModEntry.Log(message, LogLevel.Error);
-    }
-
     public void HandlePurchaseAnimal(BazaarBuildingEntry? building = null)
     {
         if (building == null || SelectedLivestock == null)
         {
-            ErrorMessage($"Can't put '{SelectedLivestock?.LivestockName}' in '{building?.BuildingName}'");
+            ModEntry.Log($"Got null building({building}) or ", LogLevel.Error);
             return;
         }
-        if (building.IsFull)
-        {
-            ErrorMessage($"{building.BuildingName} is full");
+        if (building.RemainingSpace == 0)
             return;
-        }
 
         building.AdoptAnimal(SelectedLivestock.BuyNewFarmAnimal());
 

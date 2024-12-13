@@ -1,16 +1,13 @@
-using System.Diagnostics.CodeAnalysis;
 using LivestockBazaar.Integration;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.GameData.FarmAnimals;
-using StardewValley.ItemTypeDefinitions;
 
 namespace LivestockBazaar.Model;
 
 public record LivestockEntry(string Key, FarmAnimalData Data)
 {
     public readonly SDUISprite? ShopIcon = new(Game1.content.Load<Texture2D>(Data.ShopTexture), Data.ShopSourceRect);
-
     public const string BUY_FROM = "BuyFrom";
     public const string TRADE_ITEM_ID = "TradeItemId";
     public const string TRADE_ITEM_AMOUNT = "TradeItemAmount";
