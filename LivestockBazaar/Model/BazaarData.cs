@@ -19,7 +19,7 @@ public enum OpenFlagType
 }
 
 /// <summary>Extend vanilla ShopData with some extra fields for use in this mod</summary>
-public class BazaarData
+public sealed record BazaarData
 {
     public static readonly string Owner_AwayButOpen = $"{ModEntry.ModId}/AwayButOpen";
     public string? ShopId { get; set; } = null;

@@ -9,11 +9,10 @@ using StardewValley.TokenizableStrings;
 
 namespace LivestockBazaar.GUI;
 
-public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string ShopName, LivestockEntry Ls)
+public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string ShopName, LivestockData Ls)
 {
     // icon
-    public readonly SDUISprite? ShopIcon =
-        new(Game1.content.Load<Texture2D>(Ls.Data.ShopTexture), Ls.Data.ShopSourceRect);
+    public readonly SDUISprite ShopIcon = Ls.ShopIcon;
     public Color ShopIconTint => HasRequiredBuilding ? Color.White : (Color.Black * 0.4f);
 
     // currency
@@ -36,41 +35,51 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
     }
 
     // alternate purchase
+    public bool HasAltPurchase => AltPurchase.Any();
+    public IList<LivestockData> AltPurchase => Ls.AltPurchase;
 
     // hover color, controlled by main context
     [Notify]
     private Color backgroundTint = Color.White;
 
     // infobox anim
+    public const int FRAME_PER_ROW = 4;
+    public const int ROW_MAX = 4;
+    public const int ROW_REPEAT_MAX = 2;
+
     public readonly string LivestockName = TokenParser.ParseText(
         Ls.Data.ShopDisplayName ?? Ls.Data.DisplayName ?? "???"
     );
     public readonly string Description = TokenParser.ParseText(Ls.Data.ShopDescription ?? "");
-    private Texture2D SpriteSheet => Game1.content.Load<Texture2D>(Ls.Data.Texture);
-    public readonly string AnimLayout = $"content[{Ls.Data.SpriteWidth * 4}..] content[{Ls.Data.SpriteHeight * 4}..]";
+
+    [Notify]
+    private int animRow = 0;
 
     [Notify]
     private int animFrame = 0;
+    private int rowRepeat = 0;
     public SpriteEffects AnimFlip =>
-        Ls.Data.UseFlippedRightForLeft && AnimFrame >= 12 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+        Ls.Data.UseFlippedRightForLeft && AnimRow == 3 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
     public void ResetAnim()
     {
+        AnimRow = 0;
         AnimFrame = 0;
+        rowRepeat = 0;
     }
 
     public SDUISprite AnimSprite
     {
         get
         {
-            int adjAnimFrame = AnimFrame;
-            if (Ls.Data.UseFlippedRightForLeft && adjAnimFrame >= 12)
-                adjAnimFrame -= 8;
+            int realFrame = AnimRow * FRAME_PER_ROW + AnimFrame;
+            if (Ls.Data.UseFlippedRightForLeft && AnimRow == 3)
+                realFrame -= 8;
             return new(
-                SpriteSheet,
+                Ls.SpriteSheet,
                 new(
-                    adjAnimFrame * Ls.Data.SpriteWidth % SpriteSheet.Width,
-                    adjAnimFrame * Ls.Data.SpriteWidth / SpriteSheet.Width * Ls.Data.SpriteHeight,
+                    realFrame * Ls.Data.SpriteWidth % Ls.SpriteSheet.Width,
+                    realFrame * Ls.Data.SpriteWidth / Ls.SpriteSheet.Width * Ls.Data.SpriteHeight,
                     Ls.Data.SpriteWidth,
                     Ls.Data.SpriteHeight
                 ),
@@ -80,13 +89,30 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
         }
     }
 
-    [Notify]
-    private string buyName = Dialogue.randomName();
-
     public void NextFrame()
     {
-        AnimFrame = (AnimFrame + 1) % 16;
+        AnimFrame++;
+        if (AnimFrame == 4)
+        {
+            AnimFrame = 0;
+            rowRepeat++;
+            if (rowRepeat == ROW_REPEAT_MAX)
+            {
+                rowRepeat = 0;
+                AnimRow++;
+                if (AnimRow == ROW_MAX)
+                {
+                    AnimRow = 0;
+                }
+            }
+        }
     }
+
+    // alt purchase
+
+    // buy animal
+    [Notify]
+    private string buyName = Dialogue.randomName();
 
     public FarmAnimal BuyNewFarmAnimal()
     {

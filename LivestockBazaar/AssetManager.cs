@@ -1,4 +1,7 @@
+using System.Collections.Immutable;
+using System.Runtime.CompilerServices;
 using LivestockBazaar.Model;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.GameData.FarmAnimals;
@@ -14,16 +17,41 @@ internal static class AssetManager
     /// <summary>Shop asset target</summary>
     private static string BazaarAsset => $"{ModEntry.ModId}/Shops";
 
-    /// <summary>Backing field</summary>
+    /// <summary>Backing field for bazaar data</summary>
     private static Dictionary<string, BazaarData>? _bazaarData = null;
 
-    /// <summary>Shop data lazy loader</summary>
+    /// <summary>Bazaar data lazy loader</summary>
     internal static Dictionary<string, BazaarData> BazaarData
     {
         get
         {
             _bazaarData ??= Game1.content.Load<Dictionary<string, BazaarData>>(BazaarAsset);
             return _bazaarData;
+        }
+    }
+
+    /// <summary>Backing field for livestock data</summary>
+    private static Dictionary<string, LivestockData>? _lsData = null;
+
+    /// <summary>Livestock data lazy loader</summary>
+    internal static Dictionary<string, LivestockData> LsData
+    {
+        get
+        {
+            if (_lsData == null)
+            {
+                _lsData = [];
+                foreach ((string key, FarmAnimalData data) in Game1.farmAnimalData)
+                {
+                    if (LivestockData.IsValid(data))
+                        _lsData[key] = new(key, data);
+                }
+                foreach (LivestockData data in _lsData.Values)
+                {
+                    data.PopulateAltPurchase(_lsData);
+                }
+            }
+            return _lsData;
         }
     }
 
@@ -37,6 +65,8 @@ internal static class AssetManager
     {
         if (e.NamesWithoutLocale.Any(an => an.IsEquivalentTo(BazaarAsset)))
             _bazaarData = null;
+        if (e.NamesWithoutLocale.Any(an => an.IsEquivalentTo("Data/FarmAnimals")))
+            _lsData = null;
         CurrencyFactory.OnAssetInvalidated(sender, e);
     }
 
@@ -55,24 +85,9 @@ internal static class AssetManager
         return data;
     }
 
-    /// <summary>Get animal data and whether the animal is fit for a given location</summary>
+    /// <summary>Get available livestock for shop</summary>
     /// <param name="shopName"></param>
-    /// <param name="location"></param>
     /// <returns></returns>
-    public static IEnumerable<LivestockEntry> GetAnimalStockData(string shopName)
-    {
-        foreach ((string key, FarmAnimalData data) in Game1.farmAnimalData)
-        {
-            if (
-                data.PurchasePrice <= 0
-                || string.IsNullOrEmpty(data.ShopTexture)
-                || !GameStateQuery.CheckConditions(data.UnlockCondition)
-            )
-                continue;
-            LivestockEntry entry = new(key, data);
-            if (!entry.CanByFrom(shopName))
-                continue;
-            yield return entry;
-        }
-    }
+    public static IEnumerable<LivestockData> GetLivestockDataForShop(string shopName) =>
+        LsData.Values.Where((ls) => ls.CanBuyFrom(shopName));
 }

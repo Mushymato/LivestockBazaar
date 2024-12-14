@@ -31,7 +31,9 @@ public sealed partial record BazaarBuildingEntry(
     public SDUISprite BuildingSprite => new(Building.texture.Value, Building.getSourceRect());
     public Color BuildingSpriteTint => Color.White * (RemainingSpace > 0 ? 1f : 0.5f);
 
-    public bool IsBuildingOrUpgrade(string buildingId) => Building.buildingType.Value == buildingId || IsBuildingOrUpgrade(buildingId, Data);
+    public bool IsBuildingOrUpgrade(string buildingId) =>
+        Building.buildingType.Value == buildingId || IsBuildingOrUpgrade(buildingId, Data);
+
     private static bool IsBuildingOrUpgrade(string buildingId, BuildingData? bldData)
     {
         if (bldData == null)

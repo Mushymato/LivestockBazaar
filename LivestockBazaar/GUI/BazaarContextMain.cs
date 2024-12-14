@@ -16,7 +16,7 @@ using StardewValley.TokenizableStrings;
 namespace LivestockBazaar.GUI;
 
 /// <summary>Context for bazaar menu</summary>
-public sealed partial class BazaarContextMain
+public sealed partial record BazaarContextMain
 {
     private const int CELL_W = 192;
 
@@ -155,7 +155,7 @@ public sealed partial class BazaarContextMain
         AnimalHouseByLocation = BuildAllAnimalHouseLocations().ToImmutableDictionary();
         // livestock data
         LivestockEntries = AssetManager
-            .GetAnimalStockData(shopName)
+            .GetLivestockDataForShop(shopName)
             .Select((data) => new BazaarLivestockEntry(this, shopName, data))
             .ToImmutableList();
 
