@@ -23,6 +23,7 @@ public sealed class ModEntry : Mod
         Config = Helper.ReadConfig<ModConfig>();
         // events
         helper.Events.GameLoop.GameLaunched += OnGameLaunched;
+        helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
         helper.Events.Content.AssetRequested += AssetManager.OnAssetRequested;
         helper.Events.Content.AssetsInvalidated += AssetManager.OnAssetInvalidated;
         // setup bazaar actions
@@ -36,6 +37,16 @@ public sealed class ModEntry : Mod
     {
         Config.Register(Helper, ModManifest);
         BazaarMenu.Register(Helper);
+    }
+
+    /// <summary>Warm the cache</summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    /// <exception cref="NotImplementedException"></exception>
+    private void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
+    {
+        // preload this dict
+        var _ = AssetManager.LsData;
     }
 
     /// <summary>SMAPI static monitor Log wrapper</summary>

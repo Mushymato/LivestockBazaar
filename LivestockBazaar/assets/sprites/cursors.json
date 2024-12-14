@@ -5,5 +5,9 @@
       "SourceRect": "381,361,10,10",
       "Scale": 4,
     },
+    "question": {
+      "SourceRect": "175,425,12,12",
+      "Scale": 4,
+    }
   }
 }

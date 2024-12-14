@@ -35,7 +35,7 @@
         </grid>
       </scrollable-styled>
       <!-- info box -->
-      <infobox *context={HoveredLivestock}>
+      <infobox *context={HoveredLivestock} tint={:ShopIconTint}>
         <label *if={HasRequiredBuilding} text={:LivestockName} font="dialogue"/>
         <label *if={HasRequiredBuilding} text={:Description} font="small" margin="8,0" />
       </infobox>
@@ -56,7 +56,7 @@
                   pointer-leave=|~BazaarContextMain.HandleHoverBuilding()|
                   left-click=|~BazaarContextMain.HandlePurchaseAnimal(this)| >
                   <lane layout="144px content" padding="12" orientation="vertical" focusable="true" horizontal-content-alignment="middle">
-                    <image layout="120px 120px" fit="Contain" horizontal-alignment="middle" vertical-alignment="middle"
+                    <image layout="120px 120px" fit="Contain" horizontal-alignment="middle" vertical-alignment="end"
                       sprite={:BuildingSprite} tint={BuildingSpriteTint}/>
                     <label font="dialogue" text={BuildingOccupant}/>
                   </lane>
@@ -67,16 +67,23 @@
       </scrollable-styled>
 
       <!-- infobox and confirm -->
-      <infobox>
-        <lane orientation="horizontal" margin="0,12">
+      <infobox tint={AnimTint}>
+        <lane *if={HasSkin} layout="stretch content" orientation="horizontal" margin="0,-64,0,0" horizontal-content-alignment="middle" z-index="2">
+          <image layout="104px 44px" focusable="true" fit="Contain" horizontal-alignment="start" sprite={@Mods/StardewUI/Sprites/SmallLeftArrow}
+            left-click=|PrevSkin()| />
+          <image layout="48px 48px" sprite={@mushymato.LivestockBazaar/sprites/cursors:question} opacity={RandSkinOpacity}/>
+          <image layout="104px 44px" focusable="true" fit="Contain" horizontal-alignment="end" sprite={@Mods/StardewUI/Sprites/SmallRightArrow}
+            left-click=|NextSkin()| />
+        </lane>
+        <lane orientation="horizontal" margin="0,32">
           <textinput layout="196px 48px" text={<>BuyName}/>
           <image sprite={@mushymato.LivestockBazaar/sprites/cursors:dice} layout="32px 32px" margin="8"
             left-click=|RandomizeBuyName()| />
         </lane>
-        <label font="small" text=""/>
-        <grid item-layout="length:80" horizontal-item-alignment="middle">
-          <frame *repeat={:AltPurchase} padding="8">
-            <image layout="content[64..] content[64..]" fit="Contain" sprite={:SpriteIcon}/>
+        <grid item-layout="length:80" margin="4,0" item-spacing="4,4" horizontal-item-alignment="middle">
+          <frame *repeat={:AltPurchase} focusable="true"
+            left-click=|~BazaarLivestockEntry.HandleSelectedPurchase(this)| >
+            <image layout="content[32..] content[64..]" fit="Contain" horizontal-alignment="middle" sprite={:SpriteIcon} opacity={IconOpacity}/>
           </frame>
         </grid>
       </infobox>
@@ -86,11 +93,8 @@
 
 <template name="infobox">
   <lane layout="content[256..] stretch" orientation="vertical" horizontal-content-alignment="middle">
-    <!-- <panel layout="content content[128..]" margin="8,8,0,0" horizontal-content-alignment="middle" vertical-content-alignment="end">
-      <image layout={:AnimLayout} tint={:ShopIconTint} sprite={AnimSprite} sprite-effects={AnimFlip} />
-    </panel> -->
-    <image layout="content content[128..]" fit="Contain" horizontal-alignment="middle" vertical-alignment="middle"
-      tint={:ShopIconTint} sprite={AnimSprite} sprite-effects={AnimFlip} />
+    <image layout="content content[128..]" fit="Contain" horizontal-alignment="middle" vertical-alignment="end"
+      tint={&tint} sprite={AnimSprite} sprite-effects={AnimFlip} />
     <outlet/>
   </lane>
 </template>

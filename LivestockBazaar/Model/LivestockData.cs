@@ -5,6 +5,11 @@ using StardewValley.GameData.FarmAnimals;
 
 namespace LivestockBazaar.Model;
 
+public sealed record LivestockSkinData(FarmAnimalSkin Skin)
+{
+    public readonly Texture2D SpriteSheet = Game1.content.Load<Texture2D>(Skin.Texture);
+}
+
 public sealed record LivestockData
 {
     public const string BUY_FROM = "BuyFrom";
@@ -20,6 +25,7 @@ public sealed record LivestockData
     public readonly SDUISprite ShopIcon;
 
     public readonly IList<LivestockData> AltPurchase = [];
+    public readonly IList<LivestockSkinData> SkinData = [];
 
     public LivestockData(string key, FarmAnimalData data)
     {
@@ -31,6 +37,11 @@ public sealed record LivestockData
         ShopIcon = Game1.content.DoesAssetExist<Texture2D>(Data.ShopTexture)
             ? new(Game1.content.Load<Texture2D>(Data.ShopTexture), Data.ShopSourceRect)
             : SpriteIcon;
+
+        if (data.Skins != null)
+            foreach (FarmAnimalSkin skin in data.Skins)
+                if (Game1.content.DoesAssetExist<Texture2D>(skin.Texture))
+                    SkinData.Add(new(skin));
     }
 
     /// <summary>

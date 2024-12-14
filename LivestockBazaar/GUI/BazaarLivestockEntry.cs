@@ -9,11 +9,45 @@ using StardewValley.TokenizableStrings;
 
 namespace LivestockBazaar.GUI;
 
+public sealed partial record BazaarLivestockPurchaseEntry(LivestockData Ls)
+{
+    public readonly SDUISprite SpriteIcon = Ls.SpriteIcon;
+
+    [Notify]
+    private float iconOpacity = 0.4f;
+
+    // skin
+    [Notify]
+    private int skinId = Ls.SkinData.Any() ? -1 : -2;
+    public LivestockSkinData? Skin => skinId < 0 ? null : Ls.SkinData[skinId];
+    public Texture2D SpriteSheet => Skin?.SpriteSheet ?? Ls.SpriteSheet;
+
+    public void PrevSkin()
+    {
+        if (skinId != -2)
+        {
+            SkinId -= 1;
+            if (skinId == -2)
+                SkinId = Ls.SkinData.Count - 1;
+        }
+    }
+
+    public void NextSkin()
+    {
+        if (skinId != -2)
+        {
+            SkinId += 1;
+            if (skinId == Ls.SkinData.Count)
+                SkinId = -1;
+        }
+    }
+}
+
 public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string ShopName, LivestockData Ls)
 {
     // icon
     public readonly SDUISprite ShopIcon = Ls.ShopIcon;
-    public Color ShopIconTint => HasRequiredBuilding ? Color.White : (Color.Black * 0.4f);
+    public Color ShopIconTint => HasRequiredBuilding ? Color.White : Color.Black * 0.4f;
 
     // currency
     private readonly BaseCurrency currency = Ls.GetTradeCurrency(ShopName);
@@ -33,10 +67,6 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
             return hasRequiredBuilding ?? false;
         }
     }
-
-    // alternate purchase
-    public bool HasAltPurchase => AltPurchase.Any();
-    public IList<LivestockData> AltPurchase => Ls.AltPurchase;
 
     // hover color, controlled by main context
     [Notify]
@@ -68,6 +98,8 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
         rowRepeat = 0;
     }
 
+    [Notify]
+    private Texture2D animSpriteSheet = Ls.SpriteSheet;
     public SDUISprite AnimSprite
     {
         get
@@ -76,10 +108,10 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
             if (Ls.Data.UseFlippedRightForLeft && AnimRow == 3)
                 realFrame -= 8;
             return new(
-                Ls.SpriteSheet,
+                AnimSpriteSheet,
                 new(
-                    realFrame * Ls.Data.SpriteWidth % Ls.SpriteSheet.Width,
-                    realFrame * Ls.Data.SpriteWidth / Ls.SpriteSheet.Width * Ls.Data.SpriteHeight,
+                    realFrame * Ls.Data.SpriteWidth % AnimSpriteSheet.Width,
+                    realFrame * Ls.Data.SpriteWidth / AnimSpriteSheet.Width * Ls.Data.SpriteHeight,
                     Ls.Data.SpriteWidth,
                     Ls.Data.SpriteHeight
                 ),
@@ -101,14 +133,69 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
                 rowRepeat = 0;
                 AnimRow++;
                 if (AnimRow == ROW_MAX)
-                {
                     AnimRow = 0;
-                }
             }
         }
     }
 
     // alt purchase
+    public bool HasAltPurchase => AltPurchase.Any();
+
+    [Notify]
+    private int skinId = -2;
+    public bool HasSkin => SkinId != -2;
+    public float RandSkinOpacity => SkinId == -1 ? 1f : 0f;
+    public Color AnimTint => SkinId == -1 ? Color.Black * 0.4f : Color.White;
+    private IReadOnlyList<BazaarLivestockPurchaseEntry>? purchase = null;
+    public IReadOnlyList<BazaarLivestockPurchaseEntry> AltPurchase
+    {
+        get
+        {
+            if (purchase == null)
+            {
+                purchase = Ls.AltPurchase.Select((ls) => new BazaarLivestockPurchaseEntry(ls)).ToList();
+                if (purchase.Any())
+                    HandleSelectedPurchase(purchase[0]);
+                else
+                    HandleSelectedPurchase(new BazaarLivestockPurchaseEntry(Ls));
+            }
+            return purchase;
+        }
+    }
+
+    [Notify]
+    public float purchaseOpacity = 1f;
+    private BazaarLivestockPurchaseEntry? selectedPurchase;
+
+    public void HandleSelectedPurchase(BazaarLivestockPurchaseEntry purchase)
+    {
+        if (selectedPurchase != null)
+            selectedPurchase.IconOpacity = 0.4f;
+        selectedPurchase = purchase;
+        selectedPurchase.IconOpacity = 1f;
+        SkinId = selectedPurchase.SkinId;
+        AnimSpriteSheet = selectedPurchase.SpriteSheet;
+    }
+
+    public void PrevSkin()
+    {
+        if (selectedPurchase != null)
+        {
+            selectedPurchase.PrevSkin();
+            SkinId = selectedPurchase.SkinId;
+            AnimSpriteSheet = selectedPurchase.SpriteSheet;
+        }
+    }
+
+    public void NextSkin()
+    {
+        if (selectedPurchase != null)
+        {
+            selectedPurchase.NextSkin();
+            SkinId = selectedPurchase.SkinId;
+            AnimSpriteSheet = selectedPurchase.SpriteSheet;
+        }
+    }
 
     // buy animal
     [Notify]
@@ -117,8 +204,6 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
     public FarmAnimal BuyNewFarmAnimal()
     {
         currency.Deduct(TradePrice);
-        // Game1.playSound("sell");
-        // Game1.playSound("purchase");
         FarmAnimal animal =
             new(Ls.Key, Game1.Multiplayer.getNewID(), Game1.player.UniqueMultiplayerID) { Name = BuyName };
         Game1.playSound(animal.GetSoundId() ?? "purchase", 1200 + Game1.random.Next(-200, 201));
