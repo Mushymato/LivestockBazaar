@@ -18,7 +18,7 @@ public sealed partial record BazaarLivestockPurchaseEntry(LivestockData Ls)
 
     // skin
     [Notify]
-    private int skinId = Ls.SkinData.Any() ? -1 : -2;
+    private int skinId = Ls.SkinData.Any() ? 0 : -2;
     public LivestockSkinData? Skin => skinId < 0 ? null : Ls.SkinData[skinId];
     public Texture2D SpriteSheet => Skin?.SpriteSheet ?? Ls.SpriteSheet;
 
@@ -146,20 +146,20 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
     public bool HasSkin => SkinId != -2;
     public float RandSkinOpacity => SkinId == -1 ? 1f : 0f;
     public Color AnimTint => SkinId == -1 ? Color.Black * 0.4f : Color.White;
-    private IReadOnlyList<BazaarLivestockPurchaseEntry>? purchase = null;
+    private IReadOnlyList<BazaarLivestockPurchaseEntry>? altPurchase = null;
     public IReadOnlyList<BazaarLivestockPurchaseEntry> AltPurchase
     {
         get
         {
-            if (purchase == null)
+            if (altPurchase == null)
             {
-                purchase = Ls.AltPurchase.Select((ls) => new BazaarLivestockPurchaseEntry(ls)).ToList();
-                if (purchase.Any())
-                    HandleSelectedPurchase(purchase[0]);
+                altPurchase = Ls.AltPurchase.Select((ls) => new BazaarLivestockPurchaseEntry(ls)).ToList();
+                if (altPurchase.Any())
+                    HandleSelectedPurchase(altPurchase[0]);
                 else
                     HandleSelectedPurchase(new BazaarLivestockPurchaseEntry(Ls));
             }
-            return purchase;
+            return altPurchase;
         }
     }
 
@@ -201,18 +201,24 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
     [Notify]
     private string buyName = Dialogue.randomName();
 
-    public FarmAnimal BuyNewFarmAnimal()
+    public FarmAnimal? BuyNewFarmAnimal()
     {
+        if (selectedPurchase == null)
+        {
+            return null;
+        }
         currency.Deduct(TradePrice);
+        LivestockData ls = selectedPurchase.Ls;
         FarmAnimal animal =
-            new(Ls.Key, Game1.Multiplayer.getNewID(), Game1.player.UniqueMultiplayerID) { Name = BuyName };
+            new(ls.Key, Game1.Multiplayer.getNewID(), Game1.player.UniqueMultiplayerID) { Name = BuyName };
+        if (selectedPurchase.SkinId > -1)
+        {
+            animal.skinID.Value = selectedPurchase.Skin!.Skin.Id;
+        }
         Game1.playSound(animal.GetSoundId() ?? "purchase", 1200 + Game1.random.Next(-200, 201));
-        BuyName = Dialogue.randomName();
+        RandomizeBuyName();
         return animal;
     }
 
-    public void RandomizeBuyName()
-    {
-        BuyName = Dialogue.randomName();
-    }
+    public void RandomizeBuyName() => BuyName = Dialogue.randomName();
 }

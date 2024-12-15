@@ -50,12 +50,7 @@ internal static class BazaarMenu
     {
         if (Context!.SelectedLivestock != null)
         {
-            if (Context!.HoveredBuilding != null)
-            {
-                Context!.HoveredBuilding.BackgroundTint = Color.White;
-                Context!.HoveredBuilding = null;
-            }
-            Context!.SelectedLivestock = null;
+            Context!.ClearSelectedLivestock();
         }
         else
         {

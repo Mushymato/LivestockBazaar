@@ -25,7 +25,7 @@
             pointer-leave=|~BazaarContextMain.HandleHoverLivestock()|
             left-click=|~BazaarContextMain.HandleSelectLivestock(this)| >
             <panel opacity={:ShopIconOpacity} layout="160px 144px" horizontal-content-alignment="middle" focusable="true">
-              <image layout="content 64px" margin="0,8" sprite={:ShopIcon} tint={:ShopIconTint}/>
+              <image layout="content 64px" margin="0,8" sprite={:ShopIcon} tint={:ShopIconTint} />
               <lane layout="stretch 64px" margin="0,88" orientation="horizontal">
                 <image layout="48px 48px" sprite={:TradeItem} />
                 <label layout="stretch 48px" text={:TradePrice} font={:TradeDisplayFont} />
@@ -40,32 +40,9 @@
         <label *if={HasRequiredBuilding} text={:Description} font="small" margin="8,0" />
       </infobox>
     </lane>
+
     <!-- page 2 -->
     <lane *case="2" *context={SelectedLivestock} layout="stretch content" orientation="horizontal">
-      <!-- building selection -->
-      <scrollable-styled layout={:~BazaarContextMain.ForSaleLayout} >
-        <lane orientation="vertical">
-          <lane padding="8" *repeat={:~BazaarContextMain.BazaarLocationEntries} layout="stretch content" orientation="vertical">
-              <banner padding="8" text={:LocationName}/>
-              <grid layout="stretch content" item-layout="length:164">
-                <frame *repeat={:ValidLivestockBuildings}
-                  background={:~BazaarContextMain.Theme_ItemRowBackground}
-                  background-tint={BackgroundTint}
-                  tooltip={:BuildingName}
-                  pointer-enter=|~BazaarContextMain.HandleHoverBuilding(this)|
-                  pointer-leave=|~BazaarContextMain.HandleHoverBuilding()|
-                  left-click=|~BazaarContextMain.HandlePurchaseAnimal(this)| >
-                  <lane layout="144px content" padding="12" orientation="vertical" focusable="true" horizontal-content-alignment="middle">
-                    <image layout="120px 120px" fit="Contain" horizontal-alignment="middle" vertical-alignment="end"
-                      sprite={:BuildingSprite} tint={BuildingSpriteTint}/>
-                    <label font="dialogue" text={BuildingOccupant}/>
-                  </lane>
-                </frame>
-              </grid>
-          </lane>
-        </lane>
-      </scrollable-styled>
-
       <!-- infobox and confirm -->
       <infobox tint={AnimTint}>
         <lane *if={HasSkin} layout="stretch content" orientation="horizontal" margin="0,-64,0,0" horizontal-content-alignment="middle" z-index="2">
@@ -80,13 +57,44 @@
           <image sprite={@mushymato.LivestockBazaar/sprites/cursors:dice} layout="32px 32px" margin="8"
             left-click=|RandomizeBuyName()| />
         </lane>
-        <grid item-layout="length:80" margin="4,0" item-spacing="4,4" horizontal-item-alignment="middle">
-          <frame *repeat={:AltPurchase} focusable="true"
+        <lane orientation="vertical">
+          <frame *repeat={:AltPurchase} focusable="true" margin="8"
             left-click=|~BazaarLivestockEntry.HandleSelectedPurchase(this)| >
             <image layout="content[32..] content[64..]" fit="Contain" horizontal-alignment="middle" sprite={:SpriteIcon} opacity={IconOpacity}/>
           </frame>
-        </grid>
+        </lane>
+        <button *if={~BazaarContextMain.ReadyToPurchase} layout="stretch content" margin="8"
+          text={#GUI.PurchaseButton}
+          hover-background={@Mods/StardewUI/Sprites/ButtonLight}
+          left-click=|~BazaarContextMain.HandlePurchaseAnimal()| />
       </infobox>
+
+      <!-- building selection -->
+      <scrollable-styled layout={:~BazaarContextMain.ForSaleLayout} >
+        <lane orientation="vertical">
+          <lane padding="8" *repeat={:~BazaarContextMain.BazaarLocationEntries} layout="stretch content" orientation="vertical">
+            <banner padding="8" text={:LocationName}/>
+            <grid layout="stretch content" item-layout="length:164">
+              <frame *repeat={:ValidLivestockBuildings}
+                background={:~BazaarContextMain.Theme_ItemRowBackground}
+                background-tint={BackgroundTint}
+                tooltip={:BuildingName}
+                pointer-enter=|~BazaarContextMain.HandleHoverBuilding(this)|
+                pointer-leave=|~BazaarContextMain.HandleHoverBuilding()|
+                left-click=|~BazaarContextMain.HandleSelectBuilding(this)| >
+                <frame layout="stretch content" background={@mushymato.LivestockBazaar/sprites/cursors:border} margin="4" background-tint={SelectedFrameTint}>
+                  <lane layout="144px content" padding="8" orientation="vertical" focusable="true" horizontal-content-alignment="middle">
+                    <image layout="120px 120px" fit="Contain" horizontal-alignment="middle" vertical-alignment="end"
+                      sprite={:BuildingSprite} tint={BuildingSpriteTint}/>
+                    <label font="dialogue" text={BuildingOccupant}/>
+                  </lane>
+                </frame>
+              </frame>
+            </grid>
+          </lane>
+        </lane>
+      </scrollable-styled>
+
     </lane>
   </frame>
 </lane>

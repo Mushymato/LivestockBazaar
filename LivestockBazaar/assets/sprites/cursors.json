@@ -8,6 +8,11 @@
     "question": {
       "SourceRect": "175,425,12,12",
       "Scale": 4,
+    },
+    "border": {
+      "SourceRect": "379,357,3,3",
+      "FixedEdges": "1,1,1,1",
+      "Scale": 4,
     }
   }
 }

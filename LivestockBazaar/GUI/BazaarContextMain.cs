@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using LivestockBazaar.Integration;
 using LivestockBazaar.Model;
 using Microsoft.Xna.Framework;
@@ -30,8 +29,8 @@ public sealed partial record BazaarContextMain
 
     // data
     public readonly BazaarData? Data;
-    public readonly ImmutableList<BazaarLivestockEntry> LivestockEntries;
-    public ImmutableDictionary<GameLocation, BazaarLocationEntry> AnimalHouseByLocation;
+    public readonly IReadOnlyList<BazaarLivestockEntry> LivestockEntries;
+    public IReadOnlyDictionary<GameLocation, BazaarLocationEntry> AnimalHouseByLocation;
 
     public IEnumerable<BazaarLocationEntry> BazaarLocationEntries =>
         AnimalHouseByLocation
@@ -42,7 +41,7 @@ public sealed partial record BazaarContextMain
     /// Rebuild <see cref="AnimalHouseByLocation"/>
     /// </summary>
     /// <param name="e"></param>
-    public IDictionary<GameLocation, BazaarLocationEntry> BuildAllAnimalHouseLocations()
+    public IReadOnlyDictionary<GameLocation, BazaarLocationEntry> BuildAllAnimalHouseLocations()
     {
         Dictionary<GameLocation, BazaarLocationEntry> animalHouseByLocation = [];
         Utility.ForEachBuilding(
@@ -140,6 +139,9 @@ public sealed partial record BazaarContextMain
     [Notify]
     private BazaarBuildingEntry? hoveredBuilding = null;
 
+    // selected livestock entry
+    public BazaarBuildingEntry? selectedBuilding = null;
+
     public BazaarContextMain(string shopName, ShopOwnerData? ownerData = null)
     {
         this.shopName = shopName;
@@ -152,17 +154,17 @@ public sealed partial record BazaarContextMain
                 (ShopThemeData theme) => GameStateQuery.CheckConditions(theme.Condition)
             )
         );
-        AnimalHouseByLocation = BuildAllAnimalHouseLocations().ToImmutableDictionary();
+        AnimalHouseByLocation = BuildAllAnimalHouseLocations();
         // livestock data
         LivestockEntries = AssetManager
             .GetLivestockDataForShop(shopName)
             .Select((data) => new BazaarLivestockEntry(this, shopName, data))
-            .ToImmutableList();
+            .ToList();
 
         // layout shenanigans
         var viewport = Game1.viewport;
-        int desiredWidth = (int)((MathF.Max(viewport.Width * 0.6f, 1280) - 256) / CELL_W) * CELL_W;
-        ForSaleLayout = $"{desiredWidth}px 70%[676..]";
+        int desiredWidth = (int)((MathF.Max(viewport.Width * 0.5f, 1280) - 256) / CELL_W) * CELL_W;
+        ForSaleLayout = $"{desiredWidth}px 75%[676..]";
         MainBodyLayout = $"{desiredWidth + 256}px content";
 
         // shop owner setup
@@ -272,21 +274,54 @@ public sealed partial record BazaarContextMain
         }
     }
 
-    public void HandlePurchaseAnimal(BazaarBuildingEntry? building = null)
+    [Notify]
+    public bool readyToPurchase = false;
+
+    public void HandleSelectBuilding(BazaarBuildingEntry building)
     {
-        if (building == null || SelectedLivestock == null)
+        if (selectedBuilding != null)
+            selectedBuilding.IsSelected = false;
+        selectedBuilding = building;
+        selectedBuilding.IsSelected = true;
+        ReadyToPurchase = true;
+    }
+
+    public void ClearSelectedLivestock()
+    {
+        if (HoveredBuilding != null)
         {
-            ModEntry.Log($"Got null building({building}) or ", LogLevel.Error);
+            HoveredBuilding.BackgroundTint = Color.White;
+            HoveredBuilding = null;
+        }
+        if (selectedBuilding != null)
+        {
+            selectedBuilding.IsSelected = false;
+            selectedBuilding = null;
+            ReadyToPurchase = false;
+        }
+        SelectedLivestock = null;
+    }
+
+    public void HandlePurchaseAnimal()
+    {
+        if (SelectedLivestock == null)
+        {
+            ModEntry.Log("Attempted to purchase without selecting animal.", LogLevel.Error);
             return;
         }
-        if (building.RemainingSpace == 0)
+        if (selectedBuilding == null || selectedBuilding.RemainingSpace == 0)
             return;
 
-        building.AdoptAnimal(SelectedLivestock.BuyNewFarmAnimal());
-
-        if (!SelectedLivestock.HasEnoughTradeItems)
+        if (SelectedLivestock.BuyNewFarmAnimal() is FarmAnimal animal)
         {
-            SelectedLivestock = null;
+            selectedBuilding.AdoptAnimal(animal);
+            if (selectedBuilding.RemainingSpace == 0)
+            {
+                selectedBuilding.isSelected = false;
+                selectedBuilding = null;
+            }
+            if (!SelectedLivestock.HasEnoughTradeItems)
+                SelectedLivestock = null;
         }
     }
 }
