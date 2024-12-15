@@ -7,7 +7,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
-    <EnableHarmony>true</EnableHarmony>
   </PropertyGroup>
 
   <PropertyGroup>

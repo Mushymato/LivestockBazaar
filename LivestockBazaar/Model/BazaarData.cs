@@ -46,6 +46,17 @@ public sealed record BazaarData
     /// <summary>Which type of shop open check to follow.</summary>
     public string? OpenKey { get; set; } = "Book_AnimalCatalogue";
 
+    /// <summary>If true and there is item shop data, show a dialog to pick either the item shop or the animal shop[</summary>
+    private bool showShopDialog = true;
+    public bool ShowShopDialog
+    {
+        get => showShopDialog && (ShopData?.Items.Any() ?? false);
+        set => showShopDialog = value;
+    }
+    public string ShopDialogSupplies { get; set; } = "Strings\\Locations:AnimalShop_Marnie_Supplies";
+    public string ShopDialogAnimals { get; set; } = "Strings\\Locations:AnimalShop_Marnie_Animals";
+    public string ShopDialogLeave { get; set; } = "Strings\\Locations:AnimalShop_Marnie_Leave";
+
     /// <summary>
     /// Check if shop should check the open-close and shop owner in rect conditions.
     /// </summary>

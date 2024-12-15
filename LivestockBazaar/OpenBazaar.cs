@@ -1,5 +1,3 @@
-using System.Reflection.Emit;
-using HarmonyLib;
 using LivestockBazaar.GUI;
 using LivestockBazaar.Model;
 using Microsoft.Xna.Framework;
@@ -7,7 +5,6 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Delegates;
 using StardewValley.GameData.Shops;
-using StardewValley.Menus;
 using StardewValley.TokenizableStrings;
 using StardewValley.Triggers;
 
@@ -24,19 +21,6 @@ internal static class OpenBazaar
         GameLocation.RegisterTileAction(LivestockShop, TileAction_ShowLivestockShop);
         TriggerActionManager.RegisterAction(LivestockShop, Action_ShowLivestockShop);
         helper.ConsoleCommands.Add("lb-shop", "Open a custom livestock shop by id", Console_ShowLivestockShop);
-
-        // try
-        // {
-        //     // change Marnie's shop
-        //     harmony.Patch(
-        //         original: AccessTools.DeclaredMethod(typeof(GameLocation), nameof(GameLocation.ShowAnimalShopMenu)),
-        //         prefix: new HarmonyMethod(typeof(OpenBazaar), nameof(GameLocation_ShowAnimalShopMenu_Prefix))
-        //     );
-        // }
-        // catch (Exception err)
-        // {
-        //     ModEntry.Log($"Failed to patch LivestockBazaar:\n{err}", LogLevel.Error);
-        // }
     }
 
     /// <summary>Show livestock bazaar menu</summary>
@@ -78,10 +62,12 @@ internal static class OpenBazaar
         int shopAreaY,
         int shopAreaWidth,
         int shopAreaHeight,
-        out ShopOwnerData? foundOwnerData
+        out ShopOwnerData? foundOwnerData,
+        out NPC? foundNPC
     )
     {
         foundOwnerData = null;
+        foundNPC = null;
         // check opening and closing times
         if ((openTime >= 0 && Game1.timeOfDay < openTime) || (closeTime >= 0 && Game1.timeOfDay >= closeTime))
         {
@@ -114,6 +100,7 @@ internal static class OpenBazaar
                     {
                         // found npc
                         foundOwnerData = ownerData;
+                        foundNPC = npc;
                         return true;
                     }
                 }
@@ -190,7 +177,8 @@ internal static class OpenBazaar
                     shopAreaY,
                     shopAreaWidth,
                     shopAreaHeight,
-                    out foundOwnerData
+                    out foundOwnerData,
+                    out NPC? foundNPC
                 ) || !shouldCheck
             )
             {
@@ -205,33 +193,36 @@ internal static class OpenBazaar
                 Game1.drawObjectDialogue(TokenParser.ParseText(foundOwnerData.ClosedMessage));
                 return false;
             }
+            // if there is also (item) shop data, show a dialog
+            if (bazaarData.ShowShopDialog)
+            {
+                location.createQuestionDialogue(
+                    "", [
+                        new Response("Supplies", Game1.content.LoadString(bazaarData.ShopDialogSupplies)),
+                        new Response("Animals", Game1.content.LoadString(bazaarData.ShopDialogAnimals)),
+                        new Response("Leave", Game1.content.LoadString(bazaarData.ShopDialogLeave)),
+                    ],
+                    (Farmer _, string whichAnswer) =>
+                    {
+                        switch (whichAnswer)
+                        {
+                            case "Supplies":
+                                Utility.TryOpenShopMenu(bazaarData.ShopId, foundNPC?.Name ?? "AnyOrNone");
+                                break;
+                            case "Animals":
+                                BazaarMenu.ShowFor(shopName, foundOwnerData);
+                                break;
+                            case "Leave":
+                            default:
+                                break;
+                        }
+                    },
+                    speaker: foundNPC
+                );
+                return true;
+            }
         }
         // show shop
         return BazaarMenu.ShowFor(shopName, foundOwnerData);
-    }
-
-    /// <summary>Override marnie shop and menu, if enabled in config</summary>
-    /// <param name="__instance"></param>
-    /// <param name="onMenuOpened"></param>
-    /// <returns></returns>
-    public static bool GameLocation_ShowAnimalShopMenu_Prefix(
-        GameLocation __instance,
-        Action<PurchaseAnimalsMenu> onMenuOpened
-    )
-    {
-        try
-        {
-            // if ModEntry.Config.VanillaMarnieShop is true or if this menu uses the PurchaseAnimalsMenu delegate, use vanilla
-            if (ModEntry.Config.VanillaMarnieStock || onMenuOpened != null)
-                return true;
-            // use custom stock and menu
-            BazaarMenu.ShowFor(Wheels.MARNIE, null);
-            return false;
-        }
-        catch (Exception err)
-        {
-            ModEntry.Log($"Error in GameLocation_ShowAnimalShopMenu_Prefix:\n{err}", LogLevel.Error);
-            return false;
-        }
     }
 }
