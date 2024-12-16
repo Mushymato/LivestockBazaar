@@ -193,15 +193,23 @@ internal static class OpenBazaar
                 Game1.drawObjectDialogue(TokenParser.ParseText(foundOwnerData.ClosedMessage));
                 return false;
             }
-            // if there is also (item) shop data, show a dialog
+            // check if we need to show a dialog
+            List<Response> responses =
+            [
+                new Response("Animals", Game1.content.LoadString(bazaarData.ShopDialogAnimals)),
+            ];
             if (bazaarData.ShowShopDialog)
+                responses.Insert(0, new Response("Supplies", Game1.content.LoadString(bazaarData.ShopDialogSupplies)));
+            if (bazaarData.ShowPetShopDialog)
+                responses.Add(new Response("Adopt", Game1.content.LoadString(bazaarData.ShopDialogAdopt)));
+
+            // no dialog needed
+            if (responses.Count > 1)
             {
+                responses.Add(new Response("Leave", Game1.content.LoadString(bazaarData.ShopDialogLeave)));
                 location.createQuestionDialogue(
-                    "", [
-                        new Response("Supplies", Game1.content.LoadString(bazaarData.ShopDialogSupplies)),
-                        new Response("Animals", Game1.content.LoadString(bazaarData.ShopDialogAnimals)),
-                        new Response("Leave", Game1.content.LoadString(bazaarData.ShopDialogLeave)),
-                    ],
+                    "",
+                    responses.ToArray(),
                     (Farmer _, string whichAnswer) =>
                     {
                         switch (whichAnswer)
@@ -211,6 +219,9 @@ internal static class OpenBazaar
                                 break;
                             case "Animals":
                                 BazaarMenu.ShowFor(shopName, foundOwnerData);
+                                break;
+                            case "Adopt":
+                                Utility.TryOpenShopMenu(bazaarData.PetShopId, foundNPC?.Name ?? "AnyOrNone");
                                 break;
                             case "Leave":
                             default:
@@ -222,7 +233,7 @@ internal static class OpenBazaar
                 return true;
             }
         }
-        // show shop
+        // show shop, no bazaar data
         return BazaarMenu.ShowFor(shopName, foundOwnerData);
     }
 }

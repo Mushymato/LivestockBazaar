@@ -1,4 +1,5 @@
 using LivestockBazaar.Integration;
+using LivestockBazaar.Model;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
@@ -34,10 +35,10 @@ internal static class BazaarMenu
 #endif
     }
 
-    internal static bool ShowFor(string shopName, ShopOwnerData? ownerData = null)
+    internal static bool ShowFor(string shopName, ShopOwnerData? ownerData = null, BazaarData? bazaarData = null)
     {
         ModEntry.Log($"Show bazaar shop '{shopName}'");
-        Context = new(shopName, ownerData);
+        Context = new(shopName, ownerData, bazaarData);
         var menuCtrl = viewEngine.CreateMenuControllerFromAsset(VIEW_ASSET_MENU, Context);
         menuCtrl.CloseAction = CloseAction;
         menuCtrl.EnableCloseButton();
@@ -55,6 +56,8 @@ internal static class BazaarMenu
         {
             Game1.exitActiveMenu();
             Context = null;
+            Game1.player.forceCanMove();
+            Console.WriteLine($"Game1.viewportFreeze: {Game1.viewportFreeze}");
         }
     }
 }

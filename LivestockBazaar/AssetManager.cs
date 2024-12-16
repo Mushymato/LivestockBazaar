@@ -10,6 +10,7 @@ internal static class AssetManager
 {
     /// <summary>Vanilla AnimalShop in Data/Shops, for copying into Bazaar data.</summary>
     internal const string ANIMAL_SHOP = "AnimalShop";
+    internal const string PET_ADOPTION = "PetAdoption";
 
     /// <summary>Shop asset target</summary>
     private static string BazaarAsset => $"{ModEntry.ModId}/Shops";
@@ -62,6 +63,13 @@ internal static class AssetManager
     {
         if (e.NamesWithoutLocale.Any(an => an.IsEquivalentTo(BazaarAsset)))
             _bazaarData = null;
+        if (_bazaarData != null && e.NamesWithoutLocale.Any(an => an.IsEquivalentTo("Data/Shops")))
+        {
+            foreach (BazaarData data in _bazaarData.Values)
+            {
+                data.InvalidateShopData();
+            }
+        }
         if (e.NamesWithoutLocale.Any(an => an.IsEquivalentTo("Data/FarmAnimals")))
             _lsData = null;
         CurrencyFactory.OnAssetInvalidated(sender, e);
@@ -72,7 +80,7 @@ internal static class AssetManager
     internal static Dictionary<string, BazaarData> DefaultBazaarData()
     {
         Dictionary<string, BazaarData> bazaarData = [];
-        bazaarData[Wheels.MARNIE] = new() { ShopId = ANIMAL_SHOP };
+        bazaarData[Wheels.MARNIE] = new() { ShopId = ANIMAL_SHOP, PetShopId = PET_ADOPTION };
         return bazaarData;
     }
 

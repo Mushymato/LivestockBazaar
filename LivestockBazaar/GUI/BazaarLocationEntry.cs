@@ -61,7 +61,7 @@ public sealed partial record BazaarBuildingEntry(
 
     [Notify]
     public bool isSelected = false;
-    public Color SelectedFrameTint => IsSelected ? Color.Red : Color.Transparent;
+    public Color SelectedFrameTint => IsSelected ? Color.White : Color.Transparent;
 }
 
 public sealed partial record class BazaarLocationEntry(

@@ -142,18 +142,22 @@ public sealed partial record BazaarContextMain
     // selected livestock entry
     public BazaarBuildingEntry? selectedBuilding = null;
 
-    public BazaarContextMain(string shopName, ShopOwnerData? ownerData = null)
+    public BazaarContextMain(string shopName, ShopOwnerData? ownerData = null, BazaarData? bazaarData = null)
     {
         this.shopName = shopName;
         this.ownerData = ownerData;
 
         // bazaar data
-        Data = AssetManager.GetBazaarData(shopName);
+        Data = bazaarData ?? AssetManager.GetBazaarData(shopName);
+        ShopData? shopData = Data?.ShopData ?? Data?.PetShopData;
+        if (shopData?.OpenSound is string openSound)
+            Game1.playSound(openSound);
         Theme = new ShopMenu.ShopCachedTheme(
-            Data?.ShopData?.VisualTheme?.FirstOrDefault(
+            shopData?.VisualTheme?.FirstOrDefault(
                 (ShopThemeData theme) => GameStateQuery.CheckConditions(theme.Condition)
             )
         );
+
         AnimalHouseByLocation = BuildAllAnimalHouseLocations();
         // livestock data
         LivestockEntries = AssetManager
@@ -162,8 +166,7 @@ public sealed partial record BazaarContextMain
             .ToList();
 
         // layout shenanigans
-        var viewport = Game1.viewport;
-        int desiredWidth = (int)((MathF.Max(viewport.Width * 0.5f, 1280) - 256) / CELL_W) * CELL_W;
+        int desiredWidth = (int)((MathF.Max(Game1.viewport.Width * 0.5f, 1280) - 256) / CELL_W) * CELL_W;
         ForSaleLayout = $"{desiredWidth}px 75%[676..]";
         MainBodyLayout = $"{desiredWidth + 256}px content";
 

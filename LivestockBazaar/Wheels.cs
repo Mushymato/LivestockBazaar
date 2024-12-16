@@ -48,4 +48,9 @@ internal static class Wheels
     {
         return GameStateQuery.CheckConditions(condition, location: location, ignoreQueryKeys: GSQRandomKeys);
     }
+
+    internal static bool CanAdoptPets =>
+        (Utility.getAllPets().Count == 0 && Game1.year >= 2)
+        || Game1.player.mailReceived.Contains("MarniePetAdoption")
+        || Game1.player.mailReceived.Contains("MarniePetRejectedAdoption");
 }
