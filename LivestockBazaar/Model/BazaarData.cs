@@ -98,7 +98,6 @@ public sealed record BazaarData
         get => showPetShopDialog && Wheels.CanAdoptPets && (PetShopData?.Items.Any() ?? false);
         set => showPetShopDialog = value;
     }
-    public string ShopDialogTitle { get; set; } = "";
     public string ShopDialogSupplies { get; set; } = "Strings\\Locations:AnimalShop_Marnie_Supplies";
     public string ShopDialogAnimals { get; set; } = "Strings\\Locations:AnimalShop_Marnie_Animals";
     public string ShopDialogAdopt { get; set; } = "Strings\\1_6_Strings:AdoptPets";

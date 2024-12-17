@@ -158,14 +158,4 @@ public sealed record LivestockData
                     if (LsData.TryGetValue(animalId, out LivestockData? altPurchaseData))
                         AltPurchase.Add(altPurchaseData);
     }
-
-    // public static IEnumerable<LivestockData> GetAltPurchaseData(FarmAnimalData Data)
-    // {
-    //     if (Data.AlternatePurchaseTypes != null)
-    //         foreach (AlternatePurchaseAnimals altPurchase in Data.AlternatePurchaseTypes)
-    //             if (Wheels.GSQCheckNoRandom(altPurchase.Condition))
-    //                 foreach (string animalId in altPurchase.AnimalIds)
-    //                     if (Game1.farmAnimalData.TryGetValue(animalId, out FarmAnimalData? altPurchaseData) && IsValid(altPurchaseData))
-    //                         yield return new(animalId, altPurchaseData, true);
-    // }
 }

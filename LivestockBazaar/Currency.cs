@@ -1,6 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.ItemTypeDefinitions;
@@ -47,27 +45,6 @@ internal static class CurrencyFactory
 {
     private static readonly ConditionalWeakTable<string, BaseCurrency?> currencyCache = [];
 
-    // TODO: spacecore currency support
-    // internal static Integration.ISpaceCoreApi? scApi = null;
-    // internal static List<string> scCurrency = null!;
-
-    // internal static void RegisterApi(IModRegistry registry)
-    // {
-    //     scApi = registry.GetApi<Integration.ISpaceCoreApi>("spacechase0.SpaceCore");
-    // }
-
-    // internal static void OnAssetInvalidated(object? sender, AssetsInvalidatedEventArgs e)
-    // {
-    //     if (
-    //         e.NamesWithoutLocale.Any(an =>
-    //             an.IsEquivalentTo("Data/Objects") || an.IsEquivalentTo("spacechase0.SpaceCore/VirtualCurrencyData")
-    //         )
-    //     )
-    //     {
-    //         scCurrency = null!;
-    //         currencyCache.Clear();
-    //     }
-    // }
     internal static void OnAssetInvalidated(object? sender, AssetsInvalidatedEventArgs e)
     {
         if (e.NamesWithoutLocale.Any(an => an.IsEquivalentTo("Data/Objects")))
@@ -85,20 +62,6 @@ internal static class CurrencyFactory
             return new QiGemCurrency(itemData);
         if (itemData.QualifiedItemId == "(O)73")
             return new GoldenWalnutCurrency(itemData);
-
-        // spacecore
-        // if (scApi != null)
-        // {
-        //     scCurrency ??= scApi.GetVirtualCurrencyList();
-        //     if (scCurrency.Contains(itemData.ItemId))
-        //     {
-
-        //     }
-        // }
-        // if (ubApi != null)
-        // {
-
-        // }
 
         return new ItemCurrency(itemData);
     }

@@ -120,7 +120,8 @@ public sealed partial record BazaarContextMain
     // shop owner portrait
     public bool ShowPortraitBox => IsWidescreen && OwnerPortrait != null;
     public readonly SDUISprite? OwnerPortrait = null;
-    public string OwnerDialog = I18n.Shop_DefaultDialog();
+    public bool ShowOwnerDialog => IsWidescreen && OwnerDialog != "";
+    public string OwnerDialog = "";
 
     // hovered livestock entry
     [Notify]

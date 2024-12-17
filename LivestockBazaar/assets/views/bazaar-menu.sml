@@ -1,10 +1,10 @@
 <lane orientation="horizontal" >
   <!-- shop owner portrait -->
-  <lane *if={:IsWidescreen} *float="before" layout="320px content" padding="0,8,0,0" orientation="vertical" horizontal-content-alignment="end">
+  <lane *if={:IsWidescreen} *float="before" layout="256px content" padding="0,8,0,0" orientation="vertical" horizontal-content-alignment="end">
     <frame *if={:ShowPortraitBox} padding="20" background={:Theme_PortraitBackground}>
       <image layout="256px 256px" sprite={:OwnerPortrait} />
     </frame>
-    <frame layout="256px content[..320]" padding="20" margin="0,10" border={:Theme_DialogueBackground}>
+    <frame *if={:ShowOwnerDialog} layout="256px content[..320]" padding="20" margin="0,10" border={:Theme_DialogueBackground}>
       <label font="dialogue" text={:OwnerDialog} color={:Theme_DialogueColor} shadow-color={:Theme_DialogueShadowColor}/>
     </frame>
   </lane>
@@ -12,7 +12,7 @@
   <!-- main body -->
   <frame *switch={CurrentPage}
     layout={:MainBodyLayout} border={:Theme_WindowBorder}
-    border-thickness={:Theme_WindowBorderThickness} margin="8">
+    border-thickness={:Theme_WindowBorderThickness} margin="64,8,8,8">
     <!-- page 1 -->
     <lane *case="1" layout="stretch content" orientation="horizontal">
       <!-- for sale -->

@@ -243,6 +243,8 @@
             "mushymato.LivestockBazaar/BuyFrom.{{ModId}}_Valgrind": true,
             "mushymato.LivestockBazaar/TradeItemId.{{ModId}}_Valgrind": "(O)246",
             "mushymato.LivestockBazaar/TradeItemAmount.{{ModId}}_Valgrind": 297,
+            // allow chicken to be bought from Generic the default shop
+            "mushymato.LivestockBazaar/BuyFrom.{{ModId}}_Generic": true,
           }
         },
       }

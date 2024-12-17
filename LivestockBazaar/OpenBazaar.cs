@@ -246,11 +246,14 @@ internal static class OpenBazaar
         return BazaarMenu.ShowFor(shopName, foundOwnerData);
     }
 
-    private static bool TileAcction_AnimalShop(GameLocation location, string[] action, Farmer who, Point tile) =>
-        TileAction_ShowLivestockShop(
+    private static bool TileAcction_AnimalShop(GameLocation location, string[] action, Farmer who, Point tile)
+    {
+        ModEntry.LogOnce("Successfully activated alternate 'AnimalShop' action.");
+        return TileAction_ShowLivestockShop(
             location,
             [LivestockShop, Wheels.MARNIE, "down", "-1", "-1", "12", "14", "2", "1"],
             who,
             tile
         );
+    }
 }
