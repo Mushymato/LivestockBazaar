@@ -12,7 +12,7 @@
   <!-- main body -->
   <frame *switch={CurrentPage}
     layout={:MainBodyLayout} border={:Theme_WindowBorder}
-    border-thickness={:Theme_WindowBorderThickness} margin="64,8,8,8">
+    border-thickness={:Theme_WindowBorderThickness} margin="8">
     <!-- page 1 -->
     <lane *case="1" layout="stretch content" orientation="horizontal">
       <!-- for sale -->
@@ -101,21 +101,26 @@
 
 <template name="infobox">
   <lane layout="content[256..] stretch" orientation="vertical" horizontal-content-alignment="middle">
+    <!-- Unreleased -->
+    <!-- <image layout="content content[128..]" fit="Contain" horizontal-alignment="middle" vertical-alignment="end"
+      tint={&tint} sprite={AnimSprite} sprite-effects={AnimFlip} /> -->
     <image layout="content content[128..]" fit="Contain" horizontal-alignment="middle" vertical-alignment="end"
-      tint={&tint} sprite={AnimSprite} sprite-effects={AnimFlip} />
+      tint={&tint} sprite={AnimSprite} />
     <outlet/>
   </lane>
 </template>
 
 <template name="scrollable-styled">
-  <scrollable peeking="128"
+  <!-- Unreleased -->
+  <!-- <scrollable peeking="128"
     layout={&layout}
     scrollbar-margin="278,0,0,-8"
     scrollbar-up-sprite={:~BazaarContextMain.Theme_ScrollUp}
     scrollbar-down-sprite={:~BazaarContextMain.Theme_ScrollDown}
     scrollbar-down-sprite={:~BazaarContextMain.Theme_ScrollDown}
     scrollbar-thumb-sprite={:~BazaarContextMain.Theme_ScrollBarFront}
-    scrollbar-track-sprite={:~BazaarContextMain.Theme_ScrollBarBack}>
+    scrollbar-track-sprite={:~BazaarContextMain.Theme_ScrollBarBack}> -->
+  <scrollable peeking="128" layout={&layout}>
     <outlet/>
   </scrollable>
 </template>
