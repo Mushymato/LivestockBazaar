@@ -113,9 +113,6 @@ public sealed partial record BazaarContextMain
     public Color? Theme_DialogueColor => Theme.DialogueColor ?? Game1.textColor;
     public Color? Theme_DialogueShadowColor => Theme.DialogueShadowColor ?? Game1.textShadowColor;
 
-    // button text
-    public readonly string BtnCancel = TokenParser.ParseText("[LocalizedText Strings\\UI:Cancel]");
-
     // layouts
     public readonly string MainBodyLayout;
     public readonly string ForSaleLayout;

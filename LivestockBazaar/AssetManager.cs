@@ -2,6 +2,7 @@ using LivestockBazaar.Model;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.GameData.FarmAnimals;
+using StardewValley.GameData.Shops;
 
 namespace LivestockBazaar;
 
@@ -75,12 +76,31 @@ internal static class AssetManager
         CurrencyFactory.OnAssetInvalidated(sender, e);
     }
 
-    /// <summary>Make a copy of AnimalShop to use as <see cref="MARNIE"/>'s bazaar data.</summary>
+    /// <summary>By default add a entry for Marnie's shop.</summary>
     /// <returns></returns>
     internal static Dictionary<string, BazaarData> DefaultBazaarData()
     {
         Dictionary<string, BazaarData> bazaarData = [];
-        bazaarData[Wheels.MARNIE] = new() { ShopId = ANIMAL_SHOP, PetShopId = PET_ADOPTION };
+        bazaarData[Wheels.MARNIE] = new()
+        {
+            Owners = [new ShopOwnerData(){
+                Id = Wheels.MARNIE,
+                Name = Wheels.MARNIE,
+                Dialogues = [
+                    new ShopDialogueData(){
+                        Id = "Rare",
+                        Condition = "RANDOM 0.0001",
+                        Dialogue = "[LocalizedText Strings\\StringsFromCSFiles:ShopMenu.cs.11508]",
+                    },
+                    new ShopDialogueData(){
+                        Id = "Default",
+                        Dialogue = "[LocalizedText Strings\\1_6_Strings:Marnie_Pet_Adoption]"
+                    }
+                ]
+        }],
+            ShopId = ANIMAL_SHOP,
+            PetShopId = PET_ADOPTION,
+        };
         return bazaarData;
     }
 

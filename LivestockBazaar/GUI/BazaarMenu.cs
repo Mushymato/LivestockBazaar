@@ -57,7 +57,6 @@ internal static class BazaarMenu
             Game1.exitActiveMenu();
             Context = null;
             Game1.player.forceCanMove();
-            Console.WriteLine($"Game1.viewportFreeze: {Game1.viewportFreeze}");
         }
     }
 }

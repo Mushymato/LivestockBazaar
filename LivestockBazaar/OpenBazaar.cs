@@ -19,8 +19,17 @@ internal static class OpenBazaar
     internal static void Register(IModHelper helper)
     {
         GameLocation.RegisterTileAction(LivestockShop, TileAction_ShowLivestockShop);
+        UpdateAnimalShop();
         TriggerActionManager.RegisterAction(LivestockShop, Action_ShowLivestockShop);
         helper.ConsoleCommands.Add("lb-shop", "Open a custom livestock shop by id", Console_ShowLivestockShop);
+    }
+
+    internal static void UpdateAnimalShop()
+    {
+        GameLocation.RegisterTileAction(
+            "AnimalShop",
+            ModEntry.Config.VanillaMarnieStock ? null : TileAcction_AnimalShop
+        );
     }
 
     /// <summary>Show livestock bazaar menu</summary>
@@ -236,4 +245,12 @@ internal static class OpenBazaar
         // show shop, no bazaar data
         return BazaarMenu.ShowFor(shopName, foundOwnerData);
     }
+
+    private static bool TileAcction_AnimalShop(GameLocation location, string[] action, Farmer who, Point tile) =>
+        TileAction_ShowLivestockShop(
+            location,
+            [LivestockShop, Wheels.MARNIE, "down", "-1", "-1", "12", "14", "2", "1"],
+            who,
+            tile
+        );
 }
