@@ -29,8 +29,8 @@ These 2 fields control whether an animal is available for a given shop. An anima
 
 #### TradeItemId and TradeItemAmount
 
-| Field | Type | Default | Notes |
-| ----- | ---- | ------- | ----- |
+| Field | Type | Notes |
+| ----- | ---- | ----- |
 | `mushymato.LivestockBazaar/TradeItemId.<shopName>` | string | Let you purchase the animal with something besides money, for `<shopName>` only. |
 | `mushymato.LivestockBazaar/TradeItemId` | string| Let you purchase the animal with an item, for all shops including Marnie's. |
 | `mushymato.LivestockBazaar/TradeItemAmount.<shopName>` | int | Amount of trade items needed, for `<shopName>` only. |
@@ -90,10 +90,10 @@ This is a custom asset that let you provide some additional configurations to a 
 | `OpenKey` | string | `"Book_AnimalCatalogue"` | String name of the stat or mailflag. If this is set, then the usual open/close time and NPC prescence will not be checked. The default value `Book_AnimalCatalogue` refers to the Animal Catalogue book that grants 24/7 access to animal shop in vanilla. |
 | `ShowShopDialog` | bool | true | If true and `ShopId` is a valid shop, show a dialog option to let player open the supplies shop. |
 | `ShowPetShopDialog` | bool | true | If true and `PetShopId` is a valid shop, show a dialog option to let player open the pet shop. |
-| `ShopDialogSupplies` | string | `"Strings\\Locations:AnimalShop_Marnie_Supplies"` | Display string for the supplies shop. |
-| `ShopDialogAnimals` | string | `"Strings\\Locations:AnimalShop_Marnie_Animals"` | Display string for the animal shop. |
-| `ShopDialogAdopt` | string | `"Strings\\1_6_Strings:AdoptPets"` | Display string for the pet adoption shop. |
-| `ShopDialogLeave` | string | `"Strings\\Locations:AnimalShop_Marnie_Leave"` | Display string for exiting the dialog. |
+| `ShopDialogSupplies` | string | _ | Display string for the supplies shop. |
+| `ShopDialogAnimals` | string | _ | Display string for the animal shop. |
+| `ShopDialogAdopt` | string | _ | Display string for the pet adoption shop. |
+| `ShopDialogLeave` | string | _ | Display string for exiting the dialog. |
 
 #### Owners
 
@@ -113,3 +113,18 @@ Livestock Bazaar makes no changes to either shop's mechanics, they both use the 
 To make a custom book that acts similar to `Book_AnimalCatalogue` for your livestock bazaar shop, make a book item and then put that item's unqualified id into `OpenKey`.
 
 Mail flags are offered because there are more ways to set it compared to game stat, change `OpenFlags` to `"Mail"` to use mail flag.
+
+#### Visual Theme
+
+The Bazaar menu respects `"VisualTheme"` in either `ShopId` or `PetShopId`. For example of vanilla menus with alternate themes, check Mr Qi's shop.
+
+### ShopDialog Default Values
+
+The default values are:
+
+- ShopDialogSupplies: `"Strings\\Locations:AnimalShop_Marnie_Supplies"` (Supplies Shop)
+- ShopDialogAnimals: `"Strings\\Locations:AnimalShop_Marnie_Animals"` (Purchase Animals)
+- ShopDialogAdopt: `"Strings\\1_6_Strings:AdoptPets"` (Adopt Pets)
+- ShopDialogLeave: `"Strings\\Locations:AnimalShop_Marnie_Leave"` (Leave)
+
+Like most string fields, these keys to Strings assets. For modded shops, either string fields or i18n keys work fine here.
