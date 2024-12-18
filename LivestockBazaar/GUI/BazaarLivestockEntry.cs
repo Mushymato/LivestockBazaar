@@ -51,6 +51,7 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
 
     // currency
     private readonly BaseCurrency currency = Ls.GetTradeCurrency(ShopName);
+    public bool CurrencyIsMoney => currency is MoneyCurrency;
     public ParsedItemData TradeItem => currency.TradeItem;
     public int TradePrice = Ls.GetTradePrice(ShopName);
     public string TradeDisplayFont => TradePrice > 999999 ? "small" : "dialogue";
@@ -58,6 +59,8 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
     public float ShopIconOpacity => HasEnoughTradeItems ? 1f : 0.5f;
 
     // has required animal building
+    public string House => Ls.Data.House;
+    public string RequiredBuilding => Ls.Data.RequiredBuilding;
     private bool? hasRequiredBuilding = null;
     public bool HasRequiredBuilding
     {

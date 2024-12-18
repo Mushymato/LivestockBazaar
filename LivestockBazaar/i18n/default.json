@@ -8,5 +8,7 @@
   "config.VanillaMarnieStock.name": "Vanilla Marnie Stock",
   "config.VanillaMarnieStock.tooltip": "Do not override Marnie's vanilla stock or shop menu, allowing Marnie to sell all animals.",
   // GUI
-  "GUI.PurchaseButton": "Purchase"
+  "GUI.PurchaseButton": "Purchase",
+  "GUI.SortAsc": "{{mode}} (ASC)",
+  "GUI.SortDesc": "{{mode}} (DESC)"
 }

@@ -13,6 +13,10 @@
       "SourceRect": "375,357,3,3",
       "FixedEdges": "1,1,1,1",
       "Scale": 4,
+    },
+    "organize": {
+      "SourceRect": "162,440,16,16",
+      "Scale": 4
     }
   }
 }

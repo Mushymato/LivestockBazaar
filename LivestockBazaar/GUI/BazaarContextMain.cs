@@ -20,7 +20,6 @@ public sealed partial record BazaarContextMain
     private const int CELL_W = 192;
 
     // viewport size, could change but ppl should just reopen menu
-    // public bool IsWidescreen => Game1.viewport.Width >= 1920 * Game1.options.uiScale;
     public bool IsWidescreen = Game1.viewport.Width >= 1920 * Game1.options.uiScale;
 
     // fields
@@ -29,7 +28,11 @@ public sealed partial record BazaarContextMain
 
     // data
     public readonly BazaarData? Data;
-    public readonly IReadOnlyList<BazaarLivestockEntry> LivestockEntries;
+    private readonly IReadOnlyList<BazaarLivestockEntry> livestockEntries;
+    public IEnumerable<BazaarLivestockEntry> LivestockEntries =>
+        ModEntry.Config.SortIsAsc
+            ? livestockEntries.OrderBy(LivestockKey)
+            : livestockEntries.OrderBy(LivestockKey).Reverse();
     public IReadOnlyDictionary<GameLocation, BazaarLocationEntry> AnimalHouseByLocation;
 
     public IEnumerable<BazaarLocationEntry> BazaarLocationEntries =>
@@ -132,6 +135,7 @@ public sealed partial record BazaarContextMain
     [Notify]
     private BazaarLivestockEntry? selectedLivestock = null;
     public int CurrentPage => SelectedLivestock == null ? 1 : 2;
+    public bool IsPage1 => SelectedLivestock == null;
 
     // hovered building entry
     [Notify]
@@ -158,7 +162,7 @@ public sealed partial record BazaarContextMain
 
         AnimalHouseByLocation = BuildAllAnimalHouseLocations();
         // livestock data
-        LivestockEntries = AssetManager
+        livestockEntries = AssetManager
             .GetLivestockDataForShop(shopName)
             .Select((data) => new BazaarLivestockEntry(this, shopName, data))
             .ToList();
@@ -231,6 +235,40 @@ public sealed partial record BazaarContextMain
             HoveredLivestock?.NextFrame();
             animTimer = TimeSpan.Zero;
         }
+    }
+
+    // organize
+    public void ToggleLivestockSortMode()
+    {
+        if (ModEntry.Config.SortIsAsc)
+        {
+            ModEntry.Config.SortIsAsc = false;
+        }
+        else
+        {
+            ModEntry.Config.SortMode = ModEntry.Config.SortMode.Next();
+            ModEntry.Config.SortIsAsc = true;
+        }
+        OnPropertyChanged(new(nameof(LivestockEntries)));
+        OnPropertyChanged(new(nameof(SortTooltip)));
+    }
+
+    public string SortTooltip =>
+        ModEntry.Config.SortIsAsc
+            ? I18n.GUI_SortAsc(ModEntry.Config.SortMode.ToString())
+            : I18n.GUI_SortDesc(ModEntry.Config.SortMode.ToString());
+
+    private static string LivestockKey(BazaarLivestockEntry entry)
+    {
+        return ModEntry.Config.SortMode switch
+        {
+            LivestockSortMode.Name => entry.LivestockName,
+            LivestockSortMode.Price => entry.CurrencyIsMoney
+                ? $"0 {entry.TradePrice}"
+                : $"{entry.TradeItem.QualifiedItemId} {entry.TradePrice}",
+            LivestockSortMode.House => entry.House,
+            _ => throw new NotImplementedException(),
+        };
     }
 
     // page 1 (shop grid) hover and select

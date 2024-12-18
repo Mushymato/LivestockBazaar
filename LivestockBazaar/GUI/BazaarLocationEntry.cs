@@ -76,12 +76,10 @@ public sealed partial record class BazaarLocationEntry(
     {
         if (livestock == null)
             return false;
-        if (!LivestockBuildings.TryGetValue(livestock.Ls.Data.House, out List<BazaarBuildingEntry>? buildings))
+        if (!LivestockBuildings.TryGetValue(livestock.House, out List<BazaarBuildingEntry>? buildings))
             return false;
         return buildings.Any(
-            (bld) =>
-                livestock.Ls.Data.RequiredBuilding == null
-                || bld.IsBuildingOrUpgrade(livestock.Ls.Data.RequiredBuilding)
+            (bld) => livestock.RequiredBuilding == null || bld.IsBuildingOrUpgrade(livestock.RequiredBuilding)
         );
     }
 

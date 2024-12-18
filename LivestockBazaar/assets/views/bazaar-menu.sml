@@ -1,6 +1,9 @@
 <lane orientation="horizontal" >
   <!-- shop owner portrait -->
   <lane *if={:IsWidescreen} *float="before" layout="256px content" padding="0,8,0,0" orientation="vertical" horizontal-content-alignment="end">
+    <image *if={IsPage1} focusable="true" sprite={@mushymato.LivestockBazaar/sprites/cursors:organize} margin="8"
+      tooltip={SortTooltip}
+      left-click=|ToggleLivestockSortMode()| />
     <frame *if={:ShowPortraitBox} padding="20" background={:Theme_PortraitBackground}>
       <image layout="256px 256px" sprite={:OwnerPortrait} />
     </frame>
@@ -18,7 +21,7 @@
       <!-- for sale -->
       <scrollable-styled layout={:~BazaarContextMain.ForSaleLayout} >
         <grid item-layout="length: 192" horizontal-item-alignment="middle">
-          <frame *repeat={:LivestockEntries} padding="16"
+          <frame *repeat={LivestockEntries} padding="16"
             background={:~BazaarContextMain.Theme_ItemRowBackground}
             background-tint={BackgroundTint}
             pointer-enter=|~BazaarContextMain.HandleHoverLivestock(this)|
@@ -28,7 +31,7 @@
               <image layout="content 64px" margin="0,8" sprite={:ShopIcon} tint={:ShopIconTint} />
               <lane layout="stretch 64px" margin="0,88" orientation="horizontal">
                 <image layout="48px 48px" sprite={:TradeItem} />
-                <label layout="stretch 48px" text={:TradePrice} font={:TradeDisplayFont} />
+                <label layout="stretch 48px" text={:TradePrice} font="small" max-lines="1"/>
               </lane>
             </panel>
           </frame>
