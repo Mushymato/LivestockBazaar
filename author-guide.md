@@ -34,9 +34,9 @@ These 2 fields control whether an animal is available for a given shop. An anima
 | `mushymato.LivestockBazaar/TradeItemId.<shopName>` | string | Let you purchase the animal with something besides money, for `<shopName>` only. |
 | `mushymato.LivestockBazaar/TradeItemId` | string| Let you purchase the animal with an item, for all shops including Marnie's. |
 | `mushymato.LivestockBazaar/TradeItemAmount.<shopName>` | int | Amount of trade items needed, for `<shopName>` only. |
-| `mushymato.LivestockBazaar/TradeItemAmount` | string | Amount of trade items needed, for all shops including Marnie's. If neither this field or the shop speicfic one is set, `PurchasePrice` will be used. |
+| `mushymato.LivestockBazaar/TradeItemAmount` | string | Amount of trade items needed, for all shops including Marnie's. |
 
-These fields allows an animal to be purchased with an item instead of money.
+These fields allows an animal to be purchased with items instead of money.
 
 Special TradeItemId values:
 - `(O)858`: Qi Gems.
@@ -65,7 +65,7 @@ With this mod installed and enabled, the vanilla TileAction `"AnimalShop"` is re
 ```
 mushymato.LivestockBazaar_Shop Marnie down -1 -1 12 14 2 1
 ```
-The main exception is that this map action does not respect Marnie's island schedule. If the player has not have read the book, they will not be able to buy anything while she is on Ginger Island.
+The main difference is that this map action does not respect Marnie's island schedule. If the player has not have read the book, they will not be able to buy anything while she is on Ginger Island.
 
 When the shop has a `mushymato.LivestockBazaar/Shops` entry with `ShopwShopDialog` set to true and valid `ShopId` set, this tile action will open dialogue box that allows you to choose between the item shop or the livestock bazaar shop. A similar pair of options named `ShowPetShopDialog` and `PetShopId` exist for pet shops.
 
@@ -75,7 +75,7 @@ When the shop has a `mushymato.LivestockBazaar/Shops` entry with `ShopwShopDialo
 Usage: mushymato.LivestockBazaar_Shop \<shopName\>
 ```
 
-This is the trigger action way to open a livestock bazaar shop. It can be used from TriggerActions, dialogue, and more. It only accepts the shop name and directly opens the livestock bazaar shop rather, no dialog options.
+This is the trigger action way to open a livestock bazaar shop. It can be used from TriggerActions, dialogue, and more. It only accepts the shop name and directly opens the livestock bazaar shop without any question dialog.
 
 ### Custom Asset: mushymato.LivestockBazaar/Shops
 
@@ -102,9 +102,11 @@ There are up to 3 possible list of ShopOwnerData in this custom asset, they are 
 2. `Data/Shops[ShopId].Owners`
 3. `Data/Shops[PetShopId].Owners`
 
+The first non null list will be used. No attempt is made to "fall" further down the list should none of the owners match a given condition.
+
 #### ShopId vs PetShopId
 
-The main distinction between the supplies shop (ShopId) and the pet adoption shop (PetShopId) is that the player cannot access the shop behind PetShopId until they are eligiable for a second pet (first pet at max hearts, or no pets and year 2).
+The main distinction between the supplies shop (`ShopId`) and the pet adoption shop (`PetShopId`) is that the player cannot access the shop behind `PetShopId` until they are eligible for a second pet (first pet at max hearts, or no pets and year 2).
 
 Livestock Bazaar makes no changes to either shop's mechanics, they both use the vanilla shop menu.
 
