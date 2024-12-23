@@ -325,6 +325,8 @@ public sealed partial record BazaarContextMain
 
     public void HandleSelectBuilding(BazaarBuildingEntry building)
     {
+        if (building.RemainingSpace == 0)
+            return;
         if (selectedBuilding != null)
             selectedBuilding.IsSelected = false;
         selectedBuilding = building;
@@ -363,7 +365,7 @@ public sealed partial record BazaarContextMain
             selectedBuilding.AdoptAnimal(animal);
             if (selectedBuilding.RemainingSpace == 0)
             {
-                selectedBuilding.isSelected = false;
+                selectedBuilding.IsSelected = false;
                 selectedBuilding = null;
             }
             if (!SelectedLivestock.HasEnoughTradeItems)
