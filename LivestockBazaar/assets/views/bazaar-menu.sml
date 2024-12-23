@@ -12,7 +12,7 @@
   <!-- main body -->
   <frame *switch={CurrentPage}
     layout={:MainBodyLayout} border={:Theme_WindowBorder}
-    border-thickness={:Theme_WindowBorderThickness} margin="8">
+    border-thickness={:Theme_WindowBorderThickness}>
     <!-- page 1 -->
     <lane *case="1" layout="stretch content" orientation="horizontal">
       <!-- for sale -->
@@ -28,17 +28,20 @@
               <image layout="content 64px" margin="0,8" sprite={:ShopIcon} tint={:ShopIconTint} />
               <lane layout="stretch 64px" margin="0,88" orientation="horizontal">
                 <image layout="48px 48px" sprite={:TradeItem} />
-                <label layout="stretch 48px" text={:TradePrice} font="small" max-lines="1"/>
+                <label layout="stretch 48px" text={:TradePriceFmt} font="dialogue" max-lines="1"/>
               </lane>
             </panel>
           </frame>
         </grid>
       </scrollable-styled>
       <!-- info box -->
-      <lane orientation="vertical">
-        <image *if={IsPage1} focusable="true" sprite={@mushymato.LivestockBazaar/sprites/cursors:organize} margin="8"
-          tooltip={SortTooltip}
-          left-click=|ToggleLivestockSortMode()| />
+      <lane layout="stretch content" orientation="vertical">
+        <lane orientation="horizontal" vertical-content-alignment="middle">
+          <image *if={IsPage1} focusable="true" sprite={@mushymato.LivestockBazaar/sprites/cursors:organize} margin="8"
+            tooltip={SortTooltip}
+            left-click=|ToggleLivestockSortMode()| />
+          <textinput layout="stretch 48px" text={<>NameFilter}/>
+        </lane>
         <infobox *context={HoveredLivestock} tint={:ShopIconTint}>
           <label *if={HasRequiredBuilding} text={:LivestockName} font="dialogue"/>
           <label *if={HasRequiredBuilding} text={:Description} font="small" margin="8,0" />

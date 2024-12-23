@@ -57,7 +57,7 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
     public bool CurrencyIsMoney => currency is MoneyCurrency;
     public ParsedItemData TradeItem => currency.TradeItem;
     public int TradePrice = Ls.GetTradePrice(ShopName);
-    public string TradeDisplayFont => TradePrice > 999999 ? "small" : "dialogue";
+    public string TradePriceFmt => TradePrice > 99999 ? $"{TradePrice / 1000f}k" : TradePrice.ToString();
     public bool HasEnoughTradeItems => currency.HasEnough(TradePrice);
     public float ShopIconOpacity => HasEnoughTradeItems ? 1f : 0.5f;
 

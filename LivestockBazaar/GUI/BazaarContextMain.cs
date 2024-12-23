@@ -29,10 +29,16 @@ public sealed partial record BazaarContextMain
     // data
     public readonly BazaarData? Data;
     private readonly IReadOnlyList<BazaarLivestockEntry> livestockEntries;
-    public IEnumerable<BazaarLivestockEntry> LivestockEntries =>
-        ModEntry.Config.SortIsAsc
-            ? livestockEntries.OrderBy(LivestockKey)
-            : livestockEntries.OrderBy(LivestockKey).Reverse();
+    public IEnumerable<BazaarLivestockEntry> LivestockEntries
+    {
+        get
+        {
+            var entries = livestockEntries
+                .Where((ls) => ls.LivestockName.ToLowerInvariant().Contains(NameFilter.ToLowerInvariant()))
+                .OrderBy(LivestockKey);
+            return ModEntry.Config.SortIsAsc ? entries : entries.Reverse();
+        }
+    }
     public IReadOnlyDictionary<GameLocation, BazaarLocationEntry> AnimalHouseByLocation;
 
     public IEnumerable<BazaarLocationEntry> BazaarLocationEntries =>
@@ -258,14 +264,15 @@ public sealed partial record BazaarContextMain
             ? I18n.GUI_SortAsc(ModEntry.Config.SortMode.ToString())
             : I18n.GUI_SortDesc(ModEntry.Config.SortMode.ToString());
 
-    private static string LivestockKey(BazaarLivestockEntry entry)
+    [Notify]
+    public string nameFilter = "";
+
+    private static object LivestockKey(BazaarLivestockEntry entry)
     {
         return ModEntry.Config.SortMode switch
         {
             LivestockSortMode.Name => entry.LivestockName,
-            LivestockSortMode.Price => entry.CurrencyIsMoney
-                ? $"0 {entry.TradePrice}"
-                : $"{entry.TradeItem.QualifiedItemId} {entry.TradePrice}",
+            LivestockSortMode.Price => new ValueTuple<string, int>(entry.TradeItem.QualifiedItemId, entry.TradePrice),
             LivestockSortMode.House => entry.House,
             _ => throw new NotImplementedException(),
         };
