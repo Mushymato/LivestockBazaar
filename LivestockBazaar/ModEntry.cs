@@ -35,8 +35,8 @@ public sealed class ModEntry : Mod
     /// <param name="e"></param>
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
     {
-        Config.Register(Helper, ModManifest);
         BazaarMenu.Register(Helper);
+        Config.Register(Helper, ModManifest);
     }
 
     /// <summary>Warm the cache</summary>

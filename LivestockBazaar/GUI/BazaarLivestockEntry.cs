@@ -11,6 +11,9 @@ namespace LivestockBazaar.GUI;
 
 public sealed partial record BazaarLivestockPurchaseEntry(LivestockData Ls)
 {
+    public readonly string LivestockName = TokenParser.ParseText(
+        Ls.Data.ShopDisplayName ?? Ls.Data.DisplayName ?? "???"
+    );
     public readonly SDUISprite SpriteIcon = Ls.SpriteIcon;
 
     [Notify]

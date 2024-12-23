@@ -78,5 +78,20 @@ internal sealed class ModConfig
             name: I18n.Config_VanillaMarnieStock_Name,
             tooltip: I18n.Config_VanillaMarnieStock_Tooltip
         );
+        GMCM.AddTextOption(
+            mod: mod,
+            getValue: () => SortMode.ToString(),
+            setValue: (value) => SortMode = Enum.Parse<LivestockSortMode>(value),
+            name: I18n.Config_SortMode_Name,
+            tooltip: I18n.Config_SortMode_Tooltip,
+            allowedValues: Enum.GetNames(typeof(LivestockSortMode))
+        );
+        GMCM.AddBoolOption(
+            mod: mod,
+            getValue: () => SortIsAsc,
+            setValue: (value) => SortIsAsc = value,
+            name: I18n.Config_SortIsAsc_Name,
+            tooltip: I18n.Config_SortIsAsc_Tooltip
+        );
     }
 }

@@ -1,9 +1,6 @@
 <lane orientation="horizontal" >
   <!-- shop owner portrait -->
   <lane *if={:IsWidescreen} *float="before" layout="256px content" padding="0,8,0,0" orientation="vertical" horizontal-content-alignment="end">
-    <image *if={IsPage1} focusable="true" sprite={@mushymato.LivestockBazaar/sprites/cursors:organize} margin="8"
-      tooltip={SortTooltip}
-      left-click=|ToggleLivestockSortMode()| />
     <frame *if={:ShowPortraitBox} padding="20" background={:Theme_PortraitBackground}>
       <image layout="256px 256px" sprite={:OwnerPortrait} />
     </frame>
@@ -38,39 +35,52 @@
         </grid>
       </scrollable-styled>
       <!-- info box -->
-      <infobox *context={HoveredLivestock} tint={:ShopIconTint}>
-        <label *if={HasRequiredBuilding} text={:LivestockName} font="dialogue"/>
-        <label *if={HasRequiredBuilding} text={:Description} font="small" margin="8,0" />
-      </infobox>
+      <lane orientation="vertical">
+        <image *if={IsPage1} focusable="true" sprite={@mushymato.LivestockBazaar/sprites/cursors:organize} margin="8"
+          tooltip={SortTooltip}
+          left-click=|ToggleLivestockSortMode()| />
+        <infobox *context={HoveredLivestock} tint={:ShopIconTint}>
+          <label *if={HasRequiredBuilding} text={:LivestockName} font="dialogue"/>
+          <label *if={HasRequiredBuilding} text={:Description} font="small" margin="8,0" />
+        </infobox>
+      </lane>
     </lane>
 
     <!-- page 2 -->
     <lane *case="2" *context={SelectedLivestock} layout="stretch content" orientation="horizontal">
+
       <!-- infobox and confirm -->
-      <infobox tint={AnimTint}>
-        <lane *if={HasSkin} layout="stretch content" orientation="horizontal" margin="0,-64,0,0" horizontal-content-alignment="middle" z-index="2">
-          <image layout="104px 44px" focusable="true" fit="Contain" horizontal-alignment="start" sprite={@Mods/StardewUI/Sprites/SmallLeftArrow}
-            left-click=|PrevSkin()| />
-          <image layout="48px 48px" sprite={@mushymato.LivestockBazaar/sprites/cursors:question} opacity={RandSkinOpacity}/>
-          <image layout="104px 44px" focusable="true" fit="Contain" horizontal-alignment="end" sprite={@Mods/StardewUI/Sprites/SmallRightArrow}
-            left-click=|NextSkin()| />
-        </lane>
-        <lane orientation="horizontal" margin="0,32">
-          <textinput layout="196px 48px" text={<>BuyName}/>
-          <image sprite={@mushymato.LivestockBazaar/sprites/cursors:dice} layout="32px 32px" margin="8"
-            left-click=|RandomizeBuyName()| />
-        </lane>
-        <lane orientation="vertical">
-          <frame *repeat={:AltPurchase} focusable="true" margin="8"
-            left-click=|~BazaarLivestockEntry.HandleSelectedPurchase(this)| >
-            <image layout="content[32..] content[64..]" fit="Contain" horizontal-alignment="middle" sprite={:SpriteIcon} opacity={IconOpacity}/>
-          </frame>
-        </lane>
-        <button *if={~BazaarContextMain.ReadyToPurchase} layout="stretch content" margin="8"
+      <lane orientation="vertical" layout="content stretch" margin="0,32,0,0">
+        <infobox tint={AnimTint}>
+          <lane *if={HasSkin} layout="stretch content" orientation="horizontal" margin="0,-48,0,0" horizontal-content-alignment="middle" z-index="2">
+            <image layout="104px 44px" focusable="true" fit="Contain" horizontal-alignment="start" sprite={@Mods/StardewUI/Sprites/SmallLeftArrow}
+              left-click=|PrevSkin()| />
+            <image layout="48px 48px" sprite={@mushymato.LivestockBazaar/sprites/cursors:question} opacity={RandSkinOpacity}/>
+            <image layout="104px 44px" focusable="true" fit="Contain" horizontal-alignment="end" sprite={@Mods/StardewUI/Sprites/SmallRightArrow}
+              left-click=|NextSkin()| />
+          </lane>
+          <lane orientation="horizontal" margin="0,32">
+            <textinput layout="196px 48px" text={<>BuyName}/>
+            <image sprite={@mushymato.LivestockBazaar/sprites/cursors:dice} layout="32px 32px" margin="8" focusable="true"
+              left-click=|RandomizeBuyName()| />
+          </lane>
+          <scrollable layout="content content" scrollbar-visibility="hidden" >
+            <grid item-layout="count:3" horizontal-item-alignment="middle" >
+              <frame *repeat={:AltPurchase} focusable="true"
+                left-click=|~BazaarLivestockEntry.HandleSelectedPurchase(this)| >
+                <image fit="Contain" horizontal-alignment="middle" sprite={:SpriteIcon} opacity={IconOpacity}/>
+              </frame>
+            </grid>
+          </scrollable>
+        </infobox>
+        <button *!if={~BazaarContextMain.ReadyToPurchase} layout="content[256..] content" margin="8"
+          text={#GUI.PurchaseButton}
+          opacity="0.5" />
+        <button *if={~BazaarContextMain.ReadyToPurchase} layout="content[256..] content" margin="8"
           text={#GUI.PurchaseButton}
           hover-background={@Mods/StardewUI/Sprites/ButtonLight}
           left-click=|~BazaarContextMain.HandlePurchaseAnimal()| />
-      </infobox>
+      </lane>
 
       <!-- building selection -->
       <scrollable-styled layout={:~BazaarContextMain.ForSaleLayout} >
@@ -104,26 +114,20 @@
 
 <template name="infobox">
   <lane layout="content[256..] stretch" orientation="vertical" horizontal-content-alignment="middle">
-    <!-- Unreleased -->
-    <!-- <image layout="content content[128..]" fit="Contain" horizontal-alignment="middle" vertical-alignment="end"
-      tint={&tint} sprite={AnimSprite} sprite-effects={AnimFlip} /> -->
     <image layout="content content[128..]" fit="Contain" horizontal-alignment="middle" vertical-alignment="end"
-      tint={&tint} sprite={AnimSprite} />
+      tint={&tint} sprite={AnimSprite} sprite-effects={AnimFlip} />
     <outlet/>
   </lane>
 </template>
 
 <template name="scrollable-styled">
-  <!-- Unreleased -->
-  <!-- <scrollable peeking="128"
+  <scrollable peeking="128"
     layout={&layout}
     scrollbar-margin="278,0,0,-8"
     scrollbar-up-sprite={:~BazaarContextMain.Theme_ScrollUp}
     scrollbar-down-sprite={:~BazaarContextMain.Theme_ScrollDown}
-    scrollbar-down-sprite={:~BazaarContextMain.Theme_ScrollDown}
     scrollbar-thumb-sprite={:~BazaarContextMain.Theme_ScrollBarFront}
-    scrollbar-track-sprite={:~BazaarContextMain.Theme_ScrollBarBack}> -->
-  <scrollable peeking="128" layout={&layout}>
+    scrollbar-track-sprite={:~BazaarContextMain.Theme_ScrollBarBack}>
     <outlet/>
   </scrollable>
 </template>

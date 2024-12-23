@@ -7,6 +7,10 @@
   // Config
   "config.VanillaMarnieStock.name": "Vanilla Marnie Stock",
   "config.VanillaMarnieStock.tooltip": "Do not override Marnie's vanilla stock or shop menu, allowing Marnie to sell all animals.",
+  "config.SortMode.name": "Livestock Sort Mode",
+  "config.SortMode.tooltip": "Current sort mode of the livestock portion of shop, can also be changed from the shop menu directly.",
+  "config.SortIsAsc.name": "Livestock Sort Is Ascending",
+  "config.SortIsAsc.tooltip": "Current sort direction of the livestock portion of shop, can also be changed from the shop menu directly.",
   // GUI
   "GUI.PurchaseButton": "Purchase",
   "GUI.SortAsc": "{{mode}} (ASC)",
