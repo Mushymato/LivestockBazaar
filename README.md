@@ -44,11 +44,15 @@ Once you have finished the choices, press the purchase button to complete buying
 
 ## Compatibility
 
-Because this mod completely replace the vanilla animal purchase menu, thus any mods that work by changing the vanilla menu will not take effect.
+Because this mod completely replace the vanilla animal purchase menu, thus any mods that work by changing the vanilla menu will not take effect. I 
 
 ## Configuration
 
 - `Vanilla Marnie Stock`: Do not override Marnie's vanilla stock or shop menu, allowing Marnie to sell all animals. This option is intended as a backup in case of error or incompatibility.
+
+- `SortMode`: Current sort mode of the livestock portion of shop, can also be changed either in GMCM or in the custom animal shop menu.
+
+- `SortIsAsc`: Current sort direction of the livestock portion of shop, can also be changed from the custom animal shop menu directly.
 
 ## Mod Author Guide
 
