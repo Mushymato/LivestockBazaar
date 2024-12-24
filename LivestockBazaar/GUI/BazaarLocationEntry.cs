@@ -83,18 +83,27 @@ public sealed partial record class BazaarLocationEntry(
         );
     }
 
+    public IEnumerable<BazaarBuildingEntry> GetValidLivestockBuildings(BazaarLivestockEntry livestock)
+    {
+        if (LivestockBuildings.TryGetValue(livestock.Ls.Data.House, out List<BazaarBuildingEntry>? buildings))
+            return buildings.OrderByDescending((bld) => bld.RemainingSpace);
+        return [];
+    }
+
     public IEnumerable<BazaarBuildingEntry> ValidLivestockBuildings
     {
         get
         {
-            if (
-                Main.SelectedLivestock is BazaarLivestockEntry livestock
-                && LivestockBuildings.TryGetValue(livestock.Ls.Data.House, out List<BazaarBuildingEntry>? buildings)
-            )
-                return buildings.OrderByDescending((bld) => bld.RemainingSpace);
+            if (Main.SelectedLivestock is BazaarLivestockEntry livestock)
+                return GetValidLivestockBuildings(livestock);
             return [];
         }
     }
 
     public int TotalRemainingSpaceCount => ValidLivestockBuildings.Sum(bld => bld.RemainingSpace);
+
+    public int GetTotalRemainingSpaceCount(BazaarLivestockEntry livestock)
+    {
+        return GetValidLivestockBuildings(livestock).Sum(bld => bld.RemainingSpace);
+    }
 }

@@ -59,7 +59,7 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
     public int TradePrice = Ls.GetTradePrice(ShopName);
     public string TradePriceFmt => TradePrice > 99999 ? $"{TradePrice / 1000f}k" : TradePrice.ToString();
     public bool HasEnoughTradeItems => currency.HasEnough(TradePrice);
-    public float ShopIconOpacity => HasEnoughTradeItems ? 1f : 0.5f;
+    public float ShopIconOpacity => HasEnoughTradeItems && Main.HasSpaceForLivestock(this) ? 1f : 0.5f;
 
     // has required animal building
     public string House => Ls.Data.House;

@@ -29,22 +29,23 @@ public sealed partial record BazaarContextMain
     // data
     public readonly BazaarData? Data;
     private readonly IReadOnlyList<BazaarLivestockEntry> livestockEntries;
-    public IEnumerable<BazaarLivestockEntry> LivestockEntries
-    {
-        get
-        {
-            var entries = livestockEntries
-                .Where((ls) => ls.LivestockName.ToLowerInvariant().Contains(NameFilter.ToLowerInvariant()))
-                .OrderBy(LivestockKey);
-            return ModEntry.Config.SortIsAsc ? entries : entries.Reverse();
-        }
-    }
+    public IEnumerable<BazaarLivestockEntry> LivestockEntries =>
+        (
+            ModEntry.Config.SortIsAsc
+                ? livestockEntries.OrderBy(LivestockKey)
+                : livestockEntries.OrderByDescending(LivestockKey)
+        ).Where((ls) => ls.LivestockName.ToLowerInvariant().Contains(NameFilter.ToLowerInvariant()));
     public IReadOnlyDictionary<GameLocation, BazaarLocationEntry> AnimalHouseByLocation;
 
     public IEnumerable<BazaarLocationEntry> BazaarLocationEntries =>
         AnimalHouseByLocation
             .Values.Where((loc) => loc.ValidLivestockBuildings.Any())
             .OrderByDescending((loc) => loc.TotalRemainingSpaceCount);
+
+    public bool HasSpaceForLivestock(BazaarLivestockEntry livestock)
+    {
+        return AnimalHouseByLocation.Values.Any((loc) => loc.GetTotalRemainingSpaceCount(livestock) > 0);
+    }
 
     /// <summary>
     /// Rebuild <see cref="AnimalHouseByLocation"/>
@@ -295,7 +296,7 @@ public sealed partial record BazaarContextMain
 
     public void HandleSelectLivestock(BazaarLivestockEntry livestock)
     {
-        if (livestock.HasEnoughTradeItems && livestock.HasRequiredBuilding)
+        if (livestock.HasEnoughTradeItems && livestock.HasRequiredBuilding && HasSpaceForLivestock(livestock))
         {
             livestock.BackgroundTint = Color.White;
             if (SelectedLivestock != livestock)
@@ -368,7 +369,10 @@ public sealed partial record BazaarContextMain
                 selectedBuilding.IsSelected = false;
                 selectedBuilding = null;
             }
-            if (!SelectedLivestock.HasEnoughTradeItems)
+            if (
+                !SelectedLivestock.HasEnoughTradeItems
+                || BazaarLocationEntries.Max((bld) => bld.TotalRemainingSpaceCount) == 0
+            )
                 SelectedLivestock = null;
         }
     }
