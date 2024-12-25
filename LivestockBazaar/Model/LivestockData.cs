@@ -147,11 +147,9 @@ public sealed record LivestockData
 
     public void PopulateAltPurchase(Dictionary<string, LivestockData> LsData)
     {
+        AltPurchase.Clear();
         if (Data.AlternatePurchaseTypes == null)
-        {
-            AltPurchase.Clear();
             return;
-        }
         foreach (AlternatePurchaseAnimals altPurchase in Data.AlternatePurchaseTypes)
             if (Wheels.GSQCheckNoRandom(altPurchase.Condition))
                 foreach (string animalId in altPurchase.AnimalIds)

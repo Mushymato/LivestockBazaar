@@ -45,13 +45,15 @@ internal static class AssetManager
                     if (LivestockData.IsValid(data))
                         _lsData[key] = new(key, data);
                 }
-                foreach (LivestockData data in _lsData.Values)
-                {
-                    data.PopulateAltPurchase(_lsData);
-                }
             }
             return _lsData;
         }
+    }
+
+    internal static void PopulateAltPurchase()
+    {
+        foreach (LivestockData data in LsData.Values)
+            data.PopulateAltPurchase(LsData);
     }
 
     internal static void OnAssetRequested(object? sender, AssetRequestedEventArgs e)

@@ -155,6 +155,7 @@ public sealed partial record BazaarContextMain
     {
         this.shopName = shopName;
         this.ownerData = ownerData;
+        AssetManager.PopulateAltPurchase();
 
         // bazaar data
         Data = bazaarData ?? AssetManager.GetBazaarData(shopName);
