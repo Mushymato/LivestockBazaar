@@ -15,9 +15,12 @@ If you cannot afford an animal, they will be greyed out. If you lack the require
 To help you find an animal, there is a button to change the sorting mode, and a search box to find by name.
 
 Sort Modes:
+
 - Name: alphabetical name sort.
 - Price: price sort, will sort by currency first, then value.
 - House: house (e.g. coop, barn) sort.
+
+Each sort mod has ascending and descending modes.
 
 ### Target Building
 
@@ -39,8 +42,9 @@ Once you have finished the choices, press the purchase button to complete buying
 
 ## Installation
 
-1. Download SMAPI.
-2. Download this mod and extract the zip into the Mods folder.
+1. Download and install SMAPI.
+2. Download and install StardewUI.
+3. Download this mod and install to the Mods folder.
 
 ## Compatibility
 
@@ -50,9 +54,9 @@ Because this mod completely replace the vanilla animal purchase menu, thus any m
 
 - `Vanilla Marnie Stock`: Do not override Marnie's vanilla stock or shop menu, allowing Marnie to sell all animals. This option is intended as a backup in case of error or incompatibility.
 
-- `SortMode`: Current sort mode of the livestock portion of shop, can also be changed either in GMCM or in the custom animal shop menu.
+- `Livestock Sort Mode`: Current sort mode of the livestock portion of shop, can also be changed either in GMCM or in the custom animal shop menu.
 
-- `SortIsAsc`: Current sort direction of the livestock portion of shop, can also be changed from the custom animal shop menu directly.
+- `Livestock Sort Is Ascending`: Current sort direction of the livestock portion of shop, can also be changed from the custom animal shop menu directly.
 
 ## Mod Author Guide
 

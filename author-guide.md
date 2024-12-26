@@ -1,6 +1,6 @@
 # Author Guide
 
-This page covers how to add a new livestock bazaar shop. It is assumed that you already know [how to add a new farm animal](https://stardewvalleywiki.com/Modding:Animal_data).
+This page covers how to add a new livestock bazaar shop. It is assumed that you already know how to [add a new farm animal](https://stardewvalleywiki.com/Modding:Animal_data) and how to [add a tile property](https://stardewvalleywiki.com/Modding:Maps). Shop data is also relevant for adding owner portraits.
 
 ## Quick Start
 

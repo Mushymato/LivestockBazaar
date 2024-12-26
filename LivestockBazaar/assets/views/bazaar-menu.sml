@@ -39,6 +39,8 @@
         <lane orientation="horizontal" vertical-content-alignment="middle">
           <image *if={IsPage1} focusable="true" sprite={@mushymato.LivestockBazaar/sprites/cursors:organize} margin="8"
             tooltip={SortTooltip}
+            +hover:scale="1.1"
+            +transition:scale="100ms EaseInSine"
             left-click=|ToggleLivestockSortMode()| />
           <textinput layout="stretch 48px" text={<>NameFilter}/>
         </lane>

@@ -248,6 +248,7 @@ public sealed partial record BazaarContextMain
     // organize
     public void ToggleLivestockSortMode()
     {
+        Game1.playSound("smallSelect");
         if (ModEntry.Config.SortIsAsc)
         {
             ModEntry.Config.SortIsAsc = false;
@@ -334,6 +335,7 @@ public sealed partial record BazaarContextMain
         selectedBuilding = building;
         selectedBuilding.IsSelected = true;
         ReadyToPurchase = true;
+        Game1.playSound("drumkit6");
     }
 
     public void ClearSelectedLivestock()
