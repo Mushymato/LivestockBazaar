@@ -5,8 +5,8 @@
   "shop.time-start": "Opened {{openTime}}",
   "shop.time-end": "Closed {{closeTime}}",
   // Config
-  "config.VanillaMarnieStock.name": "Vanilla Marnie Stock",
-  "config.VanillaMarnieStock.tooltip": "Do not override Marnie's vanilla stock or shop menu, allowing Marnie to sell all animals.",
+  "config.VanillaMarnieStock.name": "Vanilla Marnie Menu",
+  "config.VanillaMarnieStock.tooltip": "Do not override Marnie's vanilla stock or shop menu.",
   "config.SortMode.name": "Livestock Sort Mode",
   "config.SortMode.tooltip": "Current sort mode of the livestock portion of shop, can also be changed from the custom animal shop menu directly.",
   "config.SortIsAsc.name": "Livestock Sort Is Ascending",

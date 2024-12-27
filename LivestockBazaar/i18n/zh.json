@@ -1,0 +1,18 @@
+{
+    "$schema": "https://smapi.io/schemas/i18n.json",
+    // Shop Messages
+    "shop.time-range": "营业时间：{{openTime}}至{{closeTime}}",
+    "shop.time-start": "营业开始时间：{{openTime}}",
+    "shop.time-end": "营业结束时间：{{closeTime}}",
+    // Config
+    "config.VanillaMarnieStock.name": "原版玛妮菜单",
+    "config.VanillaMarnieStock.tooltip": "不替换玛妮牧场的动物购买菜单。",
+    "config.SortMode.name": "动物商店排序",
+    "config.SortMode.tooltip": "改变动物商店排序的排序模式。可在商店菜单中直接更改。",
+    "config.SortIsAsc.name": "动物商店排序为升序",
+    "config.SortIsAsc.tooltip": "改变动物商店排序的排序方向。可在商店菜单中直接更改。",
+    // GUI
+    "GUI.PurchaseButton": "购买",
+    "GUI.SortAsc": "{{mode}} (升序)",
+    "GUI.SortDesc": "{{mode}} (降序)"
+}
