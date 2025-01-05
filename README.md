@@ -38,7 +38,7 @@ The animal name is set through a text input. You can press the dice icon to rand
 
 ### Purchase
 
-Once you have finished the choices, press the purchase button to complete buying your new animal. The menu will stick around until you run out of money or space for the animal, so you can buy as many as desired.
+Once you have finished the choices, press the purchase button to complete buying your new animal. The menu will stick around until you run out of money or space for the animal, so you can buy as many as desired. A new random name is generated with each purchase.
 
 ## Installation
 
@@ -48,15 +48,27 @@ Once you have finished the choices, press the purchase button to complete buying
 
 ## Compatibility
 
-Because this mod completely replace the vanilla animal purchase menu, thus any mods that work by changing the vanilla menu will not take effect. I 
+Because this mod completely replace the vanilla animal purchase menu, any mods that work by changing the vanilla menu will either not take effect, or prevent this mod from replacing Marnie's shop. There is a configuration to disable the menu for Marnie's shop specifically, but that essentially makes this mod useless on its own. You can suggest new features for the custom shop menu.
+
+All sprites used for UI elements are from the vanilla game, if a UI interface mod seems incompatible, then that recolour missed some vanilla assets and would need to be updated.
+
+There is no change to any animal mechanics.
 
 ## Configuration
 
-- `Vanilla Marnie Stock`: Do not override Marnie's vanilla stock or shop menu, allowing Marnie to sell all animals. This option is intended as a backup in case of error or incompatibility.
+- `Vanilla Marnie Stock`: Do not override Marnie's vanilla stock or shop menu, allowing Marnie to sell all animals regardless of custom vendor settings. This option is intended as a backup in case of error or incompatibility, and essentially disables this mod unless you have custom animal vendors from other mods using this mod as a framework.
 
 - `Livestock Sort Mode`: Current sort mode of the livestock portion of shop, can also be changed either in GMCM or in the custom animal shop menu.
 
 - `Livestock Sort Is Ascending`: Current sort direction of the livestock portion of shop, can also be changed from the custom animal shop menu directly.
+
+## Translations
+
+- English
+
+- Simplified Chinese
+
+- Español (by [Diorenis](https://next.nexusmods.com/profile/Diorenis))
 
 ## Mod Author Guide
 

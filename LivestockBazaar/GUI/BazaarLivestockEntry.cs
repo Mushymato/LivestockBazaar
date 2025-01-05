@@ -59,6 +59,7 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
     public int TradePrice = Ls.GetTradePrice(ShopName);
     public string TradePriceFmt => TradePrice > 99999 ? $"{TradePrice / 1000f}k" : TradePrice.ToString();
     public bool HasEnoughTradeItems => currency.HasEnough(TradePrice);
+    public int TotalCurrency => currency.GetTotal();
     public float ShopIconOpacity => HasEnoughTradeItems && Main.HasSpaceForLivestock(this) ? 1f : 0.5f;
 
     // has required animal building
@@ -214,6 +215,7 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
             return null;
         }
         currency.Deduct(TradePrice);
+        OnPropertyChanged(new(nameof(TotalCurrency)));
         LivestockData ls = selectedPurchase.Ls;
         FarmAnimal animal =
             new(ls.Key, Game1.Multiplayer.getNewID(), Game1.player.UniqueMultiplayerID) { Name = BuyName };

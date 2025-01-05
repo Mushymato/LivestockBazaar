@@ -22,9 +22,9 @@ public sealed partial record BazaarContextMain
     // viewport size, could change but ppl should just reopen menu
     public bool IsWidescreen = Game1.viewport.Width >= 1920 * Game1.options.uiScale;
 
-    // fields
-    private readonly string shopName;
-    private readonly ShopOwnerData? ownerData;
+    // // fields
+    // private readonly string shopName;
+    // private readonly ShopOwnerData? ownerData;
 
     // data
     public readonly BazaarData? Data;
@@ -125,6 +125,9 @@ public sealed partial record BazaarContextMain
 
     // layouts
     public readonly string MainBodyLayout;
+
+    public SDUIEdges MainBodyMargin => IsWidescreen ? new SDUIEdges(192, 0, 0, 0) : new SDUIEdges(0);
+
     public readonly string ForSaleLayout;
 
     // shop owner portrait
@@ -153,8 +156,8 @@ public sealed partial record BazaarContextMain
 
     public BazaarContextMain(string shopName, ShopOwnerData? ownerData = null, BazaarData? bazaarData = null)
     {
-        this.shopName = shopName;
-        this.ownerData = ownerData;
+        // this.shopName = shopName;
+        // this.ownerData = ownerData;
         AssetManager.PopulateAltPurchase();
 
         // bazaar data
@@ -325,6 +328,8 @@ public sealed partial record BazaarContextMain
 
     [Notify]
     public bool readyToPurchase = false;
+
+    public float ReadyToPurchaseOpacity => ReadyToPurchase ? 1f : 0.5f;
 
     public void HandleSelectBuilding(BazaarBuildingEntry building)
     {

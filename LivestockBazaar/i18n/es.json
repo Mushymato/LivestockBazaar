@@ -1,0 +1,18 @@
+{
+  "$schema": "https://smapi.io/schemas/i18n.json",
+  // Mensajes de la tienda
+  "shop.time-range": "Abierto de {{openTime}} a {{closeTime}}",
+  "shop.time-start": "Abierto a las {{openTime}}",
+  "shop.time-end": "Cerrado a las {{closeTime}}",
+  // Configuración
+  "config.VanillaMarnieStock.name": "Menú de Marnie Original",
+  "config.VanillaMarnieStock.tooltip": "No sobrescribir las existencias ni el menú de la tienda de Marnie original.",
+  "config.SortMode.name": "Modo de Orden del Ganado",
+  "config.SortMode.tooltip": "Modo de orden actual de la sección de ganado en la tienda, también puede cambiarse directamente desde el menú de animales personalizado.",
+  "config.SortIsAsc.name": "Orden Ascendente del Ganado",
+  "config.SortIsAsc.tooltip": "Dirección de orden actual de la sección de ganado en la tienda, también puede cambiarse directamente desde el menú de animales personalizado.",
+  // Interfaz Gráfica (GUI)
+  "GUI.PurchaseButton": "Comprar",
+  "GUI.SortAsc": "{{mode}} (ASC)",
+  "GUI.SortDesc": "{{mode}} (DESC)"
+}

@@ -1,6 +1,6 @@
 <lane orientation="horizontal" >
   <!-- shop owner portrait -->
-  <lane *if={:IsWidescreen} *float="before" layout="256px content" padding="0,8,0,0" orientation="vertical" horizontal-content-alignment="end">
+  <lane *if={:IsWidescreen} *float="before" layout="256px content" padding="0,8,0,0" orientation="vertical" horizontal-content-alignment="end" margin="0,0,-180,0">
     <frame *if={:ShowPortraitBox} padding="20" background={:Theme_PortraitBackground}>
       <image layout="256px 256px" sprite={:OwnerPortrait} />
     </frame>
@@ -12,7 +12,8 @@
   <!-- main body -->
   <frame *switch={CurrentPage}
     layout={:MainBodyLayout} border={:Theme_WindowBorder}
-    border-thickness={:Theme_WindowBorderThickness}>
+    border-thickness={:Theme_WindowBorderThickness}
+    margin={MainBodyMargin}>
     <!-- page 1 -->
     <lane *case="1" layout="stretch content" orientation="horizontal">
       <!-- for sale -->
@@ -55,7 +56,15 @@
     <lane *case="2" *context={SelectedLivestock} layout="stretch content" orientation="horizontal">
 
       <!-- infobox and confirm -->
-      <lane orientation="vertical" layout="content stretch" margin="0,32,0,0">
+      <lane orientation="vertical" layout="content stretch">
+        <lane layout="content 64px" margin="8,12,4,4" orientation="horizontal">
+          <panel layout="60px 60px">
+            <image margin="-6,-6" layout="48px 48px" sprite={:TradeItem} />
+            <image margin="0,12" layout="48px 48px" sprite={:TradeItem} />
+            <image margin="12,0" layout="48px 48px" sprite={:TradeItem} />
+          </panel>
+          <label layout="content 48px" text={TotalCurrency} font="dialogue" max-lines="1" />
+        </lane>
         <infobox tint={AnimTint}>
           <lane *if={HasSkin} layout="stretch content" orientation="horizontal" margin="0,-48,0,0" horizontal-content-alignment="middle" z-index="2">
             <image layout="104px 44px" focusable="true" fit="Contain" horizontal-alignment="start" sprite={@Mods/StardewUI/Sprites/SmallLeftArrow}
@@ -64,13 +73,25 @@
             <image layout="104px 44px" focusable="true" fit="Contain" horizontal-alignment="end" sprite={@Mods/StardewUI/Sprites/SmallRightArrow}
               left-click=|NextSkin()| />
           </lane>
-          <lane orientation="horizontal" margin="0,32">
+          <lane orientation="horizontal" margin="0,16">
             <textinput layout="196px 48px" text={<>BuyName}/>
             <image sprite={@mushymato.LivestockBazaar/sprites/cursors:dice} layout="32px 32px" margin="8" focusable="true"
               left-click=|RandomizeBuyName()| />
           </lane>
-          <scrollable layout="content content" scrollbar-visibility="hidden" >
-            <grid item-layout="count:3" horizontal-item-alignment="middle" >
+          <button layout="content[256..] content" margin="8,0"
+            opacity={~BazaarContextMain.ReadyToPurchaseOpacity}
+            hover-background={@Mods/StardewUI/Sprites/ButtonLight}
+            left-click=|~BazaarContextMain.HandlePurchaseAnimal()| >
+            <lane orientation="vertical" horizontal-content-alignment="start">
+              <label layout="content content" text={#GUI.PurchaseButton} font="small"/>
+              <lane orientation="horizontal" horizontal-content-alignment="end">
+                <image *float="before" layout="48px 48px" sprite={:TradeItem} />
+                <label layout="content 48px" text={:TradePriceFmt} font="dialogue" max-lines="1"/>
+              </lane>
+            </lane>
+          </button>
+          <scrollable layout="stretch content" scrollbar-visibility="hidden" >
+            <grid margin="0,8" item-layout="count:3" horizontal-item-alignment="middle" >
               <frame *repeat={:AltPurchase} focusable="true"
                 left-click=|~BazaarLivestockEntry.HandleSelectedPurchase(this)| >
                 <image fit="Contain" horizontal-alignment="middle" sprite={:SpriteIcon} opacity={IconOpacity}/>
@@ -78,13 +99,6 @@
             </grid>
           </scrollable>
         </infobox>
-        <button *!if={~BazaarContextMain.ReadyToPurchase} layout="content[256..] content" margin="8"
-          text={#GUI.PurchaseButton}
-          opacity="0.5" />
-        <button *if={~BazaarContextMain.ReadyToPurchase} layout="content[256..] content" margin="8"
-          text={#GUI.PurchaseButton}
-          hover-background={@Mods/StardewUI/Sprites/ButtonLight}
-          left-click=|~BazaarContextMain.HandlePurchaseAnimal()| />
       </lane>
 
       <!-- building selection -->

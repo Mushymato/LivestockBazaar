@@ -26,6 +26,8 @@ public static class LivestockSortModeExtension
 
 internal sealed class ModConfig
 {
+    private IModHelper helper = null!;
+
     /// <summary>Do not override marnie's stock and shop menu</summary>
     public bool VanillaMarnieStock { get; set; } = false;
 
@@ -41,11 +43,17 @@ internal sealed class ModConfig
         VanillaMarnieStock = false;
     }
 
+    public void SaveConfig()
+    {
+        helper.WriteConfig(this);
+    }
+
     /// <summary>Add mod config to GMCM if available</summary>
     /// <param name="helper"></param>
     /// <param name="mod"></param>
     public void Register(IModHelper helper, IManifest mod)
     {
+        this.helper = helper;
         Integration.IGenericModConfigMenuApi? GMCM = helper.ModRegistry.GetApi<Integration.IGenericModConfigMenuApi>(
             "spacechase0.GenericModConfigMenu"
         );
@@ -59,12 +67,9 @@ internal sealed class ModConfig
             reset: () =>
             {
                 Reset();
-                helper.WriteConfig(this);
+                SaveConfig();
             },
-            save: () =>
-            {
-                helper.WriteConfig(this);
-            },
+            save: SaveConfig,
             titleScreenOnly: false
         );
         GMCM.AddBoolOption(

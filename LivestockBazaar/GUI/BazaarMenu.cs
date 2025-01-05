@@ -57,6 +57,7 @@ internal static class BazaarMenu
             Game1.exitActiveMenu();
             Context = null;
             Game1.player.forceCanMove();
+            ModEntry.Config.SaveConfig();
         }
     }
 }

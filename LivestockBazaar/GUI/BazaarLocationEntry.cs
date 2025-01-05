@@ -1,3 +1,4 @@
+using System.Reflection;
 using LivestockBazaar.Integration;
 using Microsoft.Xna.Framework;
 using PropertyChanged.SourceGenerator;
@@ -72,10 +73,19 @@ public sealed partial record class BazaarLocationEntry(
 {
     public string LocationName => Location.DisplayName;
 
+    private static readonly MethodInfo? hasBuildingOrUpgradeMethod = typeof(Utility).GetMethod(
+        "_HasBuildingOrUpgrade",
+        BindingFlags.NonPublic | BindingFlags.Static
+    );
+
     public bool CheckHasRequiredBuilding(BazaarLivestockEntry? livestock)
     {
         if (livestock == null)
             return false;
+        // use the game's check for SVE weh
+        if (hasBuildingOrUpgradeMethod != null)
+            return (bool)(hasBuildingOrUpgradeMethod.Invoke(null, [Location, livestock.RequiredBuilding]) ?? false);
+        // fall back impl in case something weird happens
         if (!LivestockBuildings.TryGetValue(livestock.House, out List<BazaarBuildingEntry>? buildings))
             return false;
         return buildings.Any(
