@@ -7,10 +7,16 @@ This page covers how to add a new livestock bazaar shop. It is assumed that you 
 To add a custom livestock bazaar shop, add entry to `Data/FarmAnimals` normally, then:
 
 1. Add `Data/FarmAnimals` CustomFields entry `"mushymato.LivestockBazaar/BuyFrom.{{ModId}}_MyVendor": true` to the farm animal. `{{ModId}}_MyVendor` is value that will be referred to as `shopName` or `<shopName>` in following parts of this guide. It's recommended to prefix this name with your mod id, even when your vendor is a vanilla NPC.
+    - Note: `PurchasePrice` of the farm animal must be non-zero, even if you intend to use `TradeItemId`.
 2. *(Optional)* Add CustomFields entry `"mushymato.LivestockBazaar/BuyFrom.Marnie": false` to prevent Marnie from selling this animal. Marnie is the special hardcoded `shopName` this mod uses to refer to the vanilla animal shop. Unlike all other `BuyFrom` fields, `BuyFrom.Marnie` defaults to `true` and need to be explicitly set to false.
 3. *(Optional)* Add a entry named `shopName` to `mushymato.LivestockBazaar/Shops`, to provide an owner portrait and other advanced settings.
 4. Use map tile action `mushymato.LivestockBazaar_Shop` to create a shop.
 
+#### Why is my animal still purchasable at Marnie's?
+
+Livestock bazaar only applies it's rules about animal availability when it gets to apply the custom menu. If you are seeing the vanilla animal purchase menu for any reason (e.g. config option, mod incompatibility), then she will get to sell all animals as if livestock bazaar is not installed.
+
+Custom shops will always use livestock bazaar menu.
 
 ### Data/FarmAnimals CustomFields
 
