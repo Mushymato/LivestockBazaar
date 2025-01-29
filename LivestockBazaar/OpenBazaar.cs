@@ -53,8 +53,7 @@ internal static class OpenBazaar
             ModEntry.Log("Must load save first.", LogLevel.Error);
             return;
         }
-        if (!Args_ShowLivestockShop(args, out string error))
-            ModEntry.Log(error, LogLevel.Error);
+        Args_ShowLivestockShop(args, out string _);
     }
 
     private static bool Action_ShowLivestockShop(string[] args, TriggerActionContext context, out string error)

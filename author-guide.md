@@ -136,3 +136,18 @@ The default values are:
 - ShopDialogLeave: `"Strings\\Locations:AnimalShop_Marnie_Leave"` (Leave)
 
 Like most string fields, these keys to Strings assets. For modded shops, either string fields or i18n keys work fine here.
+
+
+### Extras
+
+#### Conversation Topic: purchasedAnimal_{animalType}
+
+Helps fix issue of some dialogue never showing up in other languages, because the translated name is used in the vanilla conversation topic.
+
+#### MailFlag: mushymato.LivestockBazaar_purchasedAnimal_{animalType}
+
+Mail flag indicating an animal had been purchased.
+
+#### Trigger: mushymato.LivestockBazaar_purchasedAnimal
+
+Raised trigger, passes 2 triggerArgs AnimalHouse and FarmAnimal.
