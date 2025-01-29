@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 
 - Fix a vanilla bug related to the conversation topic not working in any language besides english.
+    - Also add a mail flag `mushymato.LivestockBazaar_purchasedAnimal_{animalType}` and trigger `mushymato.LivestockBazaar_purchasedAnimal`.
 - Sort Modes not translating properly
 - Price sort mode should take account into whether animal is buyable
 
