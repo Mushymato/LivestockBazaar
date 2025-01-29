@@ -14,5 +14,9 @@
   // Interfaz Gráfica (GUI)
   "GUI.PurchaseButton": "Comprar",
   "GUI.SortAsc": "{{mode}} (ASC)",
-  "GUI.SortDesc": "{{mode}} (DESC)"
+  "GUI.SortDesc": "{{mode}} (DESC)",
+  "GUI.SortMode.Name": "Nombre",
+  "GUI.SortMode.Price": "Precio",
+  "GUI.SortMode.House": "Casa",
+  "GUI.SortMode.CanBuy": "Puede comprar"
 }

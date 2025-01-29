@@ -74,6 +74,7 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
             return hasRequiredBuilding ?? false;
         }
     }
+    public bool CanBuy => HasEnoughTradeItems && HasRequiredBuilding;
 
     // hover color, controlled by main context
     [Notify]

@@ -1,3 +1,4 @@
+using HarmonyLib;
 using LivestockBazaar.GUI;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -28,6 +29,8 @@ public sealed class ModEntry : Mod
         helper.Events.Content.AssetsInvalidated += AssetManager.OnAssetInvalidated;
         // setup bazaar actions
         OpenBazaar.Register(helper);
+        // harmony
+        Patches.Patch(new Harmony(ModId));
     }
 
     /// <summary>Setup config menu</summary>

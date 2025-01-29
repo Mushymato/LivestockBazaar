@@ -265,10 +265,14 @@ public sealed partial record BazaarContextMain
         OnPropertyChanged(new(nameof(SortTooltip)));
     }
 
-    public string SortTooltip =>
-        ModEntry.Config.SortIsAsc
-            ? I18n.GUI_SortAsc(ModEntry.Config.SortMode.ToString())
-            : I18n.GUI_SortDesc(ModEntry.Config.SortMode.ToString());
+    public string SortTooltip
+    {
+        get
+        {
+            Func<object?, string> sortDirection = ModEntry.Config.SortIsAsc ? I18n.GUI_SortAsc : I18n.GUI_SortDesc;
+            return sortDirection(I18n.GetByKey($"GUI.SortMode.{ModEntry.Config.SortMode}"));
+        }
+    }
 
     [Notify]
     public string nameFilter = "";
@@ -278,7 +282,11 @@ public sealed partial record BazaarContextMain
         return ModEntry.Config.SortMode switch
         {
             LivestockSortMode.Name => entry.LivestockName,
-            LivestockSortMode.Price => new ValueTuple<string, int>(entry.TradeItem.QualifiedItemId, entry.TradePrice),
+            LivestockSortMode.Price => new ValueTuple<bool, string, int>(
+                !entry.CanBuy,
+                entry.TradeItem.QualifiedItemId,
+                entry.TradePrice
+            ),
             LivestockSortMode.House => entry.House,
             _ => throw new NotImplementedException(),
         };
@@ -312,7 +320,7 @@ public sealed partial record BazaarContextMain
         }
     }
 
-    // page 2 (building list) hover and select
+    // page 2 (building list) hover and selectoh
     public void HandleHoverBuilding(BazaarBuildingEntry? building = null)
     {
         if (HoveredBuilding != null)

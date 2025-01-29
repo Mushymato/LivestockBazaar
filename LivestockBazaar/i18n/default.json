@@ -14,5 +14,9 @@
   // GUI
   "GUI.PurchaseButton": "Purchase",
   "GUI.SortAsc": "{{mode}} (ASC)",
-  "GUI.SortDesc": "{{mode}} (DESC)"
+  "GUI.SortDesc": "{{mode}} (DESC)",
+  "GUI.SortMode.Name": "Name",
+  "GUI.SortMode.Price": "Price",
+  "GUI.SortMode.House": "House",
+  "GUI.SortMode.CanBuy": "Can Buy"
 }

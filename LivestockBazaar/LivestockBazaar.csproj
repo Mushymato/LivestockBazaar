@@ -7,6 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
+    <EnableHarmony>true</EnableHarmony>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -15,7 +16,7 @@
     <Description>Allow custom animal sellers, revamp animal shop UI.</Description>
     <UniqueId>mushymato.LivestockBazaar</UniqueId>
     <UpdateKeys>Nexus:29997</UpdateKeys>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <MinimumApiVersion_Behavior>UpdateFull</MinimumApiVersion_Behavior>
     <MinimumGameVersion_Behavior>UpdateFull</MinimumGameVersion_Behavior>
     <Dependencies_VersionBehavior>UpdateFull</Dependencies_VersionBehavior>

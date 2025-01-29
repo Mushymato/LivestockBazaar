@@ -14,5 +14,9 @@
     // GUI
     "GUI.PurchaseButton": "购买",
     "GUI.SortAsc": "{{mode}} (升序)",
-    "GUI.SortDesc": "{{mode}} (降序)"
+    "GUI.SortDesc": "{{mode}} (降序)",
+    "GUI.SortMode.Name": "名字",
+    "GUI.SortMode.Price": "价格",
+    "GUI.SortMode.House": "住所",
+    "GUI.SortMode.CanBuy": "可购买"
 }
