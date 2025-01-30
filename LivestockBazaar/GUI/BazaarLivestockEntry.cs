@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PropertyChanged.SourceGenerator;
 using StardewValley;
+using StardewValley.GameData.Buildings;
 using StardewValley.ItemTypeDefinitions;
 using StardewValley.TokenizableStrings;
 
@@ -64,16 +65,40 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
 
     // has required animal building
     public string House => Ls.Data.House;
+    private BuildingData? requiredBuildingData = null;
+    public BuildingData? RequiredBuildingData
+    {
+        get
+        {
+            if (Ls.Data.RequiredBuilding == null)
+                return null;
+            if (requiredBuildingData != null)
+                return requiredBuildingData;
+            if (Game1.buildingData.TryGetValue(Ls.Data.RequiredBuilding, out requiredBuildingData))
+                return requiredBuildingData;
+            return null;
+        }
+    }
     public string RequiredBuilding => Ls.Data.RequiredBuilding;
     private bool? hasRequiredBuilding = null;
     public bool HasRequiredBuilding
     {
         get
         {
+            if (Ls.Data.RequiredBuilding == null)
+                return false;
             hasRequiredBuilding ??= Main.AnimalHouseByLocation.Any(bld => bld.Value.CheckHasRequiredBuilding(this));
             return hasRequiredBuilding ?? false;
         }
     }
+    public string? RequiredBuildingText => TokenParser.ParseText(Ls.Data.ShopMissingBuildingDescription);
+    public SDUISprite? RequiredBuildingSprite =>
+        RequiredBuildingData != null
+            ? new SDUISprite(
+                Game1.content.Load<Texture2D>(RequiredBuildingData.Texture),
+                RequiredBuildingData.SourceRect
+            )
+            : null;
     public bool CanBuy => HasEnoughTradeItems && HasRequiredBuilding;
 
     // hover color, controlled by main context

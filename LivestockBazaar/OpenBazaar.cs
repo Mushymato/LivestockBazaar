@@ -202,44 +202,44 @@ internal static class OpenBazaar
                 return false;
             }
             // check if we need to show a dialog
-            List<Response> responses =
-            [
-                new Response("Animals", Game1.content.LoadString(bazaarData.ShopDialogAnimals)),
-            ];
+            List<Response> responses = [];
+            if (AssetManager.HasAnyLivestockDataForShop(shopName))
+                responses.Add(new Response("Animals", TokenParser.ParseText(bazaarData.ShopDialogAnimals)));
             if (bazaarData.ShowShopDialog)
-                responses.Insert(0, new Response("Supplies", Game1.content.LoadString(bazaarData.ShopDialogSupplies)));
+                responses.Insert(0, new Response("Supplies", TokenParser.ParseText(bazaarData.ShopDialogSupplies)));
             if (bazaarData.ShowPetShopDialog)
-                responses.Add(new Response("Adopt", Game1.content.LoadString(bazaarData.ShopDialogAdopt)));
+                responses.Add(new Response("Adopt", TokenParser.ParseText(bazaarData.ShopDialogAdopt)));
 
-            // no dialog needed
+            if (responses.Count <= 0)
+                return false;
+            GameLocation.afterQuestionBehavior shopHandler = (Farmer _, string whichAnswer) =>
+            {
+                switch (whichAnswer)
+                {
+                    case "Supplies":
+                        Utility.TryOpenShopMenu(bazaarData.ShopId, foundNPC?.Name ?? "AnyOrNone");
+                        break;
+                    case "Animals":
+                        BazaarMenu.ShowFor(shopName, foundOwnerData);
+                        break;
+                    case "Adopt":
+                        Utility.TryOpenShopMenu(bazaarData.PetShopId, foundNPC?.Name ?? "AnyOrNone");
+                        break;
+                    case "Leave":
+                    default:
+                        break;
+                }
+            };
             if (responses.Count > 1)
             {
-                responses.Add(new Response("Leave", Game1.content.LoadString(bazaarData.ShopDialogLeave)));
-                location.createQuestionDialogue(
-                    "",
-                    responses.ToArray(),
-                    (Farmer _, string whichAnswer) =>
-                    {
-                        switch (whichAnswer)
-                        {
-                            case "Supplies":
-                                Utility.TryOpenShopMenu(bazaarData.ShopId, foundNPC?.Name ?? "AnyOrNone");
-                                break;
-                            case "Animals":
-                                BazaarMenu.ShowFor(shopName, foundOwnerData);
-                                break;
-                            case "Adopt":
-                                Utility.TryOpenShopMenu(bazaarData.PetShopId, foundNPC?.Name ?? "AnyOrNone");
-                                break;
-                            case "Leave":
-                            default:
-                                break;
-                        }
-                    },
-                    speaker: foundNPC
-                );
-                return true;
+                responses.Add(new Response("Leave", TokenParser.ParseText(bazaarData.ShopDialogLeave)));
+                location.createQuestionDialogue("", responses.ToArray(), shopHandler, speaker: foundNPC);
             }
+            else
+            {
+                shopHandler(who, responses[0].responseKey);
+            }
+            return true;
         }
         // show shop, no bazaar data
         return BazaarMenu.ShowFor(shopName, foundOwnerData);

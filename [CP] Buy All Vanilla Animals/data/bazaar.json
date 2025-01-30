@@ -5,7 +5,8 @@
       "Target": "mushymato.LivestockBazaar/Shops",
       "Entries": {
         "IslandTrade": {
-          "ShopId": "IslandTrade"
+          "ShopId": "IslandTrade",
+          "ShopDialogSupplies": "[LocalizedText Strings\\WorldMap:GingerIsland_North_Trader]"
         }
       }
     },

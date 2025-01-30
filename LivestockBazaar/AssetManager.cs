@@ -124,4 +124,10 @@ internal static class AssetManager
     /// <returns></returns>
     public static IEnumerable<LivestockData> GetLivestockDataForShop(string shopName) =>
         LsData.Values.Where((ls) => ls.CanBuyFrom(shopName));
+
+    /// <summary>Check if there's any livestock shop</summary>
+    /// <param name="shopName"></param>
+    /// <returns></returns>
+    public static bool HasAnyLivestockDataForShop(string shopName) =>
+        LsData.Values.Any((ls) => ls.CanBuyFrom(shopName));
 }

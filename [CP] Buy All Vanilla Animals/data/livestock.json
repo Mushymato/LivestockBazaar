@@ -32,6 +32,7 @@
             "Width": 16,
             "Height": 16
           },
+          "ShopMissingBuildingDescription": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5947]",
           "RequiredBuilding": "Deluxe Coop",
           "CustomFields": {
             "mushymato.LivestockBazaar/BuyFrom.Marnie": "{{query: {{AvailableFromMarnie}} AND {{GoldenChicken}}}}",
@@ -51,7 +52,8 @@
             "Width": 16,
             "Height": 16
           },
-          "BuildingToUpgrade": "Big Coop",
+          "ShopMissingBuildingDescription": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5940]",
+          "RequiredBuilding": "Big Coop",
           "CustomFields": {
             "mushymato.LivestockBazaar/BuyFrom.Marnie": "{{Dinosaur}}",
           }

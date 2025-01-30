@@ -48,6 +48,8 @@
         <infobox *context={HoveredLivestock} tint={:ShopIconTint}>
           <label *if={HasRequiredBuilding} text={:LivestockName} font="dialogue"/>
           <label *if={HasRequiredBuilding} text={:Description} font="small" margin="8,0" />
+          <label *!if={HasRequiredBuilding} text={:RequiredBuildingText} font="small" margin="8,8" />
+          <image *!if={HasRequiredBuilding} sprite={:RequiredBuildingSprite} layout="120px 120px" fit="Contain" horizontal-alignment="middle" vertical-alignment="end" />
         </infobox>
       </lane>
     </lane>

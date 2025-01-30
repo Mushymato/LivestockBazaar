@@ -130,10 +130,10 @@ The Bazaar menu respects `"VisualTheme"` in either `ShopId` or `PetShopId`. For 
 
 The default values are:
 
-- ShopDialogSupplies: `"Strings\\Locations:AnimalShop_Marnie_Supplies"` (Supplies Shop)
-- ShopDialogAnimals: `"Strings\\Locations:AnimalShop_Marnie_Animals"` (Purchase Animals)
-- ShopDialogAdopt: `"Strings\\1_6_Strings:AdoptPets"` (Adopt Pets)
-- ShopDialogLeave: `"Strings\\Locations:AnimalShop_Marnie_Leave"` (Leave)
+- ShopDialogSupplies: `"[LocalizedText Strings\\Locations:AnimalShop_Marnie_Supplies]"` (Supplies Shop)
+- ShopDialogAnimals: `"[LocalizedText Strings\\Locations:AnimalShop_Marnie_Animals]"` (Purchase Animals)
+- ShopDialogAdopt: `"[LocalizedText Strings\\1_6_Strings:AdoptPets]"` (Adopt Pets)
+- ShopDialogLeave: `"[LocalizedText Strings\\Locations:AnimalShop_Marnie_Leave]"` (Leave)
 
 Like most string fields, these keys to Strings assets. For modded shops, either string fields or i18n keys work fine here.
 

@@ -98,10 +98,10 @@ public sealed record BazaarData
         get => showPetShopDialog && Wheels.CanAdoptPets && (PetShopData?.Items.Any() ?? false);
         set => showPetShopDialog = value;
     }
-    public string ShopDialogSupplies { get; set; } = "Strings\\Locations:AnimalShop_Marnie_Supplies";
-    public string ShopDialogAnimals { get; set; } = "Strings\\Locations:AnimalShop_Marnie_Animals";
-    public string ShopDialogAdopt { get; set; } = "Strings\\1_6_Strings:AdoptPets";
-    public string ShopDialogLeave { get; set; } = "Strings\\Locations:AnimalShop_Marnie_Leave";
+    public string ShopDialogSupplies { get; set; } = "[LocalizedText Strings\\Locations:AnimalShop_Marnie_Supplies]";
+    public string ShopDialogAnimals { get; set; } = "[LocalizedText Strings\\Locations:AnimalShop_Marnie_Animals]";
+    public string ShopDialogAdopt { get; set; } = "[LocalizedText Strings\\1_6_Strings:AdoptPets]";
+    public string ShopDialogLeave { get; set; } = "[LocalizedText Strings\\Locations:AnimalShop_Marnie_Leave]";
 
     public void InvalidateShopData()
     {
