@@ -41,7 +41,7 @@
       },
       "When": {
         "query: {{IsCommunityCenterComplete}} OR {{IsJojaMartComplete}}": true,
-        "query: {{VoidChicken}} OR {{GoldenChicken}}": true
+        "GoldenChicken": true
       },
       "Priority": "Late"
     },
@@ -55,9 +55,6 @@
         "Y": 7,
         "Width": 5,
         "Height": 1
-      },
-      "When": {
-        "Ostrich": true
       },
       "Priority": "Late"
     },

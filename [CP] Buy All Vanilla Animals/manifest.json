@@ -1,0 +1,21 @@
+{
+  "Name": "[CP] Buy All Vanilla Animals",
+  "Author": "mushymato",
+  "Version": "1.0.0",
+  "Description": "Add special ways to buy Void Chicken, Golden Chicken, Dinosaur, and Ostrich.",
+  "UniqueID": "mushymato.BuyAllVanillaAnimals",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [
+    "Nexus:31319"
+  ],
+  "ContentPackFor": {
+    "UniqueID": "Pathoschild.ContentPatcher"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "mushymato.LivestockBazaar",
+      "MinimumVersion": "1.1.2",
+      "IsRequired": true
+    }
+  ]
+}
