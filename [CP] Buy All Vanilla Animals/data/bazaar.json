@@ -1,0 +1,61 @@
+{
+  "Changes": [
+    {
+      "Action": "EditData",
+      "Target": "mushymato.LivestockBazaar/Shops",
+      "Entries": {
+        "IslandTrade": {
+          "ShopId": "IslandTrade"
+        }
+      }
+    },
+    // Sewer Chimkins
+    {
+      "Action": "EditMap",
+      "Target": "Maps/Sewer",
+      "PatchMode": "Overlay",
+      "FromFile": "assets/SewerChickens_Void.tmx",
+      "ToArea": {
+        "X": 32,
+        "Y": 16,
+        "Width": 1,
+        "Height": 2
+      },
+      "When": {
+        "query: {{IsCommunityCenterComplete}} AND {{IsJojaMartComplete}}": false,
+        "VoidChicken": true
+      }
+    },
+    {
+      "Action": "EditMap",
+      "Target": "Maps/Sewer",
+      "PatchMode": "Overlay",
+      "FromFile": "assets/SewerChickens_VoidGold.tmx",
+      "ToArea": {
+        "X": 32,
+        "Y": 16,
+        "Width": 1,
+        "Height": 2
+      },
+      "When": {
+        "query: {{IsCommunityCenterComplete}} OR {{IsJojaMartComplete}}": true,
+        "query: {{VoidChicken}} OR {{GoldenChicken}}": true
+      }
+    },
+    // Island Trader
+    {
+      "Action": "EditMap",
+      "Target": "Maps/Island_N_Trader",
+      "FromFile": "assets/PatchThese5TilesAsWholeOtherSheetForRidiculousReasons.tmx",
+      "ToArea": {
+        "X": 2,
+        "Y": 7,
+        "Width": 5,
+        "Height": 1
+      },
+      "When": {
+        "Ostrich": true
+      }
+    },
+  ]
+}

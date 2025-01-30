@@ -1,0 +1,71 @@
+{
+  "Changes": [
+    {
+      "Action": "EditData",
+      "Target": "Data/FarmAnimals",
+      "Fields": {
+        "Void Chicken": {
+          "PurchasePrice": 2500,
+          "ShopTexture": "Animals/Void Chicken",
+          "ShopDescription": "{{i18n:ShopDescription.VoidChicken}}\\n[LocalizedText Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11335]",
+          "ShopSourceRect": {
+            "X": 0,
+            "Y": 0,
+            "Width": 16,
+            "Height": 16
+          },
+          "CustomFields": {
+            "mushymato.LivestockBazaar/BuyFrom.Marnie": "{{AvailableFromMarnie}}",
+            "mushymato.LivestockBazaar/BuyFrom.{{ModId}}_SewerChickens": "{{VoidChicken}}",
+            "mushymato.LivestockBazaar/TradeItemId.{{ModId}}_SewerChickens": "(O)769",
+            "mushymato.LivestockBazaar/TradeItemAmount.{{ModId}}_SewerChickens": 50,
+          }
+        },
+        "Golden Chicken": {
+          "PurchasePrice": 8000,
+          "UnlockCondition": "ANY \"IS_COMMUNITY_CENTER_COMPLETE\" \"IS_JOJA_MART_COMPLETE\"",
+          "ShopTexture": "Animals/Golden Chicken",
+          "ShopDescription": "{{i18n:ShopDescription.GoldenChicken}}\\n[LocalizedText Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11335]",
+          "ShopSourceRect": {
+            "X": 0,
+            "Y": 0,
+            "Width": 16,
+            "Height": 16
+          },
+          "RequiredBuilding": "Deluxe Coop",
+          "CustomFields": {
+            "mushymato.LivestockBazaar/BuyFrom.Marnie": "{{AvailableFromMarnie}}",
+            "mushymato.LivestockBazaar/BuyFrom.{{ModId}}_SewerChickens": "{{GoldenChicken}}",
+            "mushymato.LivestockBazaar/TradeItemId.{{ModId}}_SewerChickens": "(O)768",
+            "mushymato.LivestockBazaar/TradeItemAmount.{{ModId}}_SewerChickens": 100,
+          }
+        },
+        "Dinosaur": {
+          "PurchasePrice": 3500,
+          "UnlockCondition": "MINE_LOWEST_LEVEL_REACHED 120",
+          "ShopTexture": "Animals/Dinosaur",
+          "ShopDescription": "{{i18n:ShopDescription.Dinosaur}}\\n[LocalizedText Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11335]",
+          "ShopSourceRect": {
+            "X": 0,
+            "Y": 0,
+            "Width": 16,
+            "Height": 16
+          },
+          "CustomFields": {
+            "mushymato.LivestockBazaar/BuyFrom.Marnie": "{{Dinosaur}}",
+          }
+        },
+        "Ostrich": {
+          "PurchasePrice": 6000,
+          "UnlockCondition": "PLAYER_VISITED_LOCATION Any Caldera",
+          "CustomFields": {
+            "mushymato.LivestockBazaar/BuyFrom.Marnie": "{{AvailableFromMarnie}}",
+            "mushymato.LivestockBazaar/BuyFrom.IslandTrade": "{{Ostrich}}",
+            "mushymato.LivestockBazaar/TradeItemId.IslandTrade": "(O)848",
+            "mushymato.LivestockBazaar/TradeItemAmount.IslandTrade": 40,
+          }
+        }
+      }
+    },
+  ]
+}

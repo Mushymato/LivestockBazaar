@@ -1,0 +1,41 @@
+{
+  "Format": "2.5.1",
+  "ConfigSchema": {
+    "VoidChicken": {
+      "AllowValues": "true, false",
+      "Default": "true",
+      "Section": "Stock"
+    },
+    "GoldenChicken": {
+      "AllowValues": "true, false",
+      "Default": "true",
+      "Section": "Stock"
+    },
+    "Dinosaur": {
+      "AllowValues": "true, false",
+      "Default": "true",
+      "Section": "Stock"
+    },
+    "Ostrich": {
+      "AllowValues": "true, false",
+      "Default": "true",
+      "Section": "Stock"
+    },
+    "AvailableFromMarnie": {
+      "AllowValues": "true, false",
+      "Default": "false",
+      "Section": "Shop"
+    },
+  },
+  "Changes": [
+    {
+      "Action": "Load",
+      "Target": "Maps/{{ModId}}/SewerChickens",
+      "FromFile": "assets/SewerChickens.png"
+    },
+    {
+      "Action": "Include",
+      "FromFile": "data/bazaar.json, data/livestock.json"
+    }
+  ]
+}

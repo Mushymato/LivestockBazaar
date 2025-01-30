@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down"
+  compressionlevel="0" width="1" height="2" tilewidth="16" tileheight="16" infinite="0"
+  nextlayerid="9" nextobjectid="5">
+  <properties>
+    <property name="AmbientLight" value="250 140 160" />
+    <property name="Warp" value="3 49 Forest 94 100 3 18 BugLand 15 53" />
+  </properties>
+  <tileset firstgid="1" name="p" tilewidth="16" tileheight="16" tilecount="64" columns="4">
+    <image source="paths" width="64" height="256" />
+  </tileset>
+  <tileset firstgid="65" name="st" tilewidth="16" tileheight="16" tilecount="88" columns="8">
+    <image source="SewerTiles" width="128" height="176" />
+    <tile id="56">
+      <properties>
+        <property name="Water" value="T" />
+      </properties>
+    </tile>
+    <tile id="57">
+      <animation>
+        <frame tileid="57" duration="250" />
+        <frame tileid="58" duration="250" />
+        <frame tileid="59" duration="250" />
+        <frame tileid="60" duration="250" />
+      </animation>
+    </tile>
+    <tile id="64">
+      <properties>
+        <property name="Water" value="T" />
+      </properties>
+    </tile>
+    <tile id="69">
+      <properties>
+        <property name="Water" value="T" />
+      </properties>
+    </tile>
+    <tile id="70">
+      <properties>
+        <property name="Water" value="T" />
+      </properties>
+    </tile>
+  </tileset>
+  <tileset firstgid="153" name="z_SewerChickens" tilewidth="16" tileheight="16" tilecount="8"
+    columns="4">
+    <image source="mushymato.BuyAllVanillaAnimals/SewerChickens.png" width="64" height="32" />
+    <tile id="0">
+      <animation>
+        <frame tileid="0" duration="350" />
+        <frame tileid="1" duration="350" />
+      </animation>
+    </tile>
+    <tile id="2">
+      <animation>
+        <frame tileid="2" duration="350" />
+        <frame tileid="3" duration="350" />
+      </animation>
+    </tile>
+    <tile id="4">
+      <animation>
+        <frame tileid="4" duration="350" />
+        <frame tileid="5" duration="350" />
+      </animation>
+    </tile>
+    <tile id="6">
+      <animation>
+        <frame tileid="6" duration="350" />
+        <frame tileid="7" duration="350" />
+      </animation>
+    </tile>
+  </tileset>
+  <layer id="1" name="Back" width="1" height="2">
+    <data encoding="csv">
+      0,
+      0
+</data>
+  </layer>
+  <layer id="2" name="Buildings" width="1" height="2">
+    <data encoding="csv">
+      0,
+      159
+</data>
+  </layer>
+  <layer id="3" name="Front" width="1" height="2">
+    <data encoding="csv">
+      155,
+      0
+</data>
+  </layer>
+  <layer id="4" name="Paths" width="1" height="2">
+    <data encoding="csv">
+      0,
+      0
+</data>
+  </layer>
+  <objectgroup id="5" name="Back" />
+  <objectgroup id="6" name="Buildings">
+    <object id="4" name="TileData" x="0" y="16" width="16" height="16">
+      <properties>
+        <property name="Action"
+          value="mushymato.LivestockBazaar_Shop mushymato.BuyAllVanillaAnimals_SewerChickens" />
+      </properties>
+    </object>
+  </objectgroup>
+  <objectgroup id="7" name="Front" />
+  <objectgroup id="8" name="Paths" />
+</map>
