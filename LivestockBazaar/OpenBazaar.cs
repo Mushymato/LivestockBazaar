@@ -204,11 +204,16 @@ internal static class OpenBazaar
             // check if we need to show a dialog
             List<Response> responses = [];
             if (AssetManager.HasAnyLivestockDataForShop(shopName))
-                responses.Add(new Response("Animals", TokenParser.ParseText(bazaarData.ShopDialogAnimals)));
+                responses.Add(
+                    new Response("Animals", Wheels.ParseTextOrDefault(bazaarData.ShopDialogAnimals, "Animals"))
+                );
             if (bazaarData.ShowShopDialog)
-                responses.Insert(0, new Response("Supplies", TokenParser.ParseText(bazaarData.ShopDialogSupplies)));
+                responses.Insert(
+                    0,
+                    new Response("Supplies", Wheels.ParseTextOrDefault(bazaarData.ShopDialogSupplies, "Supplies"))
+                );
             if (bazaarData.ShowPetShopDialog)
-                responses.Add(new Response("Adopt", TokenParser.ParseText(bazaarData.ShopDialogAdopt)));
+                responses.Add(new Response("Adopt", Wheels.ParseTextOrDefault(bazaarData.ShopDialogAdopt, "Adopt")));
 
             if (responses.Count <= 0)
                 return false;
@@ -232,7 +237,7 @@ internal static class OpenBazaar
             };
             if (responses.Count > 1)
             {
-                responses.Add(new Response("Leave", TokenParser.ParseText(bazaarData.ShopDialogLeave)));
+                responses.Add(new Response("Leave", Wheels.ParseTextOrDefault(bazaarData.ShopDialogLeave)));
                 location.createQuestionDialogue("", responses.ToArray(), shopHandler, speaker: foundNPC);
             }
             else

@@ -1,4 +1,5 @@
 using StardewValley;
+using StardewValley.TokenizableStrings;
 
 namespace LivestockBazaar;
 
@@ -53,4 +54,9 @@ internal static class Wheels
         (Utility.getAllPets().Count == 0 && Game1.year >= 2)
         || Game1.player.mailReceived.Contains("MarniePetAdoption")
         || Game1.player.mailReceived.Contains("MarniePetRejectedAdoption");
+
+    internal static string ParseTextOrDefault(string? tokenText, string? defaultText = "")
+    {
+        return tokenText == null ? (defaultText ?? "") : TokenParser.ParseText(tokenText);
+    }
 }

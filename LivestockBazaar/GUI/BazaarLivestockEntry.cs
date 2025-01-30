@@ -12,8 +12,9 @@ namespace LivestockBazaar.GUI;
 
 public sealed partial record BazaarLivestockPurchaseEntry(LivestockData Ls)
 {
-    public readonly string LivestockName = TokenParser.ParseText(
-        Ls.Data.ShopDisplayName ?? Ls.Data.DisplayName ?? "???"
+    public readonly string LivestockName = Wheels.ParseTextOrDefault(
+        Ls.Data.ShopDisplayName ?? Ls.Data.DisplayName,
+        "???"
     );
     public readonly SDUISprite SpriteIcon = Ls.SpriteIcon;
 
@@ -91,7 +92,11 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
             return hasRequiredBuilding ?? false;
         }
     }
-    public string? RequiredBuildingText => TokenParser.ParseText(Ls.Data.ShopMissingBuildingDescription);
+    public string? RequiredBuildingText =>
+        Wheels.ParseTextOrDefault(
+            Ls.Data.ShopMissingBuildingDescription,
+            RequiredBuildingData?.Name ?? Ls.Data.RequiredBuilding ?? "???"
+        );
     public SDUISprite? RequiredBuildingSprite =>
         RequiredBuildingData != null
             ? new SDUISprite(
@@ -110,10 +115,11 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
     public const int ROW_MAX = 4;
     public const int ROW_REPEAT_MAX = 2;
 
-    public readonly string LivestockName = TokenParser.ParseText(
-        Ls.Data.ShopDisplayName ?? Ls.Data.DisplayName ?? "???"
+    public readonly string LivestockName = Wheels.ParseTextOrDefault(
+        Ls.Data.ShopDisplayName ?? Ls.Data.DisplayName,
+        "???"
     );
-    public readonly string Description = TokenParser.ParseText(Ls.Data.ShopDescription ?? "");
+    public readonly string Description = Wheels.ParseTextOrDefault(Ls.Data.ShopDescription, "??? ???? ?? ????? ?");
 
     [Notify]
     private int animRow = 0;

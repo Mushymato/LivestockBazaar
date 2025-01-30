@@ -25,7 +25,7 @@ public sealed partial record BazaarBuildingEntry(
             string name = Data.Name;
             if (Building.GetSkin() is BuildingSkin skin)
                 name = skin.Name ?? name;
-            return $"{TokenParser.ParseText(name)} ({Building.tileX},{Building.tileY})";
+            return $"{Wheels.ParseTextOrDefault(name)} ({Building.tileX},{Building.tileY})";
         }
     }
     public string BuildingOccupant => $"{House.animalsThatLiveHere.Count}/{House.animalLimit.Value}";

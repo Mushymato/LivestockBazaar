@@ -133,8 +133,8 @@ public sealed partial record BazaarContextMain
     // shop owner portrait
     public bool ShowPortraitBox => IsWidescreen && OwnerPortrait != null;
     public readonly SDUISprite? OwnerPortrait = null;
-    public bool ShowOwnerDialog => IsWidescreen && OwnerDialog != "";
-    public string OwnerDialog = "";
+    public bool ShowOwnerDialog => IsWidescreen && !string.IsNullOrEmpty(OwnerDialog);
+    public string? OwnerDialog = null;
 
     // hovered livestock entry
     [Notify]
@@ -226,7 +226,7 @@ public sealed partial record BazaarContextMain
                             is string rawDialog
                     )
                     {
-                        OwnerDialog = TokenParser.ParseText(rawDialog);
+                        OwnerDialog = Wheels.ParseTextOrDefault(rawDialog, "");
                         return;
                     }
                 }
