@@ -1,5 +1,15 @@
 {
-    "ShopDescription.VoidChicken": "An odd and menancing chicken. Well cared-for adult chickens lay one void egg every day.",
-    "ShopDescription.GoldenChicken": "A gaudy and aureate chicken. Well cared-for adult chickens lay one golden egg every day.",
-    "ShopDescription.Dinosaur": "The littlest dinosaur. Well cared-for adult dinosaur lay one dinosaur egg every week.",
+    "ShopDescription.VoidChicken": "An odd and menacing chicken, lay one {{Egg}} every day.",
+    "ShopDescription.GoldenChicken": "A gaudy and aureate chicken, lay one {{Egg}} every day.",
+    "ShopDescription.Dinosaur": "The littlest dinosaur in the world, lay one {{Egg}} every week.",
+    "config.VoidChicken.name": "Void Chicken",
+    "config.VoidChicken.description": "Enable Void Chicken for purchase from a new shop in the sewer.",
+    "config.GoldenChicken.name": "Golden Chicken",
+    "config.GoldenChicken.description": "Enable Golden Chicken for purchase from a new shop in the sewer after completing community center/joja and building a Deluxe Coop.",
+    "config.Dinosaur.name": "Dinosaur",
+    "config.Dinosaur.description": "Enable Dinosaur for purchase from Marnie after reaching floor 120 of the mines and building a Big Coop.",
+    "config.Ostrich.name": "Ostrich",
+    "config.Ostrich.description": "Enable Ostrich for purchase from Island Trader after reaching the Caldera and building a Deluxe Barn.",
+    "config.AvailableFromMarnie.name": "Available From Marnie",
+    "config.AvailableFromMarnie.description": "Makes all enabled animals also purchasable from Marnie with money, with the same unlock conditions.",
 }

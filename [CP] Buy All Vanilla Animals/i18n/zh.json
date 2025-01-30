@@ -1,0 +1,15 @@
+{
+    "ShopDescription.VoidChicken": "一只奇怪又可怕的鸡，每天产下一个{{Egg}}。",
+    "ShopDescription.GoldenChicken": "一只色彩艳丽、金色的鸡，每天产下一个{{Egg}}。",
+    "ShopDescription.Dinosaur": "世界上最小的恐龙，每周产下一个{{Egg}}。",
+    "config.VoidChicken.name": "虚空的鸡",
+    "config.VoidChicken.description": "虚空的鸡可从下水道的新商店购买。",
+    "config.GoldenChicken.name": "金色的鸡",
+    "config.GoldenChicken.description": "金色的鸡可从下水道的新商店购买，需要完成社区/乔家并建造高级鸡舍。",
+    "config.Dinosaur.name": "恐龙",
+    "config.Dinosaur.description": "恐龙可从玛妮牧场购买，需要抵达矿洞120层。",
+    "config.Ostrich.name": "鸵鸟",
+    "config.Ostrich.description": "鸵鸟可从姜岛商人，需要抵达火山口。",
+    "config.AvailableFromMarnie.name": "玛妮牧场可购买",
+    "config.AvailableFromMarnie.description": "让所有动物都可在玛尼牧场以金钱购买。",
+}

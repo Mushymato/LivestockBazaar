@@ -7,7 +7,7 @@
         "Void Chicken": {
           "PurchasePrice": 2500,
           "ShopTexture": "Animals/Void Chicken",
-          "ShopDescription": "{{i18n:ShopDescription.VoidChicken}}\\n[LocalizedText Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11335]",
+          "ShopDescription": "{{i18n:ShopDescription.VoidChicken |Egg=[LocalizedText Strings\\Objects:VoidEgg_Name]}}\\n[LocalizedText Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11335]",
           "ShopSourceRect": {
             "X": 0,
             "Y": 0,
@@ -25,7 +25,7 @@
           "PurchasePrice": 8000,
           "UnlockCondition": "ANY \"IS_COMMUNITY_CENTER_COMPLETE\" \"IS_JOJA_MART_COMPLETE\"",
           "ShopTexture": "Animals/Golden Chicken",
-          "ShopDescription": "{{i18n:ShopDescription.GoldenChicken}}\\n[LocalizedText Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11335]",
+          "ShopDescription": "{{i18n:ShopDescription.GoldenChicken |Egg=[LocalizedText Strings\\Objects:GoldenEgg_Name]}}\\n[LocalizedText Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11335]",
           "ShopSourceRect": {
             "X": 0,
             "Y": 0,
@@ -44,13 +44,14 @@
           "PurchasePrice": 3500,
           "UnlockCondition": "MINE_LOWEST_LEVEL_REACHED 120",
           "ShopTexture": "Animals/Dinosaur",
-          "ShopDescription": "{{i18n:ShopDescription.Dinosaur}}\\n[LocalizedText Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11335]",
+          "ShopDescription": "{{i18n:ShopDescription.Dinosaur |Egg=[LocalizedText Strings\\Objects:DinosaurEgg_Name]}}\\n[LocalizedText Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11335]",
           "ShopSourceRect": {
             "X": 0,
-            "Y": 0,
+            "Y": 16,
             "Width": 16,
             "Height": 16
           },
+          "BuildingToUpgrade": "Big Coop",
           "CustomFields": {
             "mushymato.LivestockBazaar/BuyFrom.Marnie": "{{Dinosaur}}",
           }
@@ -58,6 +59,7 @@
         "Ostrich": {
           "PurchasePrice": 6000,
           "UnlockCondition": "PLAYER_VISITED_LOCATION Any Caldera",
+          "RequiredBuilding": "Deluxe Barn",
           "CustomFields": {
             "mushymato.LivestockBazaar/BuyFrom.Marnie": "{{AvailableFromMarnie}}",
             "mushymato.LivestockBazaar/BuyFrom.IslandTrade": "{{Ostrich}}",
@@ -67,5 +69,15 @@
         }
       }
     },
+    {
+      "Action": "EditData",
+      "Target": "Strings/FarmAnimals",
+      "TargetLocale": "zh-CN",
+      "Entries": {
+        // fix 无力的鸡 from vanilla :u
+        "DisplayType_Chicken_Void": "虚空的鸡"
+      },
+      "Priority": "Early"
+    }
   ]
 }

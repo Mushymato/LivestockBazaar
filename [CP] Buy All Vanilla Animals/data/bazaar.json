@@ -24,7 +24,8 @@
       "When": {
         "query: {{IsCommunityCenterComplete}} AND {{IsJojaMartComplete}}": false,
         "VoidChicken": true
-      }
+      },
+      "Priority": "Late"
     },
     {
       "Action": "EditMap",
@@ -40,7 +41,8 @@
       "When": {
         "query: {{IsCommunityCenterComplete}} OR {{IsJojaMartComplete}}": true,
         "query: {{VoidChicken}} OR {{GoldenChicken}}": true
-      }
+      },
+      "Priority": "Late"
     },
     // Island Trader
     {
@@ -55,7 +57,8 @@
       },
       "When": {
         "Ostrich": true
-      }
+      },
+      "Priority": "Late"
     },
   ]
 }
