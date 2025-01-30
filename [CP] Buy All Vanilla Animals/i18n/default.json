@@ -11,5 +11,5 @@
     "config.Ostrich.name": "Ostrich",
     "config.Ostrich.description": "Enable Ostrich for purchase from Island Trader after reaching the Caldera and building a Deluxe Barn.",
     "config.AvailableFromMarnie.name": "Available From Marnie",
-    "config.AvailableFromMarnie.description": "Makes all enabled animals also purchasable from Marnie with money, with the same unlock conditions.",
+    "config.AvailableFromMarnie.description": "Makes Void Chicken/Golden Chicken/Ostrich also purchasable from Marnie with money, with the same unlock conditions.",
 }

@@ -11,5 +11,5 @@
     "config.Ostrich.name": "鸵鸟",
     "config.Ostrich.description": "鸵鸟可从姜岛商人，需要抵达火山口。",
     "config.AvailableFromMarnie.name": "玛妮牧场可购买",
-    "config.AvailableFromMarnie.description": "让所有动物都可在玛尼牧场以金钱购买。",
+    "config.AvailableFromMarnie.description": "虚空的鸡/金色的鸡/鸵鸟可在玛妮牧场以金钱购买。",
 }

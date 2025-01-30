@@ -15,7 +15,7 @@
             "Height": 16
           },
           "CustomFields": {
-            "mushymato.LivestockBazaar/BuyFrom.Marnie": "{{AvailableFromMarnie}}",
+            "mushymato.LivestockBazaar/BuyFrom.Marnie": "{{query: {{AvailableFromMarnie}} AND {{VoidChicken}}}}",
             "mushymato.LivestockBazaar/BuyFrom.{{ModId}}_SewerChickens": "{{VoidChicken}}",
             "mushymato.LivestockBazaar/TradeItemId.{{ModId}}_SewerChickens": "(O)769",
             "mushymato.LivestockBazaar/TradeItemAmount.{{ModId}}_SewerChickens": 50,
@@ -34,7 +34,7 @@
           },
           "RequiredBuilding": "Deluxe Coop",
           "CustomFields": {
-            "mushymato.LivestockBazaar/BuyFrom.Marnie": "{{AvailableFromMarnie}}",
+            "mushymato.LivestockBazaar/BuyFrom.Marnie": "{{query: {{AvailableFromMarnie}} AND {{GoldenChicken}}}}",
             "mushymato.LivestockBazaar/BuyFrom.{{ModId}}_SewerChickens": "{{GoldenChicken}}",
             "mushymato.LivestockBazaar/TradeItemId.{{ModId}}_SewerChickens": "(O)768",
             "mushymato.LivestockBazaar/TradeItemAmount.{{ModId}}_SewerChickens": 100,
@@ -61,7 +61,7 @@
           "UnlockCondition": "PLAYER_VISITED_LOCATION Any Caldera",
           "RequiredBuilding": "Deluxe Barn",
           "CustomFields": {
-            "mushymato.LivestockBazaar/BuyFrom.Marnie": "{{AvailableFromMarnie}}",
+            "mushymato.LivestockBazaar/BuyFrom.Marnie": "{{query: {{AvailableFromMarnie}} AND {{GoldenChicken}}}}",
             "mushymato.LivestockBazaar/BuyFrom.IslandTrade": "{{Ostrich}}",
             "mushymato.LivestockBazaar/TradeItemId.IslandTrade": "(O)848",
             "mushymato.LivestockBazaar/TradeItemAmount.IslandTrade": 40,
