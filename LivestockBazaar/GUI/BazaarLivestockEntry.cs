@@ -87,7 +87,7 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
         get
         {
             if (Ls.Data.RequiredBuilding == null)
-                return false;
+                return true;
             hasRequiredBuilding ??= Main.AnimalHouseByLocation.Any(bld => bld.Value.CheckHasRequiredBuilding(this));
             return hasRequiredBuilding ?? false;
         }

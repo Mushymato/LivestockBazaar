@@ -179,7 +179,9 @@ public sealed partial record BazaarContextMain
             .ToList();
 
         // layout shenanigans
-        int desiredWidth = (int)((MathF.Max(Game1.viewport.Width * 0.5f, 1280) - 256) / CELL_W) * CELL_W;
+        float referenceWidth =
+            (livestockEntries.Count <= 5 ? 1280 : MathF.Max(Game1.viewport.Width * 0.5f, 1280)) - 256;
+        int desiredWidth = (int)(referenceWidth / CELL_W) * CELL_W;
         ForSaleLayout = $"{desiredWidth}px 75%[676..]";
         MainBodyLayout = $"{desiredWidth + 256}px content";
 

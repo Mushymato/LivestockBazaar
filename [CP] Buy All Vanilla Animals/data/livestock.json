@@ -63,7 +63,7 @@
           "UnlockCondition": "PLAYER_VISITED_LOCATION Any Caldera",
           "RequiredBuilding": "Deluxe Barn",
           "CustomFields": {
-            "mushymato.LivestockBazaar/BuyFrom.Marnie": "{{query: {{AvailableFromMarnie}} AND {{GoldenChicken}}}}",
+            "mushymato.LivestockBazaar/BuyFrom.Marnie": "{{query: {{AvailableFromMarnie}} AND {{Ostrich}}}}",
             "mushymato.LivestockBazaar/BuyFrom.IslandTrade": "{{Ostrich}}",
             "mushymato.LivestockBazaar/TradeItemId.IslandTrade": "(O)848",
             "mushymato.LivestockBazaar/TradeItemAmount.IslandTrade": 40,
