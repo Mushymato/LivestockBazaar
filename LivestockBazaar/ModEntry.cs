@@ -2,7 +2,6 @@ using HarmonyLib;
 using LivestockBazaar.GUI;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
-using StardewValley.Triggers;
 
 namespace LivestockBazaar;
 
