@@ -59,7 +59,7 @@ If you set a `TradeItemId` without setting a `TradeItemAmount`, the shop will re
 Usage: mushymato.LivestockBazaar_Shop \<shopName\> [direction] [openTime] [closeTime] [ownerRect: [X] [Y] [Width] [Height]]
 ```
 
-The arguments of this tile action is identical to "OpenShop" from vanilla.
+The arguments of this tile action is identical to "OpenShop" from vanilla, every argument after `shopName` is optional.
 
 - `shopName`: Name of livestock bazaar shop
 - `direction`: Which direction of the tile is valid for interaction, one of `down`, `up`, `left`, `right` for direction, or `any` to allow interaction from all directions.
