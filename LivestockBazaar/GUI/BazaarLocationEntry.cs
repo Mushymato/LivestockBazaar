@@ -5,7 +5,6 @@ using PropertyChanged.SourceGenerator;
 using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.GameData.Buildings;
-using StardewValley.TokenizableStrings;
 
 namespace LivestockBazaar.GUI;
 

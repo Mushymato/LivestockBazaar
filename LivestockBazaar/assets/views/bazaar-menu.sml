@@ -47,6 +47,9 @@
         </lane>
         <infobox *context={HoveredLivestock} tint={:ShopIconTint}>
           <label *if={HasRequiredBuilding} text={:LivestockName} font="dialogue"/>
+          <lane *if={HasRequiredBuilding} orientation="horizontal" layout="content[..256] content" margin="4">
+            <image *repeat={:LivestockProduce} sprite={:this} layout="32px 32px"/>
+          </lane>
           <label *if={HasRequiredBuilding} text={:Description} font="small" margin="8,0" />
           <label *!if={HasRequiredBuilding} text={:RequiredBuildingText} font="small" margin="8,8" />
           <image *!if={HasRequiredBuilding} sprite={:RequiredBuildingSprite} layout="120px 120px" fit="Contain" horizontal-alignment="middle" vertical-alignment="end" />
@@ -92,6 +95,9 @@
               </lane>
             </lane>
           </button>
+          <lane *if={:HasAltPurchase} orientation="horizontal" layout="content[..256] content" margin="4">
+            <image *repeat={LivestockProduce} sprite={:this} layout="32px 32px"/>
+          </lane>
           <scrollable layout="stretch content" scrollbar-visibility="hidden" >
             <grid margin="0,8" item-layout="count:3" horizontal-item-alignment="middle" >
               <frame *repeat={:AltPurchase} focusable="true"

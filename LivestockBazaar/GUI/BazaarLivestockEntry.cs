@@ -5,8 +5,8 @@ using Microsoft.Xna.Framework.Graphics;
 using PropertyChanged.SourceGenerator;
 using StardewValley;
 using StardewValley.GameData.Buildings;
+using StardewValley.GameData.FarmAnimals;
 using StardewValley.ItemTypeDefinitions;
-using StardewValley.TokenizableStrings;
 
 namespace LivestockBazaar.GUI;
 
@@ -121,6 +121,24 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
     );
     public readonly string Description = Wheels.ParseTextOrDefault(Ls.Data.ShopDescription, "??? ???? ?? ????? ?");
 
+    public IEnumerable<ParsedItemData> LivestockProduce
+    {
+        get
+        {
+            FarmAnimalData data = selectedPurchase == null ? Ls.Data : selectedPurchase.Ls.Data;
+            HashSet<string> seenProduce = [];
+            foreach (FarmAnimalProduce prod in data.ProduceItemIds.Concat(data.DeluxeProduceItemIds))
+                if (
+                    !seenProduce.Contains(prod.ItemId)
+                    && ItemRegistry.GetData("(O)" + prod.ItemId) is ParsedItemData itemData
+                )
+                {
+                    yield return itemData;
+                    seenProduce.Add(prod.ItemId);
+                }
+        }
+    }
+
     [Notify]
     private int animRow = 0;
 
@@ -214,6 +232,7 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
         selectedPurchase.IconOpacity = 1f;
         SkinId = selectedPurchase.SkinId;
         AnimSpriteSheet = selectedPurchase.SpriteSheet;
+        OnPropertyChanged(new(nameof(LivestockProduce)));
     }
 
     public void PrevSkin()
@@ -253,7 +272,10 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
             new(ls.Key, Game1.Multiplayer.getNewID(), Game1.player.UniqueMultiplayerID) { Name = BuyName };
         if (selectedPurchase.SkinId > -1)
         {
-            animal.skinID.Value = selectedPurchase.Skin!.Skin.Id;
+            if (selectedPurchase.Skin == null)
+                animal.skinID.Value = null;
+            else
+                animal.skinID.Value = selectedPurchase.Skin.Skin.Id;
         }
         Game1.playSound(animal.GetSoundId() ?? "purchase", 1200 + Game1.random.Next(-200, 201));
         RandomizeBuyName();
