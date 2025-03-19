@@ -129,7 +129,8 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
             HashSet<string> seenProduce = [];
             foreach (FarmAnimalProduce prod in data.ProduceItemIds.Concat(data.DeluxeProduceItemIds))
                 if (
-                    !seenProduce.Contains(prod.ItemId)
+                    !string.IsNullOrEmpty(prod.ItemId)
+                    && !seenProduce.Contains(prod.ItemId)
                     && ItemRegistry.GetData("(O)" + prod.ItemId) is ParsedItemData itemData
                 )
                 {
