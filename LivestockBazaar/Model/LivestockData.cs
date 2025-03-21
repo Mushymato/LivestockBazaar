@@ -25,7 +25,7 @@ public sealed record LivestockData
     public readonly SDUISprite ShopIcon;
 
     public readonly IList<LivestockData> AltPurchase = [];
-    public readonly IList<LivestockSkinData> SkinData = [];
+    public readonly IList<LivestockSkinData?> SkinData = [];
 
     public LivestockData(string key, FarmAnimalData data)
     {
@@ -39,9 +39,12 @@ public sealed record LivestockData
             : SpriteIcon;
 
         if (data.Skins != null)
+        {
+            SkinData.Add(null);
             foreach (FarmAnimalSkin skin in data.Skins)
                 if (Game1.content.DoesAssetExist<Texture2D>(skin.Texture))
                     SkinData.Add(new(skin));
+        }
     }
 
     /// <summary>
