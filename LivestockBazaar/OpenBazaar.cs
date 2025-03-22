@@ -217,7 +217,7 @@ internal static class OpenBazaar
 
             if (responses.Count <= 0)
                 return false;
-            GameLocation.afterQuestionBehavior shopHandler = (Farmer _, string whichAnswer) =>
+            void shopHandler(Farmer _, string whichAnswer)
             {
                 switch (whichAnswer)
                 {
@@ -234,7 +234,7 @@ internal static class OpenBazaar
                     default:
                         break;
                 }
-            };
+            }
             if (responses.Count > 1)
             {
                 responses.Add(new Response("Leave", Wheels.ParseTextOrDefault(bazaarData.ShopDialogLeave)));

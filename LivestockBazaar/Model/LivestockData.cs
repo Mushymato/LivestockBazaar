@@ -1,4 +1,5 @@
 using LivestockBazaar.Integration;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.GameData.FarmAnimals;
@@ -34,9 +35,20 @@ public sealed record LivestockData
 
         SpriteSheet = Game1.content.Load<Texture2D>(Data.Texture);
         SpriteIcon = new(SpriteSheet, new(0, 0, Data.SpriteWidth, Data.SpriteHeight));
-        ShopIcon = Game1.content.DoesAssetExist<Texture2D>(Data.ShopTexture)
-            ? new(Game1.content.Load<Texture2D>(Data.ShopTexture), Data.ShopSourceRect)
-            : SpriteIcon;
+        if (Game1.content.DoesAssetExist<Texture2D>(Data.ShopTexture))
+        {
+            Texture2D texture = Game1.content.Load<Texture2D>(Data.ShopTexture);
+            Rectangle rectangle = Data.ShopSourceRect;
+            if (rectangle.Equals(Rectangle.Empty))
+            {
+                rectangle = texture.Bounds;
+            }
+            ShopIcon = new(texture, rectangle);
+        }
+        else
+        {
+            ShopIcon = SpriteIcon;
+        }
 
         if (data.Skins != null)
         {
@@ -153,10 +165,30 @@ public sealed record LivestockData
         AltPurchase.Clear();
         if (Data.AlternatePurchaseTypes == null)
             return;
+        bool altPurchaseContainsThis = false;
         foreach (AlternatePurchaseAnimals altPurchase in Data.AlternatePurchaseTypes)
-            if (Wheels.GSQCheckNoRandom(altPurchase.Condition))
-                foreach (string animalId in altPurchase.AnimalIds)
-                    if (LsData.TryGetValue(animalId, out LivestockData? altPurchaseData))
+        {
+            if (!Wheels.GSQCheckNoRandom(altPurchase.Condition))
+                continue;
+            foreach (string animalId in altPurchase.AnimalIds)
+            {
+                if (LsData.TryGetValue(animalId, out LivestockData? altPurchaseData))
+                {
+                    if (animalId == Key)
+                    {
+                        altPurchaseContainsThis = true;
+                        AltPurchase.Insert(0, altPurchaseData);
+                    }
+                    else
+                    {
                         AltPurchase.Add(altPurchaseData);
+                    }
+                }
+            }
+        }
+        if (!altPurchaseContainsThis)
+        {
+            AltPurchase.Insert(0, this);
+        }
     }
 }

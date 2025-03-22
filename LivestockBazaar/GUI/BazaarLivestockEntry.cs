@@ -95,7 +95,7 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
     public string? RequiredBuildingText =>
         Wheels.ParseTextOrDefault(
             Ls.Data.ShopMissingBuildingDescription,
-            RequiredBuildingData?.Name ?? Ls.Data.RequiredBuilding ?? "???"
+            Wheels.ParseTextOrDefault(RequiredBuildingData?.Name ?? Ls.Data.RequiredBuilding ?? "???")
         );
     public SDUISprite? RequiredBuildingSprite =>
         RequiredBuildingData != null
@@ -127,6 +127,7 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
         {
             FarmAnimalData data = selectedPurchase == null ? Ls.Data : selectedPurchase.Ls.Data;
             HashSet<string> seenProduce = [];
+            int cnt = 0;
             foreach (FarmAnimalProduce prod in data.ProduceItemIds.Concat(data.DeluxeProduceItemIds))
                 if (
                     !string.IsNullOrEmpty(prod.ItemId)
@@ -134,11 +135,16 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
                     && ItemRegistry.GetData("(O)" + prod.ItemId) is ParsedItemData itemData
                 )
                 {
+                    cnt++;
                     yield return itemData;
                     seenProduce.Add(prod.ItemId);
                 }
+            LivestockProduceLayout = cnt < 8 ? $"content[..{cnt * 36}] content" : "content[..256] content";
         }
     }
+
+    [Notify]
+    private string livestockProduceLayout = "content[..256] content";
 
     [Notify]
     private int animRow = 0;
@@ -158,6 +164,9 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
 
     [Notify]
     private Texture2D animSpriteSheet = Ls.SpriteSheet;
+    private int spriteWidth = Ls.Data.SpriteWidth;
+    private int spriteHeight = Ls.Data.SpriteHeight;
+
     public SDUISprite AnimSprite
     {
         get
@@ -168,10 +177,10 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
             return new(
                 AnimSpriteSheet,
                 new(
-                    realFrame * Ls.Data.SpriteWidth % AnimSpriteSheet.Width,
-                    realFrame * Ls.Data.SpriteWidth / AnimSpriteSheet.Width * Ls.Data.SpriteHeight,
-                    Ls.Data.SpriteWidth,
-                    Ls.Data.SpriteHeight
+                    realFrame * spriteWidth % AnimSpriteSheet.Width,
+                    realFrame * spriteWidth / AnimSpriteSheet.Width * spriteHeight,
+                    spriteWidth,
+                    spriteHeight
                 ),
                 SDUIEdges.NONE,
                 new(Scale: 4)
@@ -225,6 +234,12 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
     public float purchaseOpacity = 1f;
     private BazaarLivestockPurchaseEntry? selectedPurchase;
 
+    [Notify]
+    private string purchaseLivestockName = Wheels.ParseTextOrDefault(
+        Ls.Data.ShopDisplayName ?? Ls.Data.DisplayName,
+        "???"
+    );
+
     public void HandleSelectedPurchase(BazaarLivestockPurchaseEntry purchase)
     {
         if (selectedPurchase != null)
@@ -232,7 +247,10 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
         selectedPurchase = purchase;
         selectedPurchase.IconOpacity = 1f;
         SkinId = selectedPurchase.SkinId;
+        spriteWidth = selectedPurchase.Ls.Data.SpriteWidth;
+        spriteHeight = selectedPurchase.Ls.Data.SpriteHeight;
         AnimSpriteSheet = selectedPurchase.SpriteSheet;
+        PurchaseLivestockName = selectedPurchase.LivestockName;
         OnPropertyChanged(new(nameof(LivestockProduce)));
     }
 

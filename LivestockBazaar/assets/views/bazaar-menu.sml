@@ -47,9 +47,7 @@
         </lane>
         <infobox *context={HoveredLivestock} tint={:ShopIconTint}>
           <label *if={HasRequiredBuilding} text={:LivestockName} font="dialogue"/>
-          <lane *if={HasRequiredBuilding} orientation="horizontal" layout="content[..256] content" margin="4">
-            <image *repeat={:LivestockProduce} sprite={:this} layout="32px 32px"/>
-          </lane>
+          <produce-grid *if={HasRequiredBuilding}/>
           <label *if={HasRequiredBuilding} text={:Description} font="small" margin="8,0" />
           <label *!if={HasRequiredBuilding} text={:RequiredBuildingText} font="small" margin="8,8" />
           <image *!if={HasRequiredBuilding} sprite={:RequiredBuildingSprite} layout="120px 120px" fit="Contain" horizontal-alignment="middle" vertical-alignment="end" />
@@ -78,6 +76,7 @@
             <image layout="104px 44px" focusable="true" fit="Contain" horizontal-alignment="end" sprite={@Mods/StardewUI/Sprites/SmallRightArrow}
               left-click=|NextSkin()| />
           </lane>
+          <label text={PurchaseLivestockName} margin="0,4" font="dialogue"/>
           <lane orientation="horizontal" margin="0,16">
             <textinput layout="196px 48px" text={<>BuyName}/>
             <image sprite={@mushymato.LivestockBazaar/sprites/cursors:dice} layout="32px 32px" margin="8" focusable="true"
@@ -95,53 +94,51 @@
               </lane>
             </lane>
           </button>
-          <lane *if={:HasAltPurchase} orientation="horizontal" layout="content[..256] content" margin="4">
-            <image *repeat={LivestockProduce} sprite={:this} layout="32px 32px"/>
-          </lane>
-          <scrollable layout="stretch content" scrollbar-visibility="hidden" >
-            <grid margin="0,8" item-layout="count:3" horizontal-item-alignment="middle" >
+          <produce-grid />
+          <label text={:Description} font="small" />
+        </infobox>
+      </lane>
+
+      <!-- building selection -->
+      <lane orientation="vertical">
+        <scrollable-styled layout={:~BazaarContextMain.ForSaleLayout} >
+          <lane orientation="vertical">
+            <grid *if={:HasAltPurchase} margin="8" item-layout="length: 96+" horizontal-item-alignment="middle" >
               <frame *repeat={:AltPurchase} focusable="true"
                 left-click=|~BazaarLivestockEntry.HandleSelectedPurchase(this)| >
                 <image fit="Contain" horizontal-alignment="middle" sprite={:SpriteIcon} opacity={IconOpacity}/>
               </frame>
             </grid>
-          </scrollable>
-        </infobox>
-      </lane>
-
-      <!-- building selection -->
-      <scrollable-styled layout={:~BazaarContextMain.ForSaleLayout} >
-        <lane orientation="vertical">
-          <lane padding="8" *repeat={:~BazaarContextMain.BazaarLocationEntries} layout="stretch content" orientation="vertical">
-            <banner padding="8" text={:LocationName}/>
-            <grid layout="stretch content" item-layout="length:164">
-              <frame *repeat={:ValidLivestockBuildings}
-                background={:~BazaarContextMain.Theme_ItemRowBackground}
-                background-tint={BackgroundTint}
-                tooltip={:BuildingName}
-                pointer-enter=|~BazaarContextMain.HandleHoverBuilding(this)|
-                pointer-leave=|~BazaarContextMain.HandleHoverBuilding()|
-                left-click=|~BazaarContextMain.HandleSelectBuilding(this)| >
-                <frame layout="stretch content" background={@mushymato.LivestockBazaar/sprites/cursors:border} margin="4" background-tint={SelectedFrameTint}>
-                  <lane layout="144px content" padding="8" orientation="vertical" focusable="true" horizontal-content-alignment="middle">
-                    <image layout="120px 120px" fit="Contain" horizontal-alignment="middle" vertical-alignment="end"
-                      sprite={:BuildingSprite} tint={BuildingSpriteTint}/>
-                    <label font="dialogue" text={BuildingOccupant}/>
-                  </lane>
+            <lane padding="8" *repeat={:~BazaarContextMain.BazaarLocationEntries} layout="stretch content" orientation="vertical">
+              <banner padding="8" text={:LocationName}/>
+              <grid layout="stretch content" item-layout="length:164">
+                <frame *repeat={:ValidLivestockBuildings}
+                  background={:~BazaarContextMain.Theme_ItemRowBackground}
+                  background-tint={BackgroundTint}
+                  tooltip={:BuildingName}
+                  pointer-enter=|~BazaarContextMain.HandleHoverBuilding(this)|
+                  pointer-leave=|~BazaarContextMain.HandleHoverBuilding()|
+                  left-click=|~BazaarContextMain.HandleSelectBuilding(this)| >
+                  <frame layout="stretch content" background={@mushymato.LivestockBazaar/sprites/cursors:border} margin="4" background-tint={SelectedFrameTint}>
+                    <lane layout="144px content" padding="8" orientation="vertical" focusable="true" horizontal-content-alignment="middle">
+                      <image layout="120px 120px" fit="Contain" horizontal-alignment="middle" vertical-alignment="end"
+                        sprite={:BuildingSprite} tint={BuildingSpriteTint}/>
+                      <label font="dialogue" text={BuildingOccupant}/>
+                    </lane>
+                  </frame>
                 </frame>
-              </frame>
-            </grid>
+              </grid>
+            </lane>
           </lane>
-        </lane>
-      </scrollable-styled>
-
+        </scrollable-styled>
+      </lane>
     </lane>
   </frame>
 </lane>
 
 <template name="infobox">
   <lane layout="content[256..] stretch" orientation="vertical" horizontal-content-alignment="middle">
-    <image layout="content content[128..]" fit="Contain" horizontal-alignment="middle" vertical-alignment="end"
+      <image layout="content content[64..]" fit="Contain" horizontal-alignment="middle" vertical-alignment="end"
       tint={&tint} sprite={AnimSprite} sprite-effects={AnimFlip} />
     <outlet/>
   </lane>
@@ -157,4 +154,10 @@
     scrollbar-track-sprite={:~BazaarContextMain.Theme_ScrollBarBack}>
     <outlet/>
   </scrollable>
+</template>
+
+<template name="produce-grid">
+  <grid item-layout="length: 32+" layout={LivestockProduceLayout} margin="4">
+    <image *repeat={LivestockProduce} sprite={:this} layout="32px 32px"/>
+  </grid>
 </template>

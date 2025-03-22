@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-03-25
+
+### Changed
+
+- Rearrange position of alt purchase.
+
+### Fixed
+
+- Handle shop icon case when there there is no source rect set.
+- Actually fix the skin purchase thing.
+
+## [1.1.6] - 2025-03-21
+
+### Fixed
+
+- Null check for produced items
+
 ## [1.1.5] - 2025-03-12
 
 ### Added
