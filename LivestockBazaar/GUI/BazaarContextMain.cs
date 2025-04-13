@@ -47,6 +47,11 @@ public sealed partial record BazaarContextMain
         return AnimalHouseByLocation.Values.Any((loc) => loc.GetTotalRemainingSpaceCount(livestock) > 0);
     }
 
+    internal int GetCurrentlyOwnedCount(BazaarLivestockEntry livestock)
+    {
+        return AnimalHouseByLocation.Values.Sum(loc => loc.GetCurrentLivestockCount(livestock));
+    }
+
     /// <summary>
     /// Rebuild <see cref="AnimalHouseByLocation"/>
     /// </summary>
@@ -311,7 +316,7 @@ public sealed partial record BazaarContextMain
 
     public void HandleSelectLivestock(BazaarLivestockEntry livestock)
     {
-        if (livestock.HasEnoughTradeItems && livestock.HasRequiredBuilding && HasSpaceForLivestock(livestock))
+        if (livestock.HasEnoughTradeItems && livestock.HasRequiredBuilding)
         {
             livestock.BackgroundTint = Color.White;
             if (SelectedLivestock != livestock)

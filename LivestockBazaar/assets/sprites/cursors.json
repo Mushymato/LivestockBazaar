@@ -9,10 +9,15 @@
       "SourceRect": "175,425,12,12",
       "Scale": 4,
     },
-    "border": {
+    "borderRed": {
       "SourceRect": "375,357,3,3",
       "FixedEdges": "1,1,1,1",
       "Scale": 4,
+    },
+    "borderBrown": {
+      "SourceRect": "297,420,14,5",
+      "FixedEdges": "1,1,1,2",
+      "Scale": 4
     },
     "organize": {
       "SourceRect": "162,440,16,16",

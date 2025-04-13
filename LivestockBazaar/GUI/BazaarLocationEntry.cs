@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text;
 using LivestockBazaar.Integration;
 using Microsoft.Xna.Framework;
 using PropertyChanged.SourceGenerator;
@@ -17,14 +18,31 @@ public sealed partial record BazaarBuildingEntry(
 {
     private readonly AnimalHouse House = (AnimalHouse)Building.GetIndoors();
     public int RemainingSpace => House.animalLimit.Value - House.animalsThatLiveHere.Count;
+
+    private readonly StringBuilder buildingNameSb = new();
     public string BuildingName
     {
         get
         {
+            buildingNameSb.Clear();
+
             string name = Data.Name;
             if (Building.GetSkin() is BuildingSkin skin)
                 name = skin.Name ?? name;
-            return $"{Wheels.ParseTextOrDefault(name)} ({Building.tileX},{Building.tileY})";
+            buildingNameSb.Append(Wheels.ParseTextOrDefault(name));
+            buildingNameSb.Append(" (");
+            buildingNameSb.Append(Building.tileX);
+            buildingNameSb.Append(',');
+            buildingNameSb.Append(Building.tileY);
+            buildingNameSb.Append(')');
+            foreach (FarmAnimal animal in House.animals.Values)
+            {
+                buildingNameSb.Append('\n');
+                buildingNameSb.Append(animal.displayType);
+                buildingNameSb.Append(": ");
+                buildingNameSb.Append(animal.displayName);
+            }
+            return buildingNameSb.ToString();
         }
     }
     public string BuildingOccupant => $"{House.animalsThatLiveHere.Count}/{House.animalLimit.Value}";
@@ -53,6 +71,17 @@ public sealed partial record BazaarBuildingEntry(
         House.adoptAnimal(animal);
         OnPropertyChanged(new(nameof(BuildingOccupant)));
         OnPropertyChanged(new(nameof(BuildingSpriteTint)));
+    }
+
+    internal int CountAnimal(BazaarLivestockEntry livestock)
+    {
+        int count = 0;
+        foreach (FarmAnimal animal in House.animals.Values)
+        {
+            if (livestock.HasThisType(animal.type.Value))
+                count++;
+        }
+        return count;
     }
 
     // hover color
@@ -97,6 +126,15 @@ public sealed partial record class BazaarLocationEntry(
         if (LivestockBuildings.TryGetValue(livestock.Ls.Data.House, out List<BazaarBuildingEntry>? buildings))
             return buildings.OrderByDescending((bld) => bld.RemainingSpace);
         return [];
+    }
+
+    public int GetCurrentLivestockCount(BazaarLivestockEntry livestock)
+    {
+        if (LivestockBuildings.TryGetValue(livestock.Ls.Data.House, out List<BazaarBuildingEntry>? buildings))
+        {
+            return buildings.Sum(bld => bld.CountAnimal(livestock));
+        }
+        return 0;
     }
 
     public IEnumerable<BazaarBuildingEntry> ValidLivestockBuildings

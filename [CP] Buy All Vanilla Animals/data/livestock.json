@@ -6,6 +6,9 @@
       "Fields": {
         "Void Chicken": {
           "PurchasePrice": 2500,
+          "ShopMissingBuildingDescription": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5940]",
+          "UnlockCondition": "PLAYER_VISITED_LOCATION Current Sewer",
+          "RequiredBuilding": "Big Coop",
           "ShopTexture": "Animals/Void Chicken",
           "ShopDescription": "{{i18n:ShopDescription.VoidChicken |Egg=[LocalizedText Strings\\Objects:VoidEgg_Name]}}\\n[LocalizedText Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11335]",
           "ShopSourceRect": {

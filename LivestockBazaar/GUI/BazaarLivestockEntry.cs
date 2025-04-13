@@ -63,6 +63,10 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
     public bool HasEnoughTradeItems => currency.HasEnough(TradePrice);
     public int TotalCurrency => currency.GetTotal();
     public float ShopIconOpacity => HasEnoughTradeItems && Main.HasSpaceForLivestock(this) ? 1f : 0.5f;
+    public bool ShowCurrentlyOwnedCount => CurrentlyOwnedCount > 0;
+    public int CurrentlyOwnedCount => Main.GetCurrentlyOwnedCount(this);
+
+    public bool HasThisType(string type) => Ls.Key == type || AltPurchase.Any((alt) => alt.Ls.Key == type);
 
     // has required animal building
     public string House => Ls.Data.House;

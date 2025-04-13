@@ -31,6 +31,15 @@
                 <image layout="48px 48px" sprite={:TradeItem} />
                 <label layout="stretch 48px" text={:TradePriceFmt} font="dialogue" max-lines="1"/>
               </lane>
+              <panel *if={ShowCurrentlyOwnedCount} layout="stretch" horizontal-content-alignment="end">
+                <frame 
+                  background={@mushymato.LivestockBazaar/sprites/cursors:borderBrown} 
+                  layout="content content"
+                  margin="0,-8,-8,0"
+                  padding="6">
+                  <label text={CurrentlyOwnedCount} />
+                </frame>
+              </panel>
             </panel>
           </frame>
         </grid>
@@ -119,7 +128,7 @@
                   pointer-enter=|~BazaarContextMain.HandleHoverBuilding(this)|
                   pointer-leave=|~BazaarContextMain.HandleHoverBuilding()|
                   left-click=|~BazaarContextMain.HandleSelectBuilding(this)| >
-                  <frame layout="stretch content" background={@mushymato.LivestockBazaar/sprites/cursors:border} margin="4" background-tint={SelectedFrameTint}>
+                  <frame layout="stretch content" background={@mushymato.LivestockBazaar/sprites/cursors:borderRed} margin="4" background-tint={SelectedFrameTint}>
                     <lane layout="144px content" padding="8" orientation="vertical" focusable="true" horizontal-content-alignment="middle">
                       <image layout="120px 120px" fit="Contain" horizontal-alignment="middle" vertical-alignment="end"
                         sprite={:BuildingSprite} tint={BuildingSpriteTint}/>
