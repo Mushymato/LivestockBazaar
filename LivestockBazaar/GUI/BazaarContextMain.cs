@@ -369,8 +369,8 @@ public sealed partial record BazaarContextMain
         {
             selectedBuilding.IsSelected = false;
             selectedBuilding = null;
-            ReadyToPurchase = false;
         }
+        ReadyToPurchase = false;
         SelectedLivestock = null;
     }
 

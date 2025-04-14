@@ -11,10 +11,11 @@ using StardewValley.Triggers;
 namespace LivestockBazaar;
 
 /// <summary>Add tile action for opening and closing animal shops</summary>
-internal static class OpenBazaar
+public static class OpenBazaar
 {
     /// <summary>Tile action to open FAB shop</summary>
     internal static string LivestockShop => $"{ModEntry.ModId}_Shop";
+    internal static string LivestockShopArgs => $"{ModEntry.ModId}_ShopTile";
 
     internal static void Register(IModHelper helper)
     {
@@ -42,7 +43,6 @@ internal static class OpenBazaar
             ModEntry.Log(error, LogLevel.Error);
             return false;
         }
-        ModEntry.Log($"Show animal shop '{shopName}'");
         return BazaarMenu.ShowFor(shopName, null);
     }
 
@@ -59,6 +59,24 @@ internal static class OpenBazaar
     private static bool Action_ShowLivestockShop(string[] args, TriggerActionContext context, out string error)
     {
         return Args_ShowLivestockShop(args, out error);
+    }
+
+    public static bool InteractShowLivestockShop(StardewValley.Object machine, GameLocation location, Farmer player)
+    {
+        if (machine.GetMachineData()?.CustomFields is Dictionary<string, string> customFields)
+        {
+            if (customFields.TryGetValue(LivestockShop, out string? shopArgs))
+            {
+                string[] args = ArgUtility.SplitBySpaceQuoteAware(shopArgs);
+                return Args_ShowLivestockShop(args, out _);
+            }
+            else if (location != null && player != null && customFields.TryGetValue(LivestockShopArgs, out shopArgs))
+            {
+                string[] args = ArgUtility.SplitBySpaceQuoteAware(shopArgs);
+                return TileAction_ShowLivestockShop(location, ["", .. args], player, machine.TileLocation.ToPoint());
+            }
+        }
+        return false;
     }
 
     private static bool CheckShopOpen(

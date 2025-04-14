@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2025-04-13
+
+### Added
+
+- Add an indicator for number of animals owned on the animal select page
+- List what animals are in a building in the tooltip
+- New interact method `LivestockBazaar.OpenBazaar, LivestockBazaar: InteractShowLivestockShop`
+
 ## [1.2.0] - 2025-03-25
 
 ### Changed
@@ -21,7 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Null check for produced items
 
-## [1.1.5] - 2025-03-12
+## [1.1.5] - 2025-03-12a
 
 ### Added
 

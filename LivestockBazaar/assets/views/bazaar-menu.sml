@@ -25,9 +25,9 @@
             pointer-enter=|~BazaarContextMain.HandleHoverLivestock(this)|
             pointer-leave=|~BazaarContextMain.HandleHoverLivestock()|
             left-click=|~BazaarContextMain.HandleSelectLivestock(this)| >
-            <panel opacity={:ShopIconOpacity} layout="160px 144px" horizontal-content-alignment="middle" focusable="true">
-              <image layout="content 64px" margin="0,8" sprite={:ShopIcon} tint={:ShopIconTint} />
-              <lane layout="stretch 64px" margin="0,88" orientation="horizontal">
+            <panel layout="160px 144px" horizontal-content-alignment="middle" focusable="true">
+              <image layout="content 64px" margin="0,8" sprite={:ShopIcon} opacity={:ShopIconOpacity} tint={:ShopIconTint} />
+              <lane layout="stretch 64px" margin="0,88" orientation="horizontal" opacity={:ShopIconOpacity}>
                 <image layout="48px 48px" sprite={:TradeItem} />
                 <label layout="stretch 48px" text={:TradePriceFmt} font="dialogue" max-lines="1"/>
               </lane>
@@ -36,7 +36,7 @@
                   background={@mushymato.LivestockBazaar/sprites/cursors:borderBrown} 
                   layout="content content"
                   margin="0,-8,-8,0"
-                  padding="6">
+                  padding="6,4,6,10">
                   <label text={CurrentlyOwnedCount} />
                 </frame>
               </panel>
@@ -124,7 +124,7 @@
                 <frame *repeat={:ValidLivestockBuildings}
                   background={:~BazaarContextMain.Theme_ItemRowBackground}
                   background-tint={BackgroundTint}
-                  tooltip={:BuildingName}
+                  tooltip={BuildingTooltip}
                   pointer-enter=|~BazaarContextMain.HandleHoverBuilding(this)|
                   pointer-leave=|~BazaarContextMain.HandleHoverBuilding()|
                   left-click=|~BazaarContextMain.HandleSelectBuilding(this)| >

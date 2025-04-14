@@ -152,3 +152,13 @@ Mail flag indicating an animal had been purchased.
 #### Trigger: mushymato.LivestockBazaar_purchasedAnimal
 
 A trigger raised when the player purchases an animal, passes 2 triggerArgs AnimalHouse and FarmAnimal.
+
+#### InteractMethod: LivestockBazaar.OpenBazaar, LivestockBazaar: InteractShowLivestockShop
+
+This interact method can be set via Data/Machines to open a shop by interacting with a big craftable.
+
+CustomFields can be used to control the behavior:
+- mushymato.LivestockBazaar_ShopTile: all the arguments for TileAction is valid through this field and will behave similarly, this version spawns the dialogue.
+- mushymato.LivestockBazaar_Shop: directly opens animal shop of this ID.
+
+Quirk with using this is that, should the machine have any item processing rules and you attempt to drop in an item, the menu **WILL** appear even after the item is dropped into machine.

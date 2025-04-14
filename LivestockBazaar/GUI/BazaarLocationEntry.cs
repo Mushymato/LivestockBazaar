@@ -3,6 +3,7 @@ using System.Text;
 using LivestockBazaar.Integration;
 using Microsoft.Xna.Framework;
 using PropertyChanged.SourceGenerator;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.GameData.Buildings;
@@ -19,30 +20,30 @@ public sealed partial record BazaarBuildingEntry(
     private readonly AnimalHouse House = (AnimalHouse)Building.GetIndoors();
     public int RemainingSpace => House.animalLimit.Value - House.animalsThatLiveHere.Count;
 
-    private readonly StringBuilder buildingNameSb = new();
-    public string BuildingName
+    private readonly StringBuilder buildingTooltipSb = new();
+    public string BuildingTooltip
     {
         get
         {
-            buildingNameSb.Clear();
+            buildingTooltipSb.Clear();
 
             string name = Data.Name;
             if (Building.GetSkin() is BuildingSkin skin)
                 name = skin.Name ?? name;
-            buildingNameSb.Append(Wheels.ParseTextOrDefault(name));
-            buildingNameSb.Append(" (");
-            buildingNameSb.Append(Building.tileX);
-            buildingNameSb.Append(',');
-            buildingNameSb.Append(Building.tileY);
-            buildingNameSb.Append(')');
-            foreach (FarmAnimal animal in House.animals.Values)
+            buildingTooltipSb.Append(Wheels.ParseTextOrDefault(name));
+            buildingTooltipSb.Append(" (");
+            buildingTooltipSb.Append(Building.tileX);
+            buildingTooltipSb.Append(',');
+            buildingTooltipSb.Append(Building.tileY);
+            buildingTooltipSb.Append(')');
+            foreach (FarmAnimal animal in GetFarmAnimalsThatLiveHere())
             {
-                buildingNameSb.Append('\n');
-                buildingNameSb.Append(animal.displayType);
-                buildingNameSb.Append(": ");
-                buildingNameSb.Append(animal.displayName);
+                buildingTooltipSb.Append('\n');
+                buildingTooltipSb.Append(animal.displayType);
+                buildingTooltipSb.Append(": ");
+                buildingTooltipSb.Append(animal.displayName);
             }
-            return buildingNameSb.ToString();
+            return buildingTooltipSb.ToString();
         }
     }
     public string BuildingOccupant => $"{House.animalsThatLiveHere.Count}/{House.animalLimit.Value}";
@@ -71,12 +72,27 @@ public sealed partial record BazaarBuildingEntry(
         House.adoptAnimal(animal);
         OnPropertyChanged(new(nameof(BuildingOccupant)));
         OnPropertyChanged(new(nameof(BuildingSpriteTint)));
+        OnPropertyChanged(new(nameof(BuildingTooltip)));
+    }
+
+    internal IEnumerable<FarmAnimal> GetFarmAnimalsThatLiveHere()
+    {
+        GameLocation parentLocation = Building.GetParentLocation();
+        foreach (long animalId in House.animalsThatLiveHere)
+        {
+            if (House.animals.TryGetValue(animalId, out FarmAnimal animal))
+                yield return animal;
+            else if (parentLocation.animals.TryGetValue(animalId, out animal))
+                yield return animal;
+            else
+                ModEntry.LogOnce($"Failed to find animal {animalId}", LogLevel.Warn);
+        }
     }
 
     internal int CountAnimal(BazaarLivestockEntry livestock)
     {
         int count = 0;
-        foreach (FarmAnimal animal in House.animals.Values)
+        foreach (FarmAnimal animal in GetFarmAnimalsThatLiveHere())
         {
             if (livestock.HasThisType(animal.type.Value))
                 count++;

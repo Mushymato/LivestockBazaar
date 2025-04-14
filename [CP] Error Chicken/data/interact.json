@@ -1,0 +1,39 @@
+{
+  "Changes": [
+    // this behaves identical to the tile action and will spawn a dialogue
+    {
+      "Action": "EditData",
+      "Target": "Data/Machines",
+      "Entries": {
+        "(BC)31": {
+          "InteractMethod": "LivestockBazaar.OpenBazaar, LivestockBazaar: InteractShowLivestockShop",
+          "CustomFields": {
+            "mushymato.LivestockBazaar_ShopTile": "Marnie"
+          }
+        }
+      }
+    },
+    // this directly opens the shop
+    {
+      "Action": "EditData",
+      "Target": "Data/Machines",
+      "Fields": {
+        "(BC)24": {
+          "InteractMethod": "LivestockBazaar.OpenBazaar, LivestockBazaar: InteractShowLivestockShop",
+        }
+      }
+    },
+    {
+      "Action": "EditData",
+      "Target": "Data/Machines",
+      // neccesary to edit like this on any pre-existing machines
+      "TargetField": [
+        "(BC)24",
+        "CustomFields"
+      ],
+      "Entries": {
+        "mushymato.LivestockBazaar_Shop": "Marnie"
+      }
+    }
+  ]
+}
