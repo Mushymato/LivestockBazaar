@@ -27,10 +27,10 @@ public static class OpenBazaar
 
     internal static void UpdateAnimalShop()
     {
-        GameLocation.RegisterTileAction(
-            "AnimalShop",
-            ModEntry.Config.VanillaMarnieStock ? null : TileAcction_AnimalShop
-        );
+        // GameLocation.RegisterTileAction(
+        //     "AnimalShop",
+        //     ModEntry.Config.VanillaMarnieStock ? null : TileAcction_AnimalShop
+        // );
     }
 
     /// <summary>Show livestock bazaar menu</summary>

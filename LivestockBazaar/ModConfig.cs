@@ -75,11 +75,7 @@ internal sealed class ModConfig
         GMCM.AddBoolOption(
             mod: mod,
             getValue: () => VanillaMarnieStock,
-            setValue: (value) =>
-            {
-                VanillaMarnieStock = value;
-                OpenBazaar.UpdateAnimalShop();
-            },
+            setValue: (value) => VanillaMarnieStock = value,
             name: I18n.Config_VanillaMarnieStock_Name,
             tooltip: I18n.Config_VanillaMarnieStock_Tooltip
         );
