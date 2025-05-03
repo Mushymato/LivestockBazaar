@@ -1,0 +1,26 @@
+{
+  "$schema": "https://smapi.io/schemas/content-patcher.json",
+  "Format": "2.6.0",
+  "Changes": [
+    {
+      "Action": "Include",
+      "FromFile": "data/milk.json"
+    },
+    {
+      "Action": "Include",
+      "FromFile": "data/goat_milk.json"
+    },
+    {
+      "Action": "Include",
+      "FromFile": "data/ewe_milk.json"
+    },
+    {
+      "Action": "Include",
+      "FromFile": "data/snake_milk.json"
+    },
+    {
+      "Action": "Include",
+      "FromFile": "data/w.json"
+    }
+  ]
+}

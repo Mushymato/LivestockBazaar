@@ -1,0 +1,59 @@
+{
+  "$schema": "https://smapi.io/schemas/content-patcher.json",
+  "Changes": [
+    {
+      "LogName": "Bagged goat milk",
+      "Action": "EditImage",
+      "Target": "Maps/springobjects",
+      "FromFile": "assets/bagged_milk.png",
+      "FromArea": {
+        "X": 0,
+        "Y": 16,
+        "Width": 16,
+        "Height": 16
+      },
+      "ToArea": {
+        "X": 64,
+        "Y": 288,
+        "Height": 16,
+        "Width": 16
+      }
+    },
+    {
+      "LogName": "Bagged large goat milk",
+      "Action": "EditImage",
+      "Target": "Maps/springobjects",
+      "FromFile": "assets/bagged_milk.png",
+      "FromArea": {
+        "X": 16,
+        "Y": 16,
+        "Width": 16,
+        "Height": 16
+      },
+      "ToArea": {
+        "X": 96,
+        "Y": 288,
+        "Height": 16,
+        "Width": 16
+      }
+    },
+    {
+      "LogName": "Bagged extra large goat milk (VMV)",
+      "Action": "EditImage",
+      "Target": "Mods/Lumisteria.MtVapius/AnimalProducts",
+      "FromFile": "assets/bagged_milk.png",
+      "FromArea": {
+        "X": 32,
+        "Y": 16,
+        "Width": 16,
+        "Height": 16
+      },
+      "ToArea": {
+        "X": 144,
+        "Y": 16,
+        "Width": 16,
+        "Height": 16
+      }
+    }
+  ]
+}

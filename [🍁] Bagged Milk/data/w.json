@@ -1,0 +1,90 @@
+{
+  "$schema": "https://smapi.io/schemas/content-patcher.json",
+  "Changes": [
+    {
+      "LogName": "Milk pail weapon",
+      "Action": "EditData",
+      "Target": "Data/Weapons",
+      "Entries": {
+        "{{ModId}}_MilkPail": {
+          "Name": "MilkPail",
+          "DisplayName": "[LocalizedText Strings\\Tools:MilkPail_Name]",
+          "Description": "[LocalizedText Strings\\Tools:MilkPail_Description]",
+          "MinDamage": 20,
+          "MaxDamage": 25,
+          "Knockback": 1.0,
+          "Speed": 2,
+          "Precision": 0,
+          "Defense": 0,
+          "Type": 2,
+          "MineBaseLevel": -1,
+          "MineMinLevel": -1,
+          "AreaOfEffect": 0,
+          "CritChance": 0,
+          "CritMultiplier": 0,
+          "CanBeLostOnDeath": true,
+          "Texture": "TileSheets/tools",
+          "SpriteIndex": 6,
+          "Projectiles": [
+            {
+              "Id": "Default_Milked",
+              "Damage": 500,
+              "Bounces": 4,
+              "MaxDistance": 108,
+              "RotationVelocity": 12,
+              "MinAngleOffset": -15,
+              "MaxAngleOffset": 15,
+              "FireSound": "Milking",
+              "Item": {
+                "Id": "Default_Milked_Any",
+                "RandomItemId": [
+                  "(O)184",
+                  "(O)186",
+                  "(O)436",
+                  "(O)438",
+                  "(O)803"
+                ]
+              }
+            }
+          ],
+        },
+      }
+    },
+    {
+      "LogName": "Milk pail weapon (VMV)",
+      "Action": "EditData",
+      "Target": "Data/Weapons",
+      "TargetField": [
+        "{{ModId}}_MilkPail",
+        "Projectiles",
+        "Default_Milked",
+        "Item",
+        "RandomItemId"
+      ],
+      "Entries": {
+        "(O)Lumisteria.MtVapius_EweMilk": "(O)Lumisteria.MtVapius_EweMilk",
+        "(O)Lumisteria.MtVapius_EweMilkLarge": "(O)Lumisteria.MtVapius_EweMilkLarge",
+        "(O)Lumisteria.MtVapius_EweMilkExtraLarge": "(O)Lumisteria.MtVapius_EweMilkExtraLarge",
+        "(O)Lumisteria.MtVapius_MilkExtraLarge": "(O)Lumisteria.MtVapius_MilkExtraLarge",
+        "(O)Lumisteria.MtVapius_GoatMilkExtraLarge": "(O)Lumisteria.MtVapius_GoatMilkExtraLarge"
+      }
+    },
+    {
+      "LogName": "Milk pail weapon purchase",
+      "Action": "EditData",
+      "Target": "Data/Shops",
+      "TargetField": [
+        "VolcanoShop",
+        "Items"
+      ],
+      "Entries": {
+        "{{ModId}}_MilkPail": {
+          "Id": "{{ModId}}_MilkPail",
+          "ItemId": "{{ModId}}_MilkPail",
+          "TradeItemId": "(O)186",
+          "TradeItemAmount": 12,
+        },
+      }
+    }
+  ]
+}

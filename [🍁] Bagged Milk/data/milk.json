@@ -1,0 +1,59 @@
+{
+  "$schema": "https://smapi.io/schemas/content-patcher.json",
+  "Changes": [
+    {
+      "LogName": "Bagged milk",
+      "Action": "EditImage",
+      "Target": "Maps/springobjects",
+      "FromFile": "assets/bagged_milk.png",
+      "FromArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 16,
+        "Height": 16
+      },
+      "ToArea": {
+        "X": 256,
+        "Y": 112,
+        "Height": 16,
+        "Width": 16
+      }
+    },
+    {
+      "LogName": "Bagged large milk",
+      "Action": "EditImage",
+      "Target": "Maps/springobjects",
+      "FromFile": "assets/bagged_milk.png",
+      "FromArea": {
+        "X": 16,
+        "Y": 0,
+        "Width": 16,
+        "Height": 16
+      },
+      "ToArea": {
+        "X": 288,
+        "Y": 112,
+        "Height": 16,
+        "Width": 16
+      }
+    },
+    {
+      "LogName": "Bagged extra large milk",
+      "Action": "EditImage",
+      "Target": "Mods/Lumisteria.MtVapius/AnimalProducts",
+      "FromFile": "assets/bagged_milk.png",
+      "FromArea": {
+        "X": 32,
+        "Y": 0,
+        "Width": 16,
+        "Height": 16
+      },
+      "ToArea": {
+        "X": 128,
+        "Y": 16,
+        "Width": 16,
+        "Height": 16
+      },
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://smapi.io/schemas/content-patcher.json",
+  "Changes": [
+    {
+      "LogName": "Bagged iridium snake milk",
+      "Action": "EditImage",
+      "Target": "Maps/springobjects",
+      "FromFile": "assets/bagged_milk.png",
+      "FromArea": {
+        "X": 48,
+        "Y": 0,
+        "Width": 16,
+        "Height": 16
+      },
+      "ToArea": {
+        "X": 176,
+        "Y": 528,
+        "Width": 16,
+        "Height": 16
+      },
+    },
+    {
+      "LogName": "Bagged iridium snake milk (Sinister Servants)",
+      "Action": "EditImage",
+      "Target": "Mods/mushymato.SinisterServants/snek_t",
+      "FromFile": "assets/bagged_milk.png",
+      "FromArea": {
+        "X": 48,
+        "Y": 0,
+        "Width": 32,
+        "Height": 16
+      },
+      "ToArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 32,
+        "Height": 16
+      },
+    },
+  ]
+}

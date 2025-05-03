@@ -1,0 +1,59 @@
+{
+  "$schema": "https://smapi.io/schemas/content-patcher.json",
+  "Changes": [
+    {
+      "LogName": "Bagged ewe milk (VMV)",
+      "Action": "EditImage",
+      "Target": "Mods/Lumisteria.MtVapius/AnimalProducts",
+      "FromFile": "assets/bagged_milk.png",
+      "FromArea": {
+        "X": 0,
+        "Y": 32,
+        "Width": 16,
+        "Height": 16
+      },
+      "ToArea": {
+        "X": 64,
+        "Y": 0,
+        "Height": 16,
+        "Width": 16
+      }
+    },
+    {
+      "LogName": "Bagged ewe milk (VMV)",
+      "Action": "EditImage",
+      "Target": "Mods/Lumisteria.MtVapius/AnimalProducts",
+      "FromFile": "assets/bagged_milk.png",
+      "FromArea": {
+        "X": 16,
+        "Y": 32,
+        "Width": 16,
+        "Height": 16
+      },
+      "ToArea": {
+        "X": 80,
+        "Y": 0,
+        "Height": 16,
+        "Width": 16
+      }
+    },
+    {
+      "LogName": "Bagged extra large milk (VMV)",
+      "Action": "EditImage",
+      "Target": "Mods/Lumisteria.MtVapius/AnimalProducts",
+      "FromFile": "assets/bagged_milk.png",
+      "FromArea": {
+        "X": 32,
+        "Y": 32,
+        "Width": 16,
+        "Height": 16
+      },
+      "ToArea": {
+        "X": 96,
+        "Y": 0,
+        "Width": 16,
+        "Height": 16
+      }
+    }
+  ]
+}

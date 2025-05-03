@@ -24,13 +24,13 @@ public sealed record BazaarData
     /// <summary>
     /// Special owner name, for any case where the NPC is not in the shop but it is open anyways
     /// </summary>
-    public static readonly string Owner_AwayButOpen = $"{ModEntry.ModId}/AwayButOpen";
+    internal static readonly string Owner_AwayButOpen = $"{ModEntry.ModId}/AwayButOpen";
 
     /// <summary>
     /// List of shop owners, similar to field of same name in Data/Shops.
     /// If not given then the owner list from shop data will be used instead.
     /// </summary>
-    public List<ShopOwnerData>? Owners = null;
+    public List<ShopOwnerData>? Owners { get; set; } = null;
 
     /// <summary>
     /// String id to an entry in Data/Shops.
@@ -39,7 +39,7 @@ public sealed record BazaarData
     /// </summary>
     public string? ShopId { get; set; } = null;
     private ShopData? _shopData;
-    public ShopData? ShopData
+    internal ShopData? ShopData
     {
         get
         {
@@ -61,7 +61,7 @@ public sealed record BazaarData
     /// </summary>
     public string? PetShopId { get; set; } = null;
     private ShopData? _petShopData;
-    public ShopData? PetShopData
+    internal ShopData? PetShopData
     {
         get
         {
