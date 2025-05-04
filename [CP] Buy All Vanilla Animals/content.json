@@ -1,5 +1,6 @@
 {
-  "Format": "2.5.1",
+  "$schema": "https://smapi.io/schemas/content-patcher.json",
+  "Format": "2.6.0",
   "ConfigSchema": {
     "VoidChicken": {
       "AllowValues": "true, false",

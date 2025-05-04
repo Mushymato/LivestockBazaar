@@ -18,5 +18,7 @@
   "GUI.SortMode.Name": "Name",
   "GUI.SortMode.Price": "Price",
   "GUI.SortMode.House": "House",
-  "GUI.SortMode.CanBuy": "Can Buy"
+  "GUI.SortMode.CanBuy": "Can Buy",
+  // CMCT
+  "CMCT.LivestockBazaar.AnimalManage": "Livestock Bazaar: Manage Animals"
 }

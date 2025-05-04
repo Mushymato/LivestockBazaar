@@ -15,6 +15,7 @@ public sealed class ModEntry : Mod
     private static IMonitor? mon;
     internal static ModConfig Config = null!;
     internal static string ModId = null!;
+    internal static Integration.IExtraAnimalConfigApi? EAC = null;
 
     public override void Entry(IModHelper helper)
     {
@@ -40,6 +41,29 @@ public sealed class ModEntry : Mod
     {
         BazaarMenu.Register(Helper);
         Config.Register(Helper, ModManifest);
+        try
+        {
+            EAC = Helper.ModRegistry.GetApi<Integration.IExtraAnimalConfigApi>("selph.ExtraAnimalConfig");
+        }
+        catch (Exception ex)
+        {
+            EAC = null;
+            Log($"Failed to get selph.ExtraAnimalConfig API:\n{ex}", LogLevel.Warn);
+        }
+        try
+        {
+            if (
+                Helper.ModRegistry.GetApi<Integration.IBetterGameMenuApi>("leclair.bettergamemenu")
+                is Integration.IBetterGameMenuApi BGM
+            )
+            {
+                BazaarMenu.RegisterBGMContextMenu(BGM);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log($"Failed to get leclair.bettergamemenu API:\n{ex}", LogLevel.Warn);
+        }
     }
 
     /// <summary>Warm the cache</summary>

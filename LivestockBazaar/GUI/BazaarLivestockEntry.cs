@@ -3,9 +3,13 @@ using LivestockBazaar.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PropertyChanged.SourceGenerator;
+using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Delegates;
+using StardewValley.GameData;
 using StardewValley.GameData.Buildings;
 using StardewValley.GameData.FarmAnimals;
+using StardewValley.Internal;
 using StardewValley.ItemTypeDefinitions;
 
 namespace LivestockBazaar.GUI;
@@ -132,17 +136,57 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
             FarmAnimalData data = selectedPurchase == null ? Ls.Data : selectedPurchase.Ls.Data;
             HashSet<string> seenProduce = [];
             int cnt = 0;
+            ItemQueryContext itemQueryContext = new();
+
             foreach (FarmAnimalProduce prod in data.ProduceItemIds.Concat(data.DeluxeProduceItemIds))
+            {
                 if (
-                    !string.IsNullOrEmpty(prod.ItemId)
-                    && !seenProduce.Contains(prod.ItemId)
-                    && ItemRegistry.GetData("(O)" + prod.ItemId) is ParsedItemData itemData
+                    ModEntry.EAC != null
+                    && ModEntry.EAC.GetItemQueryOverrides(Ls.Key, prod.Id)
+                        is List<GenericSpawnItemDataWithCondition> overrideList
+                    && overrideList.Any()
                 )
                 {
-                    cnt++;
-                    yield return itemData;
-                    seenProduce.Add(prod.ItemId);
+                    foreach (GenericSpawnItemDataWithCondition gsidwc in overrideList)
+                    {
+                        foreach (
+                            var result in ItemQueryResolver.TryResolve(
+                                gsidwc,
+                                itemQueryContext,
+                                ItemQuerySearchMode.AllOfTypeItem
+                            )
+                        )
+                        {
+                            if (
+                                result.Item is Item item
+                                && !seenProduce.Contains(item.ItemId)
+                                && ItemRegistry.GetData(item.QualifiedItemId) is ParsedItemData itemData
+                            )
+                            {
+                                cnt++;
+                                yield return itemData;
+                                seenProduce.Add(item.QualifiedItemId);
+                            }
+                        }
+                    }
                 }
+                else
+                {
+                    if (string.IsNullOrEmpty(prod.ItemId))
+                        continue;
+                    string qualifiedItemId = ItemRegistry.type_object + prod.ItemId;
+                    if (
+                        !seenProduce.Contains(qualifiedItemId)
+                        && ItemRegistry.GetData(qualifiedItemId) is ParsedItemData itemData
+                    )
+                    {
+                        cnt++;
+                        yield return itemData;
+                        seenProduce.Add(qualifiedItemId);
+                    }
+                }
+            }
+
             LivestockProduceLayout = cnt < 8 ? $"content[..{cnt * 36}] content" : "content[..256] content";
         }
     }

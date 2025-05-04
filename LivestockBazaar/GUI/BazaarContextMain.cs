@@ -10,12 +10,11 @@ using StardewValley.Extensions;
 using StardewValley.GameData.Buildings;
 using StardewValley.GameData.Shops;
 using StardewValley.Menus;
-using StardewValley.TokenizableStrings;
 
 namespace LivestockBazaar.GUI;
 
 /// <summary>Context for bazaar menu</summary>
-public sealed partial record BazaarContextMain
+public sealed partial record BazaarContextMain : IHasSelectedLivestock
 {
     private const int CELL_W = 192;
 
@@ -56,20 +55,23 @@ public sealed partial record BazaarContextMain
     /// Rebuild <see cref="AnimalHouseByLocation"/>
     /// </summary>
     /// <param name="e"></param>
-    public IReadOnlyDictionary<GameLocation, BazaarLocationEntry> BuildAllAnimalHouseLocations()
+    public static IReadOnlyDictionary<GameLocation, BazaarLocationEntry> BuildAllAnimalHouseLocations(
+        IHasSelectedLivestock mainContext
+    )
     {
         Dictionary<GameLocation, BazaarLocationEntry> animalHouseByLocation = [];
         Utility.ForEachBuilding(
             (building) =>
             {
-                AddToAllAnimalHouseLocations(animalHouseByLocation, building);
+                AddToAllAnimalHouseLocations(mainContext, animalHouseByLocation, building);
                 return true;
             }
         );
         return animalHouseByLocation;
     }
 
-    public void AddToAllAnimalHouseLocations(
+    public static void AddToAllAnimalHouseLocations(
+        IHasSelectedLivestock mainContext,
         Dictionary<GameLocation, BazaarLocationEntry> allAnimalHouseLocations,
         Building building
     )
@@ -81,13 +83,13 @@ public sealed partial record BazaarContextMain
             return;
         GameLocation parentLocation = building.GetParentLocation();
         if (!allAnimalHouseLocations.ContainsKey(building.GetParentLocation()))
-            allAnimalHouseLocations[parentLocation] = new(this, parentLocation, []);
+            allAnimalHouseLocations[parentLocation] = new(mainContext, parentLocation, []);
         var occToBld = allAnimalHouseLocations[parentLocation];
         foreach (var occupentType in buildingData.ValidOccupantTypes)
         {
             if (!occToBld.LivestockBuildings.ContainsKey(occupentType))
                 occToBld.LivestockBuildings[occupentType] = [];
-            occToBld.LivestockBuildings[occupentType].Add(new(this, occToBld, building, buildingData));
+            occToBld.LivestockBuildings[occupentType].Add(new(occToBld, building, buildingData));
         }
     }
 
@@ -176,7 +178,7 @@ public sealed partial record BazaarContextMain
             )
         );
 
-        AnimalHouseByLocation = BuildAllAnimalHouseLocations();
+        AnimalHouseByLocation = BuildAllAnimalHouseLocations(this);
         // livestock data
         livestockEntries = AssetManager
             .GetLivestockDataForShop(shopName)
@@ -327,7 +329,7 @@ public sealed partial record BazaarContextMain
         }
     }
 
-    // page 2 (building list) hover and selectoh
+    // page 2 (building list) hover and select
     public void HandleHoverBuilding(BazaarBuildingEntry? building = null)
     {
         if (HoveredBuilding != null)

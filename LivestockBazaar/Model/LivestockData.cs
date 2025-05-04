@@ -149,12 +149,12 @@ public sealed record LivestockData
         return (int)(price * mult);
     }
 
-    public static bool IsValid(FarmAnimalData data)
+    public static bool IsValid(string key, FarmAnimalData data)
     {
         bool valid = !string.IsNullOrEmpty(data.Texture) && Game1.content.DoesAssetExist<Texture2D>(data.Texture);
         if (!valid)
             ModEntry.LogOnce(
-                $"Got invalid Texture on farm animal: {data.DisplayName}",
+                $"Invalid Texture field on farm animal '{key}', this is a problem with one of your farm animal adding mods and should report to that mod's page.",
                 StardewModdingAPI.LogLevel.Warn
             );
         return valid;

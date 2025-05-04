@@ -22,6 +22,11 @@
     "organize": {
       "SourceRect": "162,440,16,16",
       "Scale": 4
+    },
+    "shopBg": {
+      "SourceRect": "384,396,15,15",
+      "FixedEdges": "5,5,5,5",
+      "Scale": 4
     }
   }
 }

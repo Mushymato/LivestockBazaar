@@ -42,7 +42,7 @@ internal static class AssetManager
                 _lsData = [];
                 foreach ((string key, FarmAnimalData data) in Game1.farmAnimalData)
                 {
-                    if (LivestockData.IsValid(data))
+                    if (LivestockData.IsValid(key, data))
                         _lsData[key] = new(key, data);
                 }
             }

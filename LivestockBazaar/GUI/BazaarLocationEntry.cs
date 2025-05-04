@@ -11,7 +11,6 @@ using StardewValley.GameData.Buildings;
 namespace LivestockBazaar.GUI;
 
 public sealed partial record BazaarBuildingEntry(
-    BazaarContextMain Main,
     BazaarLocationEntry LocationEntry,
     Building Building,
     BuildingData Data
@@ -21,16 +20,43 @@ public sealed partial record BazaarBuildingEntry(
     public int RemainingSpace => House.animalLimit.Value - House.animalsThatLiveHere.Count;
 
     private readonly StringBuilder buildingTooltipSb = new();
+
+    private void PutBuildingName()
+    {
+        string name = Data.Name;
+        if (Building.GetSkin() is BuildingSkin skin)
+            name = skin.Name ?? name;
+        buildingTooltipSb.Append(Wheels.ParseTextOrDefault(name));
+    }
+
+    public string BuildingName
+    {
+        get
+        {
+            buildingTooltipSb.Clear();
+            PutBuildingName();
+            return buildingTooltipSb.ToString();
+        }
+    }
+    public string BuildingLocationCoordinate
+    {
+        get
+        {
+            buildingTooltipSb.Clear();
+            buildingTooltipSb.Append(LocationEntry.LocationName);
+            buildingTooltipSb.Append(": ");
+            buildingTooltipSb.Append(Building.tileX);
+            buildingTooltipSb.Append(',');
+            buildingTooltipSb.Append(Building.tileY);
+            return buildingTooltipSb.ToString();
+        }
+    }
     public string BuildingTooltip
     {
         get
         {
             buildingTooltipSb.Clear();
-
-            string name = Data.Name;
-            if (Building.GetSkin() is BuildingSkin skin)
-                name = skin.Name ?? name;
-            buildingTooltipSb.Append(Wheels.ParseTextOrDefault(name));
+            PutBuildingName();
             buildingTooltipSb.Append(" (");
             buildingTooltipSb.Append(Building.tileX);
             buildingTooltipSb.Append(',');
@@ -89,6 +115,8 @@ public sealed partial record BazaarBuildingEntry(
         }
     }
 
+    internal IEnumerable<FarmAnimal> FarmAnimalsThatLiveHere => GetFarmAnimalsThatLiveHere();
+
     internal int CountAnimal(BazaarLivestockEntry livestock)
     {
         int count = 0;
@@ -106,11 +134,21 @@ public sealed partial record BazaarBuildingEntry(
 
     [Notify]
     public bool isSelected = false;
-    public Color SelectedFrameTint => IsSelected ? Color.White : Color.Transparent;
+
+    [Notify]
+    public bool isSelected2 = false;
+
+    public Color SelectedFrameTint =>
+        IsSelected2 ? Color.Blue * 0.8f
+        : IsSelected ? Color.White
+        : Color.Transparent;
+
+    public IEnumerable<AnimalManageFarmAnimalEntry> AMFAEList =>
+        GetFarmAnimalsThatLiveHere().Select(farmAnimal => new AnimalManageFarmAnimalEntry(this, farmAnimal)) ?? [];
 }
 
 public sealed partial record class BazaarLocationEntry(
-    BazaarContextMain Main,
+    IHasSelectedLivestock Main,
     GameLocation Location,
     Dictionary<string, List<BazaarBuildingEntry>> LivestockBuildings
 )
@@ -151,6 +189,20 @@ public sealed partial record class BazaarLocationEntry(
             return buildings.Sum(bld => bld.CountAnimal(livestock));
         }
         return 0;
+    }
+
+    public IEnumerable<BazaarBuildingEntry> AllLivestockBuildings
+    {
+        get
+        {
+            foreach (List<BazaarBuildingEntry> buildings in LivestockBuildings.Values)
+            {
+                foreach (BazaarBuildingEntry building in buildings)
+                {
+                    yield return building;
+                }
+            }
+        }
     }
 
     public IEnumerable<BazaarBuildingEntry> ValidLivestockBuildings
