@@ -38,6 +38,7 @@ public sealed partial record BazaarBuildingEntry(
             return buildingTooltipSb.ToString();
         }
     }
+
     public string BuildingLocationCoordinate
     {
         get
@@ -51,6 +52,7 @@ public sealed partial record BazaarBuildingEntry(
             return buildingTooltipSb.ToString();
         }
     }
+
     public string BuildingTooltip
     {
         get

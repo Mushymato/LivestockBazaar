@@ -51,14 +51,17 @@
             "large_egg_item"
           ],
           "Buffs": [
+            // {
+            //   "Id": "Food",
+            //   "Duration": 404,
+            //   "IsDebuff": true,
+            //   "CustomAttributes": {
+            //     "Speed": 3.0,
+            //     "LuckLevel": -9.0,
+            //   },
+            // }
             {
-              "Id": "Food",
-              "Duration": 404,
-              "IsDebuff": true,
-              "CustomAttributes": {
-                "Speed": 3.0,
-                "LuckLevel": -9.0,
-              },
+              "BuffId": "{{ModId}}_EGGFAULT_Buff"
             }
           ]
         },

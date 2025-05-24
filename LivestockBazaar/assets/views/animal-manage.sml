@@ -4,9 +4,9 @@
   border={@Mods/StardewUI/Sprites/MenuBorder}
   border-thickness="32, 36, 24, 36"
 >
-  <lane orientation="horizontal" layout="stretch stretch">
+  <lane orientation="vertical" layout="stretch stretch">
     <!-- left side building select -->
-    <scrollable peeking="128" layout="720px content" scrollbar-margin="-46,0,0,0">
+    <scrollable peeking="128" layout="content 50%" scrollbar-margin="-46,0,0,0">
       <lane orientation="vertical" margin="10,0,0,0">
         <lane padding="8" *repeat={:LocationEntries} layout="stretch content" orientation="vertical">
           <banner padding="8" text={:LocationName}/>
@@ -30,23 +30,21 @@
       </lane>
     </scrollable>
     <!-- right side animals in building -->
-    <image sprite={@Mods/StardewUI/Sprites/ThinVerticalDivider} layout="8px stretch" fit="Stretch"/>
-    <lane orientation="vertical">
-      <animal-grid *context={SelectedBuilding1} layout="stretch 50%" side="1"/>
-      <image sprite={@Mods/StardewUI/Sprites/ThinHorizontalDivider} layout="stretch 8px" margin="0,0,24,0" fit="Stretch"/>
-      <animal-grid *context={SelectedBuilding2} layout="stretch 100%" side="2"/>
+    <lane orientation="horizontal">
+      <animal-grid *context={SelectedBuilding1} layout="50% stretch" side="1"/>
+      <animal-grid *context={SelectedBuilding2} layout="100% stretch" side="2"/>
     </lane>
   </lane>
 </frame>
 
 <template name="animal-grid">
   <scrollable peeking="128" layout={&layout} scrollbar-visibility="Hidden">
-    <lane orientation="vertical" padding="0,0,12,0">
+    <lane orientation="vertical" padding="12,0,12,0">
       <label padding="4,4,0,0" font="dialogue" text={:BuildingName}/>
-      <label padding="4,4,0,0" font="small" text={:BuildingLocationCoordinate}/>
+      <label padding="4,4,0,8" font="small" text={:BuildingLocationCoordinate}/>
       <grid item-layout="count:6">
         <panel *repeat={AMFAEList}
-          layout="64px 64px"
+          layout="64px 96px"
           horizontal-content-alignment="middle"
           vertical-content-alignment="start"
           tooltip={:DisplayName}>
