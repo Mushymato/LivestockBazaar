@@ -44,25 +44,12 @@ public sealed class ModEntry : Mod
         try
         {
             EAC = Helper.ModRegistry.GetApi<Integration.IExtraAnimalConfigApi>("selph.ExtraAnimalConfig");
+            ModEntry.Log("GOT EAC");
         }
         catch (Exception ex)
         {
             EAC = null;
             Log($"Failed to get selph.ExtraAnimalConfig API:\n{ex}", LogLevel.Warn);
-        }
-        try
-        {
-            if (
-                Helper.ModRegistry.GetApi<Integration.IBetterGameMenuApi>("leclair.bettergamemenu")
-                is Integration.IBetterGameMenuApi BGM
-            )
-            {
-                BazaarMenu.RegisterBGMContextMenu(BGM);
-            }
-        }
-        catch (Exception ex)
-        {
-            Log($"Failed to get leclair.bettergamemenu API:\n{ex}", LogLevel.Warn);
         }
     }
 

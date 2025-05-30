@@ -22,7 +22,6 @@ public static class OpenBazaar
         GameLocation.RegisterTileAction(LivestockShop, TileAction_ShowLivestockShop);
         TriggerActionManager.RegisterAction(LivestockShop, Action_ShowLivestockShop);
         helper.ConsoleCommands.Add("lb-shop", "Open a custom livestock shop by id", Console_ShowLivestockShop);
-        helper.ConsoleCommands.Add("lb-animal-manage", "Open the animal manage menu", Console_ShowAnimalManage);
     }
 
     /// <summary>Show livestock bazaar menu</summary>
@@ -46,16 +45,6 @@ public static class OpenBazaar
             return;
         }
         Args_ShowLivestockShop(args, out string _);
-    }
-
-    private static void Console_ShowAnimalManage(string arg1, string[] arg2)
-    {
-        if (!Context.IsWorldReady)
-        {
-            ModEntry.Log("Must load save first.", LogLevel.Error);
-            return;
-        }
-        BazaarMenu.ShowAnimalManage();
     }
 
     private static bool Action_ShowLivestockShop(string[] args, TriggerActionContext context, out string error)

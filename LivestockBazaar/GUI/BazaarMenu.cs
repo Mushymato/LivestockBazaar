@@ -71,34 +71,4 @@ internal static class BazaarMenu
             ModEntry.Config.SaveConfig();
         }
     }
-
-    internal static void ShowAnimalManage()
-    {
-        AnimalManageContext context = new();
-        var menuCtrl = viewEngine.CreateMenuControllerFromAsset(viewAnimalManage, context);
-        menuCtrl.EnableCloseButton();
-        if (Game1.activeClickableMenu == null)
-        {
-            Game1.activeClickableMenu = menuCtrl.Menu;
-        }
-        else
-        {
-            Game1.activeClickableMenu.SetChildMenu(menuCtrl.Menu);
-        }
-    }
-
-    /// <summary>
-    /// Better game menu integration, add animal manage to right click context
-    /// </summary>
-    /// <param name="BGM"></param>
-    public static void RegisterBGMContextMenu(IBetterGameMenuApi BGM)
-    {
-        BGM.OnTabContextMenu(ShowAnimalManageFromBGM);
-    }
-
-    private static void ShowAnimalManageFromBGM(ITabContextMenuEvent evt)
-    {
-        if (evt.Tab == nameof(VanillaTabOrders.Animals))
-            evt.Entries.Add(evt.CreateEntry(I18n.CMCT_LivestockBazaar_AnimalManage(), ShowAnimalManage));
-    }
 }

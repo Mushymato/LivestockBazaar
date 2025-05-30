@@ -129,6 +129,51 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
     );
     public readonly string Description = Wheels.ParseTextOrDefault(Ls.Data.ShopDescription, "??? ???? ?? ????? ?");
 
+    private const int MAX_PRODUCE_DISPLAY = 35;
+
+    private static List<ParsedItemData>? GetEACItemQueryOverrides(
+        ItemQueryContext itemQueryContext,
+        string key,
+        string itemId,
+        ref int cnt,
+        ref HashSet<string> seenProduce
+    )
+    {
+        if (
+            ModEntry.EAC?.GetItemQueryOverrides(key, itemId) is List<GenericSpawnItemDataWithCondition> overrideList
+            && overrideList.Any()
+        )
+        {
+            List<ParsedItemData> overrideItems = [];
+            foreach (GenericSpawnItemDataWithCondition gsidwc in overrideList)
+            {
+                foreach (
+                    var result in ItemQueryResolver.TryResolve(
+                        gsidwc,
+                        itemQueryContext,
+                        ItemQuerySearchMode.AllOfTypeItem
+                    )
+                )
+                {
+                    if (
+                        result.Item is Item item
+                        && !seenProduce.Contains(item.ItemId)
+                        && ItemRegistry.GetData(item.QualifiedItemId) is ParsedItemData itemData1
+                    )
+                    {
+                        cnt++;
+                        overrideItems.Add(itemData1);
+                        seenProduce.Add(item.QualifiedItemId);
+                        if (cnt >= MAX_PRODUCE_DISPLAY)
+                            return overrideItems;
+                    }
+                }
+            }
+            return overrideItems;
+        }
+        return null;
+    }
+
     public IEnumerable<ParsedItemData> LivestockProduce
     {
         get
@@ -140,49 +185,65 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
 
             foreach (FarmAnimalProduce prod in data.ProduceItemIds.Concat(data.DeluxeProduceItemIds))
             {
+                if (string.IsNullOrEmpty(prod.ItemId))
+                    continue;
+
                 if (
-                    ModEntry.EAC != null
-                    && ModEntry.EAC.GetItemQueryOverrides(Ls.Key, prod.Id)
-                        is List<GenericSpawnItemDataWithCondition> overrideList
-                    && overrideList.Any()
+                    GetEACItemQueryOverrides(itemQueryContext, Ls.Key, prod.ItemId, ref cnt, ref seenProduce)
+                    is List<ParsedItemData> eacIqOverrides1
                 )
                 {
-                    foreach (GenericSpawnItemDataWithCondition gsidwc in overrideList)
-                    {
-                        foreach (
-                            var result in ItemQueryResolver.TryResolve(
-                                gsidwc,
-                                itemQueryContext,
-                                ItemQuerySearchMode.AllOfTypeItem
-                            )
-                        )
-                        {
-                            if (
-                                result.Item is Item item
-                                && !seenProduce.Contains(item.ItemId)
-                                && ItemRegistry.GetData(item.QualifiedItemId) is ParsedItemData itemData
-                            )
-                            {
-                                cnt++;
-                                yield return itemData;
-                                seenProduce.Add(item.QualifiedItemId);
-                            }
-                        }
-                    }
+                    foreach (ParsedItemData itemData1 in eacIqOverrides1)
+                        yield return itemData1;
+                    if (cnt >= MAX_PRODUCE_DISPLAY)
+                        yield break;
+                    continue;
                 }
                 else
                 {
-                    if (string.IsNullOrEmpty(prod.ItemId))
-                        continue;
-                    string qualifiedItemId = ItemRegistry.type_object + prod.ItemId;
+                    string qualifiedItemId2 = ItemRegistry.type_object + prod.ItemId;
                     if (
-                        !seenProduce.Contains(qualifiedItemId)
-                        && ItemRegistry.GetData(qualifiedItemId) is ParsedItemData itemData
+                        !seenProduce.Contains(qualifiedItemId2)
+                        && ItemRegistry.GetData(qualifiedItemId2) is ParsedItemData itemData2
                     )
                     {
                         cnt++;
-                        yield return itemData;
-                        seenProduce.Add(qualifiedItemId);
+                        yield return itemData2;
+                        seenProduce.Add(qualifiedItemId2);
+                        if (cnt >= MAX_PRODUCE_DISPLAY)
+                            yield break;
+                    }
+                }
+            }
+
+            if (ModEntry.EAC?.GetExtraDrops(Ls.Key) is Dictionary<string, List<string>> extraDrops)
+            {
+                foreach (string itemId in extraDrops.Values.SelectMany(id => id))
+                {
+                    if (
+                        GetEACItemQueryOverrides(itemQueryContext, Ls.Key, itemId, ref cnt, ref seenProduce)
+                        is List<ParsedItemData> eacIqOverrides2
+                    )
+                    {
+                        foreach (ParsedItemData itemData1 in eacIqOverrides2)
+                            yield return itemData1;
+                        if (cnt >= MAX_PRODUCE_DISPLAY)
+                            yield break;
+                    }
+                    else
+                    {
+                        string qualifiedItemId1 = ItemRegistry.type_object + itemId;
+                        if (
+                            !seenProduce.Contains(qualifiedItemId1)
+                            && ItemRegistry.GetData(qualifiedItemId1) is ParsedItemData itemData3
+                        )
+                        {
+                            cnt++;
+                            yield return itemData3;
+                            seenProduce.Add(qualifiedItemId1);
+                            if (cnt >= MAX_PRODUCE_DISPLAY)
+                                yield break;
+                        }
                     }
                 }
             }
@@ -325,6 +386,9 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
     // buy animal
     [Notify]
     private string buyName = Dialogue.randomName();
+
+    public FarmAnimal MakeTransiantFarmAnimal() =>
+        new(Ls.Key, Game1.Multiplayer.getNewID(), Game1.player.UniqueMultiplayerID) { Name = "???" };
 
     public FarmAnimal? BuyNewFarmAnimal()
     {

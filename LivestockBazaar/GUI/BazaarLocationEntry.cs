@@ -145,8 +145,8 @@ public sealed partial record BazaarBuildingEntry(
         : IsSelected ? Color.White
         : Color.Transparent;
 
-    public IEnumerable<AnimalManageFarmAnimalEntry> AMFAEList =>
-        GetFarmAnimalsThatLiveHere().Select(farmAnimal => new AnimalManageFarmAnimalEntry(this, farmAnimal)) ?? [];
+    // public IEnumerable<AnimalManageFarmAnimalEntry> AMFAEList =>
+    //     GetFarmAnimalsThatLiveHere().Select(farmAnimal => new AnimalManageFarmAnimalEntry(this, farmAnimal)) ?? [];
 }
 
 public sealed partial record class BazaarLocationEntry(
@@ -170,7 +170,7 @@ public sealed partial record class BazaarLocationEntry(
         if (hasBuildingOrUpgradeMethod != null)
             return (bool)(hasBuildingOrUpgradeMethod.Invoke(null, [Location, livestock.RequiredBuilding]) ?? false);
         // fall back impl in case something weird happens
-        if (!LivestockBuildings.TryGetValue(livestock.House, out List<BazaarBuildingEntry>? buildings))
+        if (!LivestockBuildings.TryGetValue(livestock.Ls.Key, out List<BazaarBuildingEntry>? buildings))
             return false;
         return buildings.Any(
             (bld) => livestock.RequiredBuilding == null || bld.IsBuildingOrUpgrade(livestock.RequiredBuilding)
@@ -179,14 +179,14 @@ public sealed partial record class BazaarLocationEntry(
 
     public IEnumerable<BazaarBuildingEntry> GetValidLivestockBuildings(BazaarLivestockEntry livestock)
     {
-        if (LivestockBuildings.TryGetValue(livestock.Ls.Data.House, out List<BazaarBuildingEntry>? buildings))
+        if (LivestockBuildings.TryGetValue(livestock.Ls.Key, out List<BazaarBuildingEntry>? buildings))
             return buildings.OrderByDescending((bld) => bld.RemainingSpace);
         return [];
     }
 
     public int GetCurrentLivestockCount(BazaarLivestockEntry livestock)
     {
-        if (LivestockBuildings.TryGetValue(livestock.Ls.Data.House, out List<BazaarBuildingEntry>? buildings))
+        if (LivestockBuildings.TryGetValue(livestock.Ls.Key, out List<BazaarBuildingEntry>? buildings))
         {
             return buildings.Sum(bld => bld.CountAnimal(livestock));
         }

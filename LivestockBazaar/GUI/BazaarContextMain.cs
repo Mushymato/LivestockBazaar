@@ -56,14 +56,16 @@ public sealed partial record BazaarContextMain : IHasSelectedLivestock
     /// </summary>
     /// <param name="e"></param>
     public static IReadOnlyDictionary<GameLocation, BazaarLocationEntry> BuildAllAnimalHouseLocations(
-        IHasSelectedLivestock mainContext
+        IHasSelectedLivestock mainContext,
+        IReadOnlyList<BazaarLivestockEntry> livestockEntries
     )
     {
+        List<FarmAnimal> tempFarmAnimals = livestockEntries.Select(le => le.MakeTransiantFarmAnimal()).ToList();
         Dictionary<GameLocation, BazaarLocationEntry> animalHouseByLocation = [];
         Utility.ForEachBuilding(
             (building) =>
             {
-                AddToAllAnimalHouseLocations(mainContext, animalHouseByLocation, building);
+                AddToAllAnimalHouseLocations(mainContext, animalHouseByLocation, building, tempFarmAnimals);
                 return true;
             }
         );
@@ -73,7 +75,8 @@ public sealed partial record BazaarContextMain : IHasSelectedLivestock
     public static void AddToAllAnimalHouseLocations(
         IHasSelectedLivestock mainContext,
         Dictionary<GameLocation, BazaarLocationEntry> allAnimalHouseLocations,
-        Building building
+        Building building,
+        List<FarmAnimal> tempFarmAnimals
     )
     {
         if (building.isUnderConstruction())
@@ -84,13 +87,25 @@ public sealed partial record BazaarContextMain : IHasSelectedLivestock
         GameLocation parentLocation = building.GetParentLocation();
         if (!allAnimalHouseLocations.ContainsKey(building.GetParentLocation()))
             allAnimalHouseLocations[parentLocation] = new(mainContext, parentLocation, []);
-        var occToBld = allAnimalHouseLocations[parentLocation];
-        foreach (var occupentType in buildingData.ValidOccupantTypes)
+        BazaarLocationEntry locationEntry = allAnimalHouseLocations[parentLocation];
+
+        foreach (FarmAnimal farmAnimal in tempFarmAnimals)
         {
-            if (!occToBld.LivestockBuildings.ContainsKey(occupentType))
-                occToBld.LivestockBuildings[occupentType] = [];
-            occToBld.LivestockBuildings[occupentType].Add(new(occToBld, building, buildingData));
+            if (farmAnimal.CanLiveIn(building))
+            {
+                string animalType = farmAnimal.type.Value;
+                if (!locationEntry.LivestockBuildings.ContainsKey(animalType))
+                    locationEntry.LivestockBuildings[animalType] = [];
+                locationEntry.LivestockBuildings[animalType].Add(new(locationEntry, building, buildingData));
+            }
         }
+
+        // foreach (var occupentType in buildingData.ValidOccupantTypes)
+        // {
+        //     if (!occToBld.LivestockBuildings.ContainsKey(occupentType))
+        //         occToBld.LivestockBuildings[occupentType] = [];
+        //     occToBld.LivestockBuildings[occupentType].Add(new(occToBld, building, buildingData));
+        // }
     }
 
     // theme
@@ -178,12 +193,13 @@ public sealed partial record BazaarContextMain : IHasSelectedLivestock
             )
         );
 
-        AnimalHouseByLocation = BuildAllAnimalHouseLocations(this);
         // livestock data
         livestockEntries = AssetManager
             .GetLivestockDataForShop(shopName)
             .Select((data) => new BazaarLivestockEntry(this, shopName, data))
             .ToList();
+
+        AnimalHouseByLocation = BuildAllAnimalHouseLocations(this, livestockEntries);
 
         // layout shenanigans
         float referenceWidth =
