@@ -25,7 +25,7 @@
   <ItemGroup>
     <SMAPIDependency Include="focustense.StardewUI" Required="true" />
     <SMAPIDependency Include="spacechase0.GenericModConfigMenu" Required="false" />
-    <SMAPIDependency Include="leclair.bettergamemenu" Required="false" />
+    <SMAPIDependency Include="selph.ExtraAnimalConfig" Required="false" />
   </ItemGroup>
 
   <ItemGroup>
