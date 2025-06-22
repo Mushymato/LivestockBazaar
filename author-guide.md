@@ -4,17 +4,18 @@ This page covers how to add a new livestock bazaar shop. It is assumed that you 
 
 ## Quick Start
 
-To add a custom livestock bazaar shop, add entry to `Data/FarmAnimals` normally, then:
+To add a custom livestock bazaar shop, add entry to `Data/FarmAnimals` normally and ensure that the animal functions correctly when bought from Marnie's shop.
+Then, follow these steps to make your farm animal appear for sale in a custom shop:
 
 1. Add `Data/FarmAnimals` CustomFields entry `"mushymato.LivestockBazaar/BuyFrom.{{ModId}}_MyVendor": true` to the farm animal. `{{ModId}}_MyVendor` is value that will be referred to as `shopName` or `<shopName>` in following parts of this guide. It's recommended to prefix this name with your mod id, even when your vendor is a vanilla NPC.
-    - Note: `PurchasePrice` of the farm animal must be non-zero, even if you intend to use `TradeItemId`.
+    - Note: `PurchasePrice` of the farm animal must be non-zero, even if you intend to use `TradeItemId` for the actual purchase. This behavior is kept since there aren't any other ways to mark a farm animal as "not for sale".
 2. *(Optional)* Add CustomFields entry `"mushymato.LivestockBazaar/BuyFrom.Marnie": false` to prevent Marnie from selling this animal. Marnie is the special hardcoded `shopName` this mod uses to refer to the vanilla animal shop. Unlike all other `BuyFrom` fields, `BuyFrom.Marnie` defaults to `true` and need to be explicitly set to false.
 3. *(Optional)* Add a entry named `shopName` to `mushymato.LivestockBazaar/Shops`, to provide an owner portrait and other advanced settings.
 4. Use map tile action `mushymato.LivestockBazaar_Shop` to create a shop.
 
 #### Why is my animal still purchasable at Marnie's?
 
-Livestock bazaar only applies it's rules about animal availability when it gets to apply the custom menu. If you are seeing the vanilla animal purchase menu for any reason (e.g. config option, mod incompatibility), then she will get to sell all animals as if livestock bazaar is not installed.
+Livestock bazaar only applies it's rules about animal availability when it gets to apply the custom menu. If you are seeing the vanilla animal purchase menu at Marnie's for any reason (e.g. config option, mod incompatibility), then she will get to sell all animals as if livestock bazaar is not installed.
 
 Custom shops will always use livestock bazaar menu.
 
@@ -22,7 +23,7 @@ Custom shops will always use livestock bazaar menu.
 
 When using these for a particular shop, replace `<shopName>` with the shop's actual ID, e.g. `mushymato.LivestockBazaar/BuyFrom.{{ModId}}_MyVendor`.
 
-A special shop `Marnie` is always available and represents the vanilla animal shop. Fields can be applied to this shop in same way as custom shops.
+A special shop `Marnie` is always available and represents the animal shop at Marnie's ranch. Fields can be applied to this shop in same way as custom shops.
 
 #### BuyFrom
 
@@ -67,11 +68,11 @@ The arguments of this tile action is identical to "OpenShop" from vanilla, every
 - `closeTime`: `2200` time code format for shop close time, or -1 to skip
 - `ownerRect`: 4 consecutive number arguments for `X`, `Y`, `Width`, `Height` of a rectangle. If defined, there must be a `mushymato.LivestockBazaar/Shops` entry for `shopName`, and that NPC must be within this rectangle in order to open the shop. Must specify all 4 arguments, or none of them.
 
-With this mod installed and enabled, the vanilla TileAction `"AnimalShop"` is replaced with an action equivalent to:
+The vanilla TileAction `"AnimalShop"` at Marnie's is equivalent to:
 ```
 mushymato.LivestockBazaar_Shop Marnie down -1 -1 12 14 2 1
 ```
-The main difference is that this map action does not respect Marnie's island schedule. If the player has not have read the book, they will not be able to buy anything while she is on Ginger Island.
+But for compatibility reasons, Marnie shop override is implemented as a Harmony prefix rather than change of tile action.
 
 When the shop has a `mushymato.LivestockBazaar/Shops` entry with `ShopwShopDialog` set to true and valid `ShopId` set, this tile action will open dialogue box that allows you to choose between the item shop or the livestock bazaar shop. A similar pair of options named `ShowPetShopDialog` and `PetShopId` exist for pet shops.
 
@@ -86,13 +87,14 @@ This is the trigger action way to open a livestock bazaar shop. It can be used f
 ### Custom Asset: mushymato.LivestockBazaar/Shops
 
 This is a custom asset that let you provide some additional configurations to a livestock bazaar shop. Each entry is keyed by `shopName`.
+Marnie's shop only uses `Owners` from this asset, as her other services are not overwritten by this mod.
 
 | Property | Type | Default | Notes |
 | -------- | ---- | ------- | ----- |
 | `Owners` | List\<ShopOwnerData\> | _null_ | A list of shop owners, identical to the Owners property on Data/Shops. |
 | `ShopId` | string | _null_ | String ID to an entry in `Data/Shops`. |
 | `PetShopId` | string | _null_ | String ID to an entry in `Data/Shops`, this one is meant to be used with a shop similar to `PetAdoption` but there's no strict check. |
-| `OpenFlag` | OpenFlagType | "Stat" | One of `"None", "Stat", "Mail"`, used in conjunction with `OpenKey` to determine if the NPC shop's open/close hours and NPC prescence can be ignored. |
+| `OpenFlag` | OpenFlagType | "Stat" | One of `"None", "Stat", "Mail"`, used in conjunction with `OpenKey` to determine if the NPC shop's open/close hours and NPC prescence can be ignored. This setting is ignored for Marnie, who always use vanilla `Book_AnimalCatalogue` logic. |
 | `OpenKey` | string | `"Book_AnimalCatalogue"` | String name of the stat or mailflag. If this is set, then the usual open/close time and NPC prescence will not be checked. The default value `Book_AnimalCatalogue` refers to the Animal Catalogue book that grants 24/7 access to animal shop in vanilla. |
 | `ShowShopDialog` | bool | true | If true and `ShopId` is a valid shop, show a dialog option to let player open the supplies shop. |
 | `ShowPetShopDialog` | bool | true | If true and `PetShopId` is a valid shop, show a dialog option to let player open the pet shop. |
@@ -103,12 +105,12 @@ This is a custom asset that let you provide some additional configurations to a 
 
 #### Owners
 
-There are up to 3 possible list of ShopOwnerData in this custom asset, they are picked in this order.
+There are up to 3 possible lists of ShopOwnerData in this custom asset, they are picked in this order.
 1. `Owners`
 2. `Data/Shops[ShopId].Owners`
 3. `Data/Shops[PetShopId].Owners`
 
-The first non null list will be used. No attempt is made to "fall" further down the list should none of the owners match a given condition.
+The first non null list will be used. No attempt is made to "fall" further down the list should none of the owners in the chosen list match a given condition.
 
 #### ShopId vs PetShopId
 
@@ -135,8 +137,7 @@ The default values are:
 - ShopDialogAdopt: `"[LocalizedText Strings\\1_6_Strings:AdoptPets]"` (Adopt Pets)
 - ShopDialogLeave: `"[LocalizedText Strings\\Locations:AnimalShop_Marnie_Leave]"` (Leave)
 
-Like most string fields, these keys to Strings assets. For modded shops, either string fields or i18n keys work fine here.
-
+The default values are [tokenizable strings](https://stardewvalleywiki.com/Modding:Tokenizable_strings), modded shops may use tokenizable strings or direct strings (like i18n keys).
 
 ### Extras
 
@@ -147,7 +148,7 @@ This version of the topic uses the animal's internal Id.
 
 #### MailFlag: mushymato.LivestockBazaar_purchasedAnimal_{animalType}
 
-Mail flag indicating an animal had been purchased.
+Mail flag indicating an animal had been purchased at least once.
 
 #### Trigger: mushymato.LivestockBazaar_purchasedAnimal
 

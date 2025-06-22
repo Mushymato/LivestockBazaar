@@ -1,3 +1,4 @@
+using System.Text;
 using LivestockBazaar.Integration;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -8,7 +9,9 @@ namespace LivestockBazaar.Model;
 
 public sealed record LivestockSkinData(FarmAnimalSkin Skin)
 {
-    public readonly Texture2D SpriteSheet = Game1.content.Load<Texture2D>(Skin.Texture);
+    public readonly Texture2D? SpriteSheet = Game1.content.DoesAssetExist<Texture2D>(Skin.Texture)
+        ? Game1.content.Load<Texture2D>(Skin.Texture)
+        : null;
 }
 
 public sealed record LivestockData
@@ -151,13 +154,51 @@ public sealed record LivestockData
 
     public static bool IsValid(string key, FarmAnimalData data)
     {
-        bool valid = !string.IsNullOrEmpty(data.Texture) && Game1.content.DoesAssetExist<Texture2D>(data.Texture);
-        if (!valid)
-            ModEntry.LogOnce(
-                $"Invalid Texture field on farm animal '{key}', this is a problem with one of your farm animal adding mods and should report to that mod's page.",
-                StardewModdingAPI.LogLevel.Warn
+        if (data == null)
+            return false;
+        bool isValid = true;
+        List<(string, string)> issues = [];
+        if (string.IsNullOrEmpty(data.Texture) || !Game1.content.DoesAssetExist<Texture2D>(data.Texture))
+        {
+            issues.Add(new("Texture", data.Texture));
+            isValid = false;
+        }
+        if (!string.IsNullOrEmpty(data.BabyTexture) && !Game1.content.DoesAssetExist<Texture2D>(data.BabyTexture))
+        {
+            issues.Add(new("BabyTexture", data.BabyTexture));
+        }
+        if (data.Skins != null)
+        {
+            foreach (FarmAnimalSkin skin in data.Skins)
+            {
+                if (!string.IsNullOrEmpty(skin.Texture) && !Game1.content.DoesAssetExist<Texture2D>(skin.Texture))
+                {
+                    issues.Add(new($"Skin['{skin.Id}'].Texture", skin.Texture));
+                }
+                if (
+                    !string.IsNullOrEmpty(skin.BabyTexture)
+                    && !Game1.content.DoesAssetExist<Texture2D>(skin.BabyTexture)
+                )
+                {
+                    issues.Add(new($"Skin['{skin.Id}'].BabyTexture", skin.BabyTexture));
+                }
+            }
+        }
+        if (issues.Any())
+        {
+            StringBuilder sb = new($"Cannot load these textures for for farm animal '");
+            sb.Append(key);
+            sb.Append("':\n");
+            foreach ((string note, string tex) in issues)
+            {
+                sb.Append($"\t{note}: '{tex}'\n");
+            }
+            sb.Append(
+                "These issues result in invalid farm animals, please report this to the mod which added the farm animal rather than livestock bazaar."
             );
-        return valid;
+            ModEntry.Log(sb.ToString(), StardewModdingAPI.LogLevel.Warn);
+        }
+        return isValid;
     }
 
     public void PopulateAltPurchase(Dictionary<string, LivestockData> LsData)
