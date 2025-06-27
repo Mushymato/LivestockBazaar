@@ -96,9 +96,9 @@ public sealed record LivestockData
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    public BaseCurrency GetTradeCurrency(string shopName = Wheels.MARNIE)
+    public BaseCurrency GetTradeCurrency(string? shopName = Wheels.MARNIE)
     {
-        if (Data.CustomFields is Dictionary<string, string> customFields)
+        if (shopName != null && Data.CustomFields is Dictionary<string, string> customFields)
         {
             if (
                 (
@@ -119,11 +119,11 @@ public sealed record LivestockData
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    public int GetTradePrice(string shopName = Wheels.MARNIE)
+    public int GetTradePrice(string? shopName = Wheels.MARNIE)
     {
         int price = Math.Max(Data.PurchasePrice, 1);
         float mult = 2f;
-        if (Data.CustomFields is Dictionary<string, string> customFields)
+        if (shopName != null && Data.CustomFields is Dictionary<string, string> customFields)
         {
             if (
                 customFields.TryGetValue(
@@ -194,7 +194,7 @@ public sealed record LivestockData
                 sb.Append($"\t{note}: '{tex}'\n");
             }
             sb.Append(
-                "These issues result in invalid farm animals, please report this to the mod which added the farm animal rather than livestock bazaar."
+                "These issues result in invalid farm animals or skins, please report this to the mod which added the farm animal rather than livestock bazaar."
             );
             ModEntry.Log(sb.ToString(), StardewModdingAPI.LogLevel.Warn);
         }

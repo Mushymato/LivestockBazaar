@@ -145,12 +145,106 @@ public sealed partial record BazaarBuildingEntry(
         : IsSelected ? Color.White
         : Color.Transparent;
 
-    // public IEnumerable<AnimalManageFarmAnimalEntry> AMFAEList =>
-    //     GetFarmAnimalsThatLiveHere().Select(farmAnimal => new AnimalManageFarmAnimalEntry(this, farmAnimal)) ?? [];
+    private IList<AnimalManageFarmAnimalEntry>? AMFAEListImpl;
+
+    public IList<AnimalManageFarmAnimalEntry> AMFAEList =>
+        AMFAEListImpl ??= (
+            GetFarmAnimalsThatLiveHere().Select(farmAnimal => new AnimalManageFarmAnimalEntry(this, farmAnimal)) ?? []
+        ).ToList();
+
+    public void RefreshAMFAE()
+    {
+        AMFAEListImpl = null;
+        OnPropertyChanged(new(nameof(AMFAEList)));
+        OnPropertyChanged(new(nameof(AMFAEPlaceholds)));
+    }
+
+    internal static bool AMFAEListSwap(AnimalManageFarmAnimalEntry oldEntry, AnimalManageFarmAnimalEntry newEntry)
+    {
+        ModEntry.Log(
+            $"AMFAEListSwap: {oldEntry.DisplayName}({oldEntry.Bld.BuildingName}) <=> {newEntry.DisplayName}({newEntry.Bld.BuildingName})"
+        );
+
+        // int oldIndex = oldEntry.Bld.AMFAEList.IndexOf(oldEntry);
+        // int newIndex = oldEntry.Bld.AMFAEList.IndexOf(newEntry);
+        // if (oldIndex == -1 || newIndex == -1)
+        //     return false;
+
+        GameLocation oldParentLoc = oldEntry.Bld.Building.GetParentLocation();
+        AnimalHouse oldHouse = oldEntry.Bld.House;
+        GameLocation newParentLoc = newEntry.Bld.Building.GetParentLocation();
+        AnimalHouse newHouse = newEntry.Bld.House;
+
+        if (
+            !oldHouse.animals.Remove(oldEntry.Animal.myID.Value)
+            && !oldParentLoc.animals.Remove(oldEntry.Animal.myID.Value)
+        )
+            return false;
+        if (
+            !newHouse.animals.Remove(newEntry.Animal.myID.Value)
+            && !newParentLoc.animals.Remove(oldEntry.Animal.myID.Value)
+        )
+            return false;
+
+        ModEntry.Log(
+            $"AMFAEListSwap for reals: {oldEntry.DisplayName}({oldEntry.Bld.BuildingName}) <=> {newEntry.DisplayName}({newEntry.Bld.BuildingName})"
+        );
+
+        oldHouse.animalsThatLiveHere.Remove(oldEntry.Animal.myID.Value);
+        newHouse.animalsThatLiveHere.Remove(newEntry.Animal.myID.Value);
+
+        oldEntry.Bld.AdoptAnimal(newEntry.Animal);
+        newEntry.Bld.AdoptAnimal(oldEntry.Animal);
+
+        oldEntry.Bld.RefreshAMFAE();
+        newEntry.Bld.RefreshAMFAE();
+
+        return true;
+    }
+
+    internal static bool AMFAEListMove(AnimalManageFarmAnimalEntry oldEntry, AnimalManageEntry newEntry)
+    {
+        ModEntry.Log(
+            $"AMFAEListMove: {oldEntry.DisplayName}({oldEntry.Bld.BuildingName}) <=> {newEntry.Bld.BuildingName}"
+        );
+        if (newEntry.Bld.House.isFull())
+            return false;
+
+        GameLocation oldParentLoc = oldEntry.Bld.Building.GetParentLocation();
+        AnimalHouse oldHouse = oldEntry.Bld.House;
+
+        if (
+            !oldHouse.animals.Remove(oldEntry.Animal.myID.Value)
+            && !oldParentLoc.animals.Remove(oldEntry.Animal.myID.Value)
+        )
+            return false;
+
+        ModEntry.Log(
+            $"AMFAEListMove for reals: {oldEntry.DisplayName}({oldEntry.Bld.BuildingName}) <=> {newEntry.Bld.BuildingName}"
+        );
+
+        oldHouse.animalsThatLiveHere.Remove(oldEntry.Animal.myID.Value);
+        oldEntry.Bld.OnPropertyChanged(new(nameof(oldEntry.Bld.BuildingOccupant)));
+        newEntry.Bld.AdoptAnimal(oldEntry.Animal);
+
+        oldEntry.Bld.RefreshAMFAE();
+        newEntry.Bld.RefreshAMFAE();
+
+        return true;
+    }
+
+    public IEnumerable<AnimalManagePlaceholder> AMFAEPlaceholds
+    {
+        get
+        {
+            for (int i = 0; i < RemainingSpace; i++)
+                yield return new AnimalManagePlaceholder(this);
+        }
+    }
 }
 
 public sealed partial record class BazaarLocationEntry(
-    IHasSelectedLivestock Main,
+    ITopLevelBazaarContext Main,
     GameLocation Location,
     Dictionary<string, List<BazaarBuildingEntry>> LivestockBuildings
 )
@@ -193,19 +287,7 @@ public sealed partial record class BazaarLocationEntry(
         return 0;
     }
 
-    public IEnumerable<BazaarBuildingEntry> AllLivestockBuildings
-    {
-        get
-        {
-            foreach (List<BazaarBuildingEntry> buildings in LivestockBuildings.Values)
-            {
-                foreach (BazaarBuildingEntry building in buildings)
-                {
-                    yield return building;
-                }
-            }
-        }
-    }
+    public HashSet<BazaarBuildingEntry> AllLivestockBuildings = [];
 
     public IEnumerable<BazaarBuildingEntry> ValidLivestockBuildings
     {

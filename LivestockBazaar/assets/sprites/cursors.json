@@ -27,6 +27,12 @@
       "SourceRect": "384,396,15,15",
       "FixedEdges": "5,5,5,5",
       "Scale": 4
+    },
+    "heartFull": {
+      "SourceRect": "211,428,7,6",
+    },
+    "heartEmpty": {
+      "SourceRect": "218,428,7,6",
     }
   }
 }

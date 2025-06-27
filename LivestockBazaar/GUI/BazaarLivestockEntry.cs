@@ -52,7 +52,7 @@ public sealed partial record BazaarLivestockPurchaseEntry(LivestockData Ls)
     }
 }
 
-public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string ShopName, LivestockData Ls)
+public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, string? ShopName, LivestockData Ls)
 {
     // icon
     public readonly SDUISprite ShopIcon = Ls.ShopIcon;
@@ -96,7 +96,7 @@ public sealed partial record BazaarLivestockEntry(BazaarContextMain Main, string
         {
             if (Ls.Data.RequiredBuilding == null)
                 return true;
-            hasRequiredBuilding ??= Main.AnimalHouseByLocation.Any(bld => bld.Value.CheckHasRequiredBuilding(this));
+            hasRequiredBuilding ??= Main.HasRequiredBuilding(this);
             return hasRequiredBuilding ?? false;
         }
     }

@@ -14,7 +14,7 @@ using StardewValley.Menus;
 namespace LivestockBazaar.GUI;
 
 /// <summary>Context for bazaar menu</summary>
-public sealed partial record BazaarContextMain : IHasSelectedLivestock
+public sealed partial record BazaarContextMain : ITopLevelBazaarContext
 {
     private const int CELL_W = 192;
 
@@ -46,9 +46,14 @@ public sealed partial record BazaarContextMain : IHasSelectedLivestock
         return AnimalHouseByLocation.Values.Any((loc) => loc.GetTotalRemainingSpaceCount(livestock) > 0);
     }
 
-    internal int GetCurrentlyOwnedCount(BazaarLivestockEntry livestock)
+    public int GetCurrentlyOwnedCount(BazaarLivestockEntry livestock)
     {
         return AnimalHouseByLocation.Values.Sum(loc => loc.GetCurrentLivestockCount(livestock));
+    }
+
+    public bool HasRequiredBuilding(BazaarLivestockEntry livestock)
+    {
+        return AnimalHouseByLocation.Any(bld => bld.Value.CheckHasRequiredBuilding(livestock));
     }
 
     /// <summary>
@@ -56,7 +61,7 @@ public sealed partial record BazaarContextMain : IHasSelectedLivestock
     /// </summary>
     /// <param name="e"></param>
     public static IReadOnlyDictionary<GameLocation, BazaarLocationEntry> BuildAllAnimalHouseLocations(
-        IHasSelectedLivestock mainContext,
+        ITopLevelBazaarContext mainContext,
         IReadOnlyList<BazaarLivestockEntry> livestockEntries
     )
     {
@@ -73,7 +78,7 @@ public sealed partial record BazaarContextMain : IHasSelectedLivestock
     }
 
     public static void AddToAllAnimalHouseLocations(
-        IHasSelectedLivestock mainContext,
+        ITopLevelBazaarContext mainContext,
         Dictionary<GameLocation, BazaarLocationEntry> allAnimalHouseLocations,
         Building building,
         List<FarmAnimal> tempFarmAnimals
@@ -88,7 +93,8 @@ public sealed partial record BazaarContextMain : IHasSelectedLivestock
         if (!allAnimalHouseLocations.ContainsKey(building.GetParentLocation()))
             allAnimalHouseLocations[parentLocation] = new(mainContext, parentLocation, []);
         BazaarLocationEntry locationEntry = allAnimalHouseLocations[parentLocation];
-
+        BazaarBuildingEntry buildingEntry = new(locationEntry, building, buildingData);
+        locationEntry.AllLivestockBuildings.Add(buildingEntry);
         foreach (FarmAnimal farmAnimal in tempFarmAnimals)
         {
             if (farmAnimal.CanLiveIn(building))
@@ -96,16 +102,9 @@ public sealed partial record BazaarContextMain : IHasSelectedLivestock
                 string animalType = farmAnimal.type.Value;
                 if (!locationEntry.LivestockBuildings.ContainsKey(animalType))
                     locationEntry.LivestockBuildings[animalType] = [];
-                locationEntry.LivestockBuildings[animalType].Add(new(locationEntry, building, buildingData));
+                locationEntry.LivestockBuildings[animalType].Add(buildingEntry);
             }
         }
-
-        // foreach (var occupentType in buildingData.ValidOccupantTypes)
-        // {
-        //     if (!occToBld.LivestockBuildings.ContainsKey(occupentType))
-        //         occToBld.LivestockBuildings[occupentType] = [];
-        //     occToBld.LivestockBuildings[occupentType].Add(new(occToBld, building, buildingData));
-        // }
     }
 
     // theme
