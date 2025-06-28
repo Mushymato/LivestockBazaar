@@ -1,0 +1,10 @@
+{
+  "Texture": "LooseSprites/Cursors2",
+  "Sprites": {
+    "animalSlotBg": {
+      "SourceRect": "80,144,16,16",
+      "FixedEdges": "4,4,4,4",
+      "Scale": 4
+    },
+  }
+}

@@ -42,6 +42,8 @@ internal static class BazaarMenu
         get => amfaeEntry.Value;
         set
         {
+            if (AMContext == null)
+                return;
             amfaeEntry.Value = value;
             amfaeTooltip.Value ??= viewEngine.CreateDrawableFromAsset(viewAnimalManageTooltip);
             if (value is AnimalManageFarmAnimalEntry amfaee)
@@ -130,8 +132,8 @@ internal static class BazaarMenu
     {
         amfaeTooltip.Value?.Dispose();
         amfaeTooltip.Value = null;
-        Game1.exitActiveMenu();
         AMContext = null;
+        Game1.exitActiveMenu();
         Game1.player.forceCanMove();
     }
 

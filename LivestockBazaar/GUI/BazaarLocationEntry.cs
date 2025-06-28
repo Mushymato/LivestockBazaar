@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text;
 using LivestockBazaar.Integration;
@@ -135,15 +136,9 @@ public sealed partial record BazaarBuildingEntry(
     public Color backgroundTint = Color.White;
 
     [Notify]
-    public bool isSelected = false;
+    private bool isSelected = false;
 
-    [Notify]
-    public bool isSelected2 = false;
-
-    public Color SelectedFrameTint =>
-        IsSelected2 ? Color.Blue * 0.8f
-        : IsSelected ? Color.White
-        : Color.Transparent;
+    public Color SelectedFrameTint => IsSelected ? Color.White : Color.Transparent;
 
     private IList<AnimalManageFarmAnimalEntry>? AMFAEListImpl;
 
@@ -154,11 +149,45 @@ public sealed partial record BazaarBuildingEntry(
             .OrderBy(amfae => amfae.DisplayType)
             .ToList();
 
+    [Notify]
+    private bool heldAnimalCanLiveHere = true;
+    public float CanLiveOpacity => HeldAnimalCanLiveHere ? 1f : 0.5f;
+
     public void RefreshAMFAE()
     {
         AMFAEListImpl = null;
         OnPropertyChanged(new(nameof(AMFAEList)));
         OnPropertyChanged(new(nameof(AMFAEPlaceholds)));
+    }
+
+    internal static bool TryGetLocAndHouse(
+        AnimalManageFarmAnimalEntry entry,
+        [NotNullWhen(true)] out (GameLocation, AnimalHouse)? locAndHouse
+    )
+    {
+        locAndHouse = null;
+        GameLocation loc = entry.Bld.Building.GetParentLocation();
+        AnimalHouse house = entry.Bld.House;
+        if (!loc.animals.ContainsKey(entry.Animal.myID.Value) && !house.animals.ContainsKey(entry.Animal.myID.Value))
+            return false;
+        locAndHouse = (loc, house);
+        return true;
+    }
+
+    internal static void RemoveFromLocAndHouse(
+        AnimalManageFarmAnimalEntry entry,
+        (GameLocation, AnimalHouse) locAndHouse
+    )
+    {
+        if (!locAndHouse.Item1.animals.Remove(entry.Animal.myID.Value))
+        {
+            locAndHouse.Item2.animals.Remove(entry.Animal.myID.Value);
+        }
+        locAndHouse.Item2.animalsThatLiveHere.Remove(entry.Animal.myID.Value);
+        if (entry.Animal.foundGrass != null && FarmAnimal.reservedGrass.Contains(entry.Animal.foundGrass))
+        {
+            FarmAnimal.reservedGrass.Remove(entry.Animal.foundGrass);
+        }
     }
 
     internal static bool AMFAEListSwap(AnimalManageFarmAnimalEntry oldEntry, AnimalManageFarmAnimalEntry newEntry)
@@ -167,31 +196,23 @@ public sealed partial record BazaarBuildingEntry(
             $"AMFAEListSwap: {oldEntry.DisplayName}({oldEntry.Bld.BuildingName}) <=> {newEntry.DisplayName}({newEntry.Bld.BuildingName})"
         );
 
-        GameLocation oldParentLoc = oldEntry.Bld.Building.GetParentLocation();
-        AnimalHouse oldHouse = oldEntry.Bld.House;
-        GameLocation newParentLoc = newEntry.Bld.Building.GetParentLocation();
-        AnimalHouse newHouse = newEntry.Bld.House;
-
-        if (
-            !oldHouse.animals.Remove(oldEntry.Animal.myID.Value)
-            && !oldParentLoc.animals.Remove(oldEntry.Animal.myID.Value)
-        )
+        if (!TryGetLocAndHouse(oldEntry, out (GameLocation, AnimalHouse)? oldLocAndHouse))
             return false;
-        if (
-            !newHouse.animals.Remove(newEntry.Animal.myID.Value)
-            && !newParentLoc.animals.Remove(oldEntry.Animal.myID.Value)
-        )
+
+        if (!TryGetLocAndHouse(newEntry, out (GameLocation, AnimalHouse)? newLocAndHouse))
             return false;
 
         ModEntry.Log(
             $"AMFAEListSwap for reals: {oldEntry.DisplayName}({oldEntry.Bld.BuildingName}) <=> {newEntry.DisplayName}({newEntry.Bld.BuildingName})"
         );
 
-        oldHouse.animalsThatLiveHere.Remove(oldEntry.Animal.myID.Value);
-        newHouse.animalsThatLiveHere.Remove(newEntry.Animal.myID.Value);
+        RemoveFromLocAndHouse(oldEntry, oldLocAndHouse.Value);
+        RemoveFromLocAndHouse(newEntry, newLocAndHouse.Value);
 
         oldEntry.Bld.AdoptAnimal(newEntry.Animal);
         newEntry.Bld.AdoptAnimal(oldEntry.Animal);
+        newEntry.Animal.makeSound();
+        oldEntry.Animal.makeSound();
 
         oldEntry.Bld.RefreshAMFAE();
         newEntry.Bld.RefreshAMFAE();
@@ -207,23 +228,19 @@ public sealed partial record BazaarBuildingEntry(
         if (newEntry.Bld.House.isFull())
             return false;
 
-        GameLocation oldParentLoc = oldEntry.Bld.Building.GetParentLocation();
-        AnimalHouse oldHouse = oldEntry.Bld.House;
-
-        if (
-            !oldHouse.animals.Remove(oldEntry.Animal.myID.Value)
-            && !oldParentLoc.animals.Remove(oldEntry.Animal.myID.Value)
-        )
+        if (!TryGetLocAndHouse(oldEntry, out (GameLocation, AnimalHouse)? oldLocAndHouse))
             return false;
+
+        RemoveFromLocAndHouse(oldEntry, oldLocAndHouse.Value);
 
         ModEntry.Log(
             $"AMFAEListMove for reals: {oldEntry.DisplayName}({oldEntry.Bld.BuildingName}) <=> {newEntry.Bld.BuildingName}"
         );
 
-        oldHouse.animalsThatLiveHere.Remove(oldEntry.Animal.myID.Value);
-        oldEntry.Bld.OnPropertyChanged(new(nameof(oldEntry.Bld.BuildingOccupant)));
         newEntry.Bld.AdoptAnimal(oldEntry.Animal);
+        oldEntry.Animal.makeSound();
 
+        oldEntry.Bld.OnPropertyChanged(new(nameof(oldEntry.Bld.BuildingOccupant)));
         oldEntry.Bld.RefreshAMFAE();
         newEntry.Bld.RefreshAMFAE();
 
