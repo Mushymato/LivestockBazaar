@@ -50,3 +50,29 @@ public record SDUISprite(
     public SDUISprite(Texture2D Texture, Rectangle SourceRect)
         : this(Texture, SourceRect, SDUIEdges.NONE, new()) { }
 };
+
+/// <summary>
+/// Cardinal directions used in UI, matching gamepad stick/button directions for navigation.
+/// </summary>
+public enum SDUIDirection
+{
+    /// <summary>
+    /// "Up" in screen space.
+    /// </summary>
+    North = 0,
+
+    /// <summary>
+    /// "Right" in screen space.
+    /// </summary>
+    East,
+
+    /// <summary>
+    /// "Down" in screen space.
+    /// </summary>
+    South,
+
+    /// <summary>
+    /// "Left" in screen space.
+    /// </summary>
+    West,
+}

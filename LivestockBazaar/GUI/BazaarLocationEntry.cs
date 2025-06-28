@@ -150,7 +150,9 @@ public sealed partial record BazaarBuildingEntry(
     public IList<AnimalManageFarmAnimalEntry> AMFAEList =>
         AMFAEListImpl ??= (
             GetFarmAnimalsThatLiveHere().Select(farmAnimal => new AnimalManageFarmAnimalEntry(this, farmAnimal)) ?? []
-        ).ToList();
+        )
+            .OrderBy(amfae => amfae.DisplayType)
+            .ToList();
 
     public void RefreshAMFAE()
     {
@@ -164,11 +166,6 @@ public sealed partial record BazaarBuildingEntry(
         ModEntry.Log(
             $"AMFAEListSwap: {oldEntry.DisplayName}({oldEntry.Bld.BuildingName}) <=> {newEntry.DisplayName}({newEntry.Bld.BuildingName})"
         );
-
-        // int oldIndex = oldEntry.Bld.AMFAEList.IndexOf(oldEntry);
-        // int newIndex = oldEntry.Bld.AMFAEList.IndexOf(newEntry);
-        // if (oldIndex == -1 || newIndex == -1)
-        //     return false;
 
         GameLocation oldParentLoc = oldEntry.Bld.Building.GetParentLocation();
         AnimalHouse oldHouse = oldEntry.Bld.House;

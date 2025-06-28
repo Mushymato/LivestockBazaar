@@ -54,7 +54,7 @@ public sealed record AnimalManageFarmAnimalEntry(BazaarBuildingEntry Bld, FarmAn
 
     public void HandleShowTooltip()
     {
-        if (BazaarMenu.AMFAEEntry is AnimalManageEntry prev && prev.Held)
+        if (BazaarMenu.AMFAEEntry is AnimalManageFarmAnimalEntry prev && prev.Held)
             return;
         BazaarMenu.AMFAEEntry = this;
     }
@@ -65,9 +65,8 @@ public sealed record AnimalManageFarmAnimalEntry(BazaarBuildingEntry Bld, FarmAn
 /// </summary>
 public sealed partial record AnimalManageContext : ITopLevelBazaarContext
 {
-    public IReadOnlyDictionary<GameLocation, BazaarLocationEntry> AnimalHouseByLocation;
-    public IEnumerable<BazaarLocationEntry> LocationEntries =>
-        AnimalHouseByLocation.Values.OrderByDescending((loc) => loc.TotalRemainingSpaceCount);
+    public readonly IReadOnlyDictionary<GameLocation, BazaarLocationEntry> AnimalHouseByLocation;
+    public readonly IList<BazaarLocationEntry> LocationEntries;
 
     public AnimalManageContext()
     {
@@ -75,6 +74,51 @@ public sealed partial record AnimalManageContext : ITopLevelBazaarContext
             .LsData.Values.Select((data) => new BazaarLivestockEntry(this, null, data))
             .ToList();
         AnimalHouseByLocation = BazaarContextMain.BuildAllAnimalHouseLocations(this, livestockEntries);
+        if (!AnimalHouseByLocation.Any())
+        {
+            throw new ArgumentException("No valid locations");
+        }
+        LocationEntries = AnimalHouseByLocation
+            .Values.OrderByDescending((loc) => loc.TotalRemainingSpaceCount)
+            .ToList();
+    }
+
+    [Notify]
+    private int selectedLocationIndex = 0;
+
+    public BazaarLocationEntry SelectedLocation => LocationEntries[SelectedLocationIndex];
+
+    public bool ShowNav => LocationEntries.Count > 1;
+
+    public void PrevLocation()
+    {
+        if (SelectedLocationIndex == 0)
+            SelectedLocationIndex = LocationEntries.Count - 1;
+        else
+            SelectedLocationIndex--;
+    }
+
+    public void NextLocation()
+    {
+        if (SelectedLocationIndex >= LocationEntries.Count - 1)
+            SelectedLocationIndex = 0;
+        else
+            SelectedLocationIndex++;
+    }
+
+    public void BuildingScroll(SDUIDirection direction)
+    {
+        if (!ShowNav)
+            return;
+        switch (direction)
+        {
+            case SDUIDirection.North:
+                PrevLocation();
+                break;
+            case SDUIDirection.South:
+                NextLocation();
+                break;
+        }
     }
 
     // hovered building entry
@@ -113,13 +157,12 @@ public sealed partial record AnimalManageContext : ITopLevelBazaarContext
         Game1.playSound("drumkit6");
     }
 
-    public void HandleSelectForSwap(AnimalManageEntry? selected = null)
+    public void HandleSelectForSwap(AnimalManageEntry selected)
     {
         if (BazaarMenu.AMFAEEntry is not AnimalManageEntry prev)
         {
             BazaarMenu.AMFAEEntry = selected;
-            if (selected != null)
-                selected.Held = true;
+            selected.Held = true;
             return;
         }
         if (prev == selected)
@@ -128,25 +171,28 @@ public sealed partial record AnimalManageContext : ITopLevelBazaarContext
             return;
         }
 
-        if (selected == null)
-            return;
-
-        if (prev is AnimalManageFarmAnimalEntry amfaePrev && amfaePrev.Animal.CanLiveIn(selected.Bld.Building))
+        // consider adding
+        if (prev.Bld != selected.Bld)
         {
-            if (selected is AnimalManageFarmAnimalEntry amfae)
+            if (prev is AnimalManageFarmAnimalEntry amfaePrev && amfaePrev.Animal.CanLiveIn(selected.Bld.Building))
             {
-                if (amfae.Animal.CanLiveIn(prev.Bld.Building) && BazaarBuildingEntry.AMFAEListSwap(amfaePrev, amfae))
+                if (selected is AnimalManageFarmAnimalEntry amfae)
+                {
+                    if (
+                        amfae.Animal.CanLiveIn(prev.Bld.Building) && BazaarBuildingEntry.AMFAEListSwap(amfaePrev, amfae)
+                    )
+                    {
+                        amfaePrev.Held = false;
+                        BazaarMenu.AMFAEEntry = null;
+                        return;
+                    }
+                }
+                else if (BazaarBuildingEntry.AMFAEListMove(amfaePrev, selected))
                 {
                     amfaePrev.Held = false;
                     BazaarMenu.AMFAEEntry = null;
                     return;
                 }
-            }
-            else if (BazaarBuildingEntry.AMFAEListMove(amfaePrev, selected))
-            {
-                amfaePrev.Held = false;
-                BazaarMenu.AMFAEEntry = null;
-                return;
             }
         }
 
