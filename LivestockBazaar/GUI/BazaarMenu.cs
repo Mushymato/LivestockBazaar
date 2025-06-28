@@ -113,7 +113,15 @@ internal static class BazaarMenu
     /// </summary>
     internal static void ShowAnimalManage()
     {
-        AMContext = new();
+        try
+        {
+            AMContext = new();
+        }
+        catch (ArgumentException)
+        {
+            ModEntry.Log("No animal buildings to manage.", LogLevel.Info);
+            return;
+        }
         var menuCtrl = viewEngine.CreateMenuControllerFromAsset(viewAnimalManage, AMContext);
         menuCtrl.CloseAction = AMCloseAction;
         menuCtrl.EnableCloseButton();
@@ -130,6 +138,7 @@ internal static class BazaarMenu
 
     private static void AMCloseAction()
     {
+        amfaeEntry.Value = null;
         amfaeTooltip.Value?.Dispose();
         amfaeTooltip.Value = null;
         AMContext = null;

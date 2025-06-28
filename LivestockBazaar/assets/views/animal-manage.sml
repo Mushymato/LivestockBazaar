@@ -11,7 +11,7 @@
       layout="stretch content"
       orientation="vertical"
       wheel=|BuildingScroll($Direction)| >
-      <lane horizontal-content-alignment="middle">
+      <lane horizontal-content-alignment="middle" layout="stretch 64px">
         <image *if={~AnimalManageContext.ShowNav} focusable="true" sprite={@Mods/StardewUI/Sprites/LargeLeftArrow} left-click=|~AnimalManageContext.PrevLocation()|/>
         <banner padding="8" text={:LocationName} layout="stretch"/>
         <image *if={~AnimalManageContext.ShowNav} focusable="true" sprite={@Mods/StardewUI/Sprites/LargeRightArrow} left-click=|~AnimalManageContext.NextLocation()|/>
