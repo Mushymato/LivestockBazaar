@@ -316,6 +316,11 @@ public sealed partial record BazaarContextMain : ITopLevelBazaarContext
         };
     }
 
+    public void ShowAnimalManage()
+    {
+        BazaarMenu.ShowAnimalManage();
+    }
+
     // page 1 (shop grid) hover and select
     public void HandleHoverLivestock(BazaarLivestockEntry? livestock = null)
     {
@@ -368,9 +373,9 @@ public sealed partial record BazaarContextMain : ITopLevelBazaarContext
         if (building.RemainingSpace == 0)
             return;
         if (selectedBuilding != null)
-            selectedBuilding.IsSelected = false;
+            selectedBuilding.Select = BazaarBuildingEntry.SelectionState.None;
         selectedBuilding = building;
-        selectedBuilding.IsSelected = true;
+        selectedBuilding.Select = BazaarBuildingEntry.SelectionState.Left;
         ReadyToPurchase = true;
         Game1.playSound("drumkit6");
     }
@@ -384,7 +389,7 @@ public sealed partial record BazaarContextMain : ITopLevelBazaarContext
         }
         if (selectedBuilding != null)
         {
-            selectedBuilding.IsSelected = false;
+            selectedBuilding.Select = BazaarBuildingEntry.SelectionState.None;
             selectedBuilding = null;
         }
         ReadyToPurchase = false;
@@ -406,7 +411,7 @@ public sealed partial record BazaarContextMain : ITopLevelBazaarContext
             selectedBuilding.AdoptAnimal(animal);
             if (selectedBuilding.RemainingSpace == 0)
             {
-                selectedBuilding.IsSelected = false;
+                selectedBuilding.Select = BazaarBuildingEntry.SelectionState.None;
                 selectedBuilding = null;
             }
             if (

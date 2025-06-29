@@ -47,12 +47,16 @@
       <!-- info box -->
       <lane layout="stretch content" orientation="vertical">
         <lane orientation="horizontal" vertical-content-alignment="middle">
-          <image *if={IsPage1} focusable="true" sprite={@mushymato.LivestockBazaar/sprites/cursors:organize} margin="8"
-            tooltip={SortTooltip}
-            +hover:scale="1.1"
-            +transition:scale="100ms EaseInSine"
-            left-click=|ToggleLivestockSortMode()| />
-          <textinput layout="stretch 48px" text={<>NameFilter}/>
+          <panel focusable="true" margin="4,0,0,0" left-click=|ToggleLivestockSortMode()| tooltip={SortTooltip}>
+            <image sprite={@mushymato.LivestockBazaar/sprites/cursors2:dotdotdot} layout="48px 48px"/>
+            <image sprite={@mushymato.LivestockBazaar/sprites/cursors:organize} layout="30px 36px" margin="9,8" +hover:scale="1.2" +transition:scale="100ms EaseInSine"/>
+          </panel>
+          <textinput layout="stretch 48px" margin="0,2,0,0" text={<>NameFilter}/>
+          <panel focusable="true" margin="4,0,0,0" left-click=|ShowAnimalManage()|>
+            <image sprite={@mushymato.LivestockBazaar/sprites/cursors2:dotdotdot} layout="48px 48px"/>
+            <image sprite={@mushymato.LivestockBazaar/sprites/springobjects:hay} layout="32px 32px" margin="8,8,8,8" +hover:scale="1.2" +transition:scale="100ms EaseInSine"/>
+          </panel>
+
         </lane>
         <infobox *context={HoveredLivestock} tint={:ShopIconTint}>
           <label *if={HasRequiredBuilding} text={:LivestockName} font="dialogue"/>

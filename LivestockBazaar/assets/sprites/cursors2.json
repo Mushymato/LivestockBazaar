@@ -6,5 +6,8 @@
       "FixedEdges": "4,4,4,4",
       "Scale": 4
     },
+    "dotdotdot": {
+      "SourceRect": "16,144,16,16"
+    }
   }
 }

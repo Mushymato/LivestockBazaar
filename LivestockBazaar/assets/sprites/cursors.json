@@ -20,8 +20,7 @@
       "Scale": 4
     },
     "organize": {
-      "SourceRect": "162,440,16,16",
-      "Scale": 4
+      "SourceRect": "165,443,10,11"
     },
     "shopBg": {
       "SourceRect": "384,396,15,15",
@@ -33,6 +32,9 @@
     },
     "heartEmpty": {
       "SourceRect": "218,428,7,6",
+    },
+    "moveAnimal": {
+      "SourceRect": "16,384,16,16"
     }
   }
 }

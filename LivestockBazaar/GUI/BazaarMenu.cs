@@ -6,6 +6,7 @@ using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.GameData.Shops;
+using StardewValley.Menus;
 
 namespace LivestockBazaar.GUI;
 
@@ -101,8 +102,8 @@ internal static class BazaarMenu
         }
         else
         {
-            Game1.exitActiveMenu();
             ShopContext = null;
+            Game1.exitActiveMenu();
             Game1.player.forceCanMove();
             ModEntry.Config.SaveConfig();
         }
@@ -123,27 +124,24 @@ internal static class BazaarMenu
             return;
         }
         var menuCtrl = viewEngine.CreateMenuControllerFromAsset(viewAnimalManage, AMContext);
-        menuCtrl.CloseAction = AMCloseAction;
-        menuCtrl.EnableCloseButton();
-        Game1.activeClickableMenu = menuCtrl.Menu;
-        // if (Game1.activeClickableMenu == null)
-        // {
-        //     Game1.activeClickableMenu = menuCtrl.Menu;
-        // }
-        // else
-        // {
-        //     Game1.activeClickableMenu.SetChildMenu(menuCtrl.Menu);
-        // }
+        menuCtrl.Closing += AMClosing;
+        if (Game1.activeClickableMenu != null)
+        {
+            Game1.activeClickableMenu.SetChildMenu(menuCtrl.Menu);
+        }
+        else
+        {
+            menuCtrl.EnableCloseButton();
+            Game1.activeClickableMenu = menuCtrl.Menu;
+        }
     }
 
-    private static void AMCloseAction()
+    private static void AMClosing()
     {
         amfaeEntry.Value = null;
         amfaeTooltip.Value?.Dispose();
         amfaeTooltip.Value = null;
         AMContext = null;
-        Game1.exitActiveMenu();
-        Game1.player.forceCanMove();
     }
 
     /// <summary>

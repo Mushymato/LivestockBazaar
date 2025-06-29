@@ -1,0 +1,8 @@
+{
+  "Texture": "Maps/springobjects",
+  "Sprites": {
+    "hay": {
+      "SourceRect": "160,112,16,16"
+    }
+  }
+}

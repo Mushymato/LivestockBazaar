@@ -135,10 +135,16 @@ public sealed partial record BazaarBuildingEntry(
     [Notify]
     public Color backgroundTint = Color.White;
 
-    [Notify]
-    private bool isSelected = false;
+    public enum SelectionState
+    {
+        None,
+        Left,
+        Right,
+    }
 
-    public Color SelectedFrameTint => IsSelected ? Color.White : Color.Transparent;
+    [Notify]
+    private SelectionState select = SelectionState.None;
+    public Color SelectedFrameTint => Select != SelectionState.None ? Color.White : Color.Transparent;
 
     private IList<AnimalManageFarmAnimalEntry>? AMFAEListImpl;
 

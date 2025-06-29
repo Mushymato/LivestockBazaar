@@ -10,13 +10,6 @@ public partial record AnimalManageEntry(BazaarBuildingEntry Bld)
     [Notify]
     private bool held = false;
     public bool IsPlacehold => this is AnimalManagePlaceholder;
-
-    public void HandleShowTooltip()
-    {
-        if (BazaarMenu.AMFAEEntry is AnimalManageFarmAnimalEntry prev && prev.Held)
-            return;
-        BazaarMenu.AMFAEEntry = this;
-    }
 }
 
 public sealed record AnimalManagePlaceholder(BazaarBuildingEntry Bld) : AnimalManageEntry(Bld);
@@ -138,10 +131,9 @@ public sealed partial record AnimalManageContext : ITopLevelBazaarContext
             return existing;
         if (existing != null)
         {
-            existing.IsSelected = false;
+            existing.Select = BazaarBuildingEntry.SelectionState.None;
             existing.HeldAnimalCanLiveHere = true;
         }
-        building.IsSelected = true;
         if (BazaarMenu.AMFAEEntry is AnimalManageFarmAnimalEntry amfae)
         {
             building.HeldAnimalCanLiveHere = amfae.Animal.CanLiveIn(building.Building);
@@ -153,11 +145,63 @@ public sealed partial record AnimalManageContext : ITopLevelBazaarContext
     public void HandleSelectBuilding1(BazaarBuildingEntry building)
     {
         SelectedBuilding1 = UpdateSelectBuilding(building, SelectedBuilding1, SelectedBuilding2);
+        if (SelectedBuilding1 != null)
+        {
+            SelectedBuilding1.Select = BazaarBuildingEntry.SelectionState.Left;
+        }
     }
 
     public void HandleSelectBuilding2(BazaarBuildingEntry building)
     {
         SelectedBuilding2 = UpdateSelectBuilding(building, SelectedBuilding2, SelectedBuilding1);
+        if (SelectedBuilding2 != null)
+        {
+            SelectedBuilding2.Select = BazaarBuildingEntry.SelectionState.Right;
+        }
+    }
+
+    public void UpdateCanLiveHere()
+    {
+        if (BazaarMenu.AMFAEEntry is AnimalManageFarmAnimalEntry amfae2)
+        {
+            BazaarBuildingEntry? otherBuilding = null;
+            if (SelectedBuilding1 == amfae2.Bld)
+            {
+                otherBuilding = SelectedBuilding2;
+            }
+            else if (SelectedBuilding2 == amfae2.Bld)
+            {
+                otherBuilding = SelectedBuilding1;
+            }
+            if (otherBuilding != null)
+            {
+                amfae2.Bld.HeldAnimalCanLiveHere = true;
+                otherBuilding.HeldAnimalCanLiveHere = amfae2.Animal.CanLiveIn(otherBuilding.Building);
+            }
+        }
+        else
+        {
+            if (SelectedBuilding1 != null)
+                SelectedBuilding1.HeldAnimalCanLiveHere = true;
+            if (SelectedBuilding2 != null)
+                SelectedBuilding2.HeldAnimalCanLiveHere = true;
+        }
+    }
+
+    public void ClearTooltip()
+    {
+        if (BazaarMenu.AMFAEEntry?.Held ?? false)
+            return;
+        BazaarMenu.AMFAEEntry = null;
+        UpdateCanLiveHere();
+    }
+
+    public void HandleShowTooltip(AnimalManageEntry selected)
+    {
+        if (BazaarMenu.AMFAEEntry is AnimalManageFarmAnimalEntry prev && prev.Held)
+            return;
+        BazaarMenu.AMFAEEntry = selected;
+        UpdateCanLiveHere();
     }
 
     public void HandleSelectForSwap(AnimalManageEntry selected)
@@ -166,12 +210,12 @@ public sealed partial record AnimalManageContext : ITopLevelBazaarContext
         {
             BazaarMenu.AMFAEEntry = selected;
             selected.Held = true;
-            goto CHECK_LIVE_IN;
+            return;
         }
         if (prev == selected)
         {
             selected.Held = !selected.Held;
-            goto CHECK_LIVE_IN;
+            return;
         }
 
         // consider adding
@@ -203,44 +247,11 @@ public sealed partial record AnimalManageContext : ITopLevelBazaarContext
         prev.Held = false;
         selected.Held = true;
         BazaarMenu.AMFAEEntry = selected;
-
-        CHECK_LIVE_IN:
-        if (BazaarMenu.AMFAEEntry is AnimalManageFarmAnimalEntry amfae2 && selected.Held)
-        {
-            BazaarBuildingEntry? otherBuilding = null;
-            if (SelectedBuilding1 == amfae2.Bld)
-            {
-                otherBuilding = SelectedBuilding2;
-            }
-            else if (SelectedBuilding2 == amfae2.Bld)
-            {
-                otherBuilding = SelectedBuilding1;
-            }
-            if (otherBuilding != null)
-            {
-                amfae2.Bld.HeldAnimalCanLiveHere = true;
-                otherBuilding.HeldAnimalCanLiveHere = amfae2.Animal.CanLiveIn(otherBuilding.Building);
-            }
-        }
-        else
-        {
-            if (SelectedBuilding1 != null)
-                SelectedBuilding1.HeldAnimalCanLiveHere = true;
-            if (SelectedBuilding2 != null)
-                SelectedBuilding2.HeldAnimalCanLiveHere = true;
-        }
     }
 
     public int GetCurrentlyOwnedCount(BazaarLivestockEntry livestock)
     {
         return AnimalHouseByLocation.Values.Sum(loc => loc.GetCurrentLivestockCount(livestock));
-    }
-
-    public void ClearTooltip()
-    {
-        if (BazaarMenu.AMFAEEntry?.Held ?? false)
-            return;
-        BazaarMenu.AMFAEEntry = null;
     }
 
     public void ClearTooltipForce() => BazaarMenu.AMFAEEntry = null;
