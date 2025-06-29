@@ -3,7 +3,7 @@
   background={@Mods/StardewUI/Sprites/MenuBackground}
   border={@Mods/StardewUI/Sprites/MenuBorder}
   border-thickness="32, 36, 24, 36"
-   pointer-leave=|~AnimalManageContext.ClearTooltipForce()|
+  pointer-leave=|~AnimalManageContext.ClearTooltipForce()|
 >
   <lane orientation="vertical" layout="stretch stretch">
     <lane *context={SelectedLocation}

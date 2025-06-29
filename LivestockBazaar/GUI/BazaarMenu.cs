@@ -112,7 +112,7 @@ internal static class BazaarMenu
     /// <summary>
     /// Show the animal manager menu
     /// </summary>
-    internal static void ShowAnimalManage()
+    internal static void ShowAnimalManage(bool asChildMenu)
     {
         try
         {
@@ -127,7 +127,15 @@ internal static class BazaarMenu
         menuCtrl.Closing += AMClosing;
         if (Game1.activeClickableMenu != null)
         {
-            Game1.activeClickableMenu.SetChildMenu(menuCtrl.Menu);
+            if (asChildMenu)
+            {
+                Game1.activeClickableMenu.SetChildMenu(menuCtrl.Menu);
+            }
+            else
+            {
+                Game1.nextClickableMenu.Add(Game1.activeClickableMenu);
+                Game1.activeClickableMenu = menuCtrl.Menu;
+            }
         }
         else
         {
@@ -156,7 +164,7 @@ internal static class BazaarMenu
     private static void ShowAnimalManageFromBGM(ITabContextMenuEvent evt)
     {
         if (evt.Tab == nameof(VanillaTabOrders.Animals))
-            evt.Entries.Add(evt.CreateEntry(I18n.CMCT_LivestockBazaar_AnimalManage(), ShowAnimalManage));
+            evt.Entries.Add(evt.CreateEntry(I18n.CMCT_LivestockBazaar_AnimalManage(), () => ShowAnimalManage(false)));
     }
 
     private static void OnRenderedActiveMenu(object? sender, RenderedActiveMenuEventArgs e)

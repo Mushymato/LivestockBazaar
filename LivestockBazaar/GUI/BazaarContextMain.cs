@@ -19,7 +19,7 @@ public sealed partial record BazaarContextMain : ITopLevelBazaarContext
     private const int CELL_W = 192;
 
     // viewport size, could change but ppl should just reopen menu
-    public bool IsWidescreen = Game1.viewport.Width >= 1920 * Game1.options.uiScale;
+    public bool IsWidescreen = Game1.viewport.Width >= 1920;
 
     // // fields
     // private readonly string shopName;
@@ -318,7 +318,7 @@ public sealed partial record BazaarContextMain : ITopLevelBazaarContext
 
     public void ShowAnimalManage()
     {
-        BazaarMenu.ShowAnimalManage();
+        BazaarMenu.ShowAnimalManage(true);
     }
 
     // page 1 (shop grid) hover and select

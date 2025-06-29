@@ -1,7 +1,9 @@
 using HarmonyLib;
 using LivestockBazaar.GUI;
+using LivestockBazaar.Model;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.GameData.Shops;
 using StardewValley.Menus;
 using StardewValley.Triggers;
 
@@ -36,7 +38,12 @@ internal static class Patches
         if (onMenuOpened == null && !ModEntry.Config.VanillaMarnieStock)
         {
             ModEntry.Log("Replace original animal shop menu.");
-            BazaarMenu.ShowFor("Marnie", null);
+            ShopOwnerData? marnieOwnerData = null;
+            if (AssetManager.BazaarData.TryGetValue(Wheels.MARNIE, out BazaarData? bazaarData))
+            {
+                marnieOwnerData = bazaarData.GetCurrentOwners().FirstOrDefault();
+            }
+            BazaarMenu.ShowFor(Wheels.MARNIE, marnieOwnerData);
             return false;
         }
         return true;
