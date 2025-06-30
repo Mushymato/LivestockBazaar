@@ -11,7 +11,7 @@ namespace LivestockBazaar;
 
 internal static class Patches
 {
-    internal static string PurchasedAnimal_Trigger => $"{ModEntry.ModId}_purchasedAnimal";
+    internal const string PurchasedAnimal_Trigger = $"{ModEntry.ModId}_purchasedAnimal";
 
     public static void Patch(Harmony patcher)
     {

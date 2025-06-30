@@ -10,11 +10,12 @@
       padding="8"
       layout="stretch content"
       orientation="vertical"
-      wheel=|BuildingScroll($Direction)| >
+      wheel=|ScrollLocations($Direction)| 
+      button-press=|PageLocations($Button)|>
       <lane horizontal-content-alignment="middle" layout="stretch 64px">
-        <image *if={~AnimalManageContext.ShowNav} focusable="true" sprite={@Mods/StardewUI/Sprites/LargeLeftArrow} left-click=|~AnimalManageContext.PrevLocation()|/>
+        <image *if={~AnimalManageContext.ShowNav} sprite={@Mods/StardewUI/Sprites/LargeLeftArrow} left-click=|~AnimalManageContext.PrevLocation()|/>
         <banner padding="8" text={:LocationName} layout="stretch"/>
-        <image *if={~AnimalManageContext.ShowNav} focusable="true" sprite={@Mods/StardewUI/Sprites/LargeRightArrow} left-click=|~AnimalManageContext.NextLocation()|/>
+        <image *if={~AnimalManageContext.ShowNav} sprite={@Mods/StardewUI/Sprites/LargeRightArrow} left-click=|~AnimalManageContext.NextLocation()|/>
       </lane>
       <grid item-layout="length:164">
         <frame *repeat={:AllLivestockBuildings}
@@ -23,7 +24,7 @@
           right-click=|~AnimalManageContext.HandleSelectBuilding2(this)|
           background-tint="#FFFFFF"
           +hover:background-tint="#F5DEB3">
-          <frame layout="stretch content" background={@mushymato.LivestockBazaar/sprites/cursors:borderRed} margin="4" background-tint={SelectedFrameTint}>
+          <frame layout="stretch content" background={@mushymato.LivestockBazaar/sprites/cursors:borderWhite} margin="4" background-tint={SelectedFrameTint}>
             <panel *switch={Select}>
               <lane layout="144px content" padding="8" orientation="vertical" focusable="true" horizontal-content-alignment="middle">
                 <image layout="120px 120px" fit="Contain" horizontal-alignment="middle" vertical-alignment="end"
@@ -56,6 +57,7 @@
           layout="96px 96px"
           horizontal-content-alignment="middle"
           vertical-content-alignment="end"
+          focusable="true"
           left-click=|~AnimalManageContext.HandleSelectForSwap(this)|
           pointer-enter=|~AnimalManageContext.HandleShowTooltip(this)|>
           <image sprite={:Sprite} fit="Contain" layout={:SpriteLayout} margin="8"/>
@@ -63,6 +65,7 @@
         <frame *repeat={AMFAEPlaceholds}
           background={@mushymato.LivestockBazaar/sprites/cursors2:animalSlotBg}
           layout="96px 96px"
+          focusable="true"
           left-click=|~AnimalManageContext.HandleSelectForSwap(this)|
           pointer-enter=|~AnimalManageContext.HandleShowTooltip(this)|>
         </frame>

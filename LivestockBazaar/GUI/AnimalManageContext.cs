@@ -1,6 +1,7 @@
 using LivestockBazaar.Integration;
 using Microsoft.Xna.Framework;
 using PropertyChanged.SourceGenerator;
+using StardewModdingAPI;
 using StardewValley;
 
 namespace LivestockBazaar.GUI;
@@ -92,7 +93,7 @@ public sealed partial record AnimalManageContext : ITopLevelBazaarContext
             SelectedLocationIndex++;
     }
 
-    public void BuildingScroll(SDUIDirection direction)
+    public void ScrollLocations(SDUIDirection direction)
     {
         if (!ShowNav)
             return;
@@ -102,6 +103,19 @@ public sealed partial record AnimalManageContext : ITopLevelBazaarContext
                 PrevLocation();
                 break;
             case SDUIDirection.South:
+                NextLocation();
+                break;
+        }
+    }
+
+    public void PageLocations(SButton button)
+    {
+        switch (button)
+        {
+            case SButton.LeftTrigger:
+                PrevLocation();
+                break;
+            case SButton.RightTrigger:
                 NextLocation();
                 break;
         }

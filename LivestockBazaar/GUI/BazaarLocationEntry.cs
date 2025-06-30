@@ -138,13 +138,29 @@ public sealed partial record BazaarBuildingEntry(
     public enum SelectionState
     {
         None,
+        All,
         Left,
         Right,
     }
 
     [Notify]
     private SelectionState select = SelectionState.None;
-    public Color SelectedFrameTint => Select != SelectionState.None ? Color.White : Color.Transparent;
+
+    // public Color SelectedFrameTint => Select != SelectionState.None ? Color.White : Color.Transparent;
+    public Color SelectedFrameTint
+    {
+        get
+        {
+            return Select switch
+            {
+                SelectionState.None => Color.Transparent,
+                SelectionState.All => Color.White,
+                SelectionState.Left => Color.Blue,
+                SelectionState.Right => Color.Green,
+                _ => throw new NotImplementedException(),
+            };
+        }
+    }
 
     private IList<AnimalManageFarmAnimalEntry>? AMFAEListImpl;
 

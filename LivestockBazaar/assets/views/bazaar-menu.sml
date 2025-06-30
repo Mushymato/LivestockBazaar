@@ -33,7 +33,7 @@
               </lane>
               <panel *if={ShowCurrentlyOwnedCount} layout="stretch" horizontal-content-alignment="end">
                 <frame 
-                  background={@mushymato.LivestockBazaar/sprites/cursors:borderBrown} 
+                  background={@mushymato.LivestockBazaar/sprites/cursors:inset} 
                   layout="content content"
                   margin="0,-8,-8,0"
                   padding="6,4,6,10">
@@ -52,7 +52,7 @@
             <image sprite={@mushymato.LivestockBazaar/sprites/cursors:organize} layout="30px 36px" margin="9,8" +hover:scale="1.2" +transition:scale="100ms EaseInSine"/>
           </panel>
           <textinput layout="stretch 48px" margin="0,2,0,0" text={<>NameFilter}/>
-          <panel focusable="true" margin="4,0,0,0" left-click=|ShowAnimalManage()|>
+          <panel focusable="true" margin="4,0,0,0" left-click=|ShowAnimalManage()| text={#GUI.AnimalManage.TitleShort}>
             <image sprite={@mushymato.LivestockBazaar/sprites/cursors2:dotdotdot} layout="48px 48px"/>
             <image sprite={@mushymato.LivestockBazaar/sprites/springobjects:hay} layout="32px 32px" margin="8,8,8,8" +hover:scale="1.2" +transition:scale="100ms EaseInSine"/>
           </panel>

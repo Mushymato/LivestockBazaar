@@ -375,7 +375,7 @@ public sealed partial record BazaarContextMain : ITopLevelBazaarContext
         if (selectedBuilding != null)
             selectedBuilding.Select = BazaarBuildingEntry.SelectionState.None;
         selectedBuilding = building;
-        selectedBuilding.Select = BazaarBuildingEntry.SelectionState.Left;
+        selectedBuilding.Select = BazaarBuildingEntry.SelectionState.All;
         ReadyToPurchase = true;
         Game1.playSound("drumkit6");
     }

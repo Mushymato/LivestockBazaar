@@ -6,13 +6,14 @@ using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.GameData.Shops;
-using StardewValley.Menus;
+using StardewValley.Network;
 
 namespace LivestockBazaar.GUI;
 
 /// <summary>Bazaar menu StardewUI setup.</summary>
 internal static class BazaarMenu
 {
+    private const string MutexId = $"{ModEntry.ModId}/AnimalManageLock";
     private static IViewEngine viewEngine = null!;
     private static string viewAssetPrefix = null!;
     private static string viewBazaarMenu = null!;
@@ -57,6 +58,8 @@ internal static class BazaarMenu
             }
         }
     }
+
+    private static NetMutex AMMutex => Game1.player.team.GetOrCreateGlobalInventoryMutex(MutexId);
 
     internal static void Register(IModHelper helper)
     {
@@ -109,10 +112,7 @@ internal static class BazaarMenu
         }
     }
 
-    /// <summary>
-    /// Show the animal manager menu
-    /// </summary>
-    internal static void ShowAnimalManage(bool asChildMenu)
+    private static void ShowAnimalManageInner(bool asChildMenu)
     {
         try
         {
@@ -144,12 +144,26 @@ internal static class BazaarMenu
         }
     }
 
+    private static void ShowAnimalManageCannot()
+    {
+        Game1.addHUDMessage(new HUDMessage(I18n.GUI_AnimalManage_Cannot()) { noIcon = true });
+    }
+
+    /// <summary>
+    /// Show the animal manager menu
+    /// </summary>
+    internal static void ShowAnimalManage(bool asChildMenu)
+    {
+        AMMutex.RequestLock(() => ShowAnimalManageInner(asChildMenu), ShowAnimalManageCannot);
+    }
+
     private static void AMClosing()
     {
         amfaeEntry.Value = null;
         amfaeTooltip.Value?.Dispose();
         amfaeTooltip.Value = null;
         AMContext = null;
+        AMMutex.ReleaseLock();
     }
 
     /// <summary>
@@ -164,7 +178,7 @@ internal static class BazaarMenu
     private static void ShowAnimalManageFromBGM(ITabContextMenuEvent evt)
     {
         if (evt.Tab == nameof(VanillaTabOrders.Animals))
-            evt.Entries.Add(evt.CreateEntry(I18n.CMCT_LivestockBazaar_AnimalManage(), () => ShowAnimalManage(false)));
+            evt.Entries.Add(evt.CreateEntry(I18n.GUI_AnimalManage_Title(), () => ShowAnimalManage(false)));
     }
 
     private static void OnRenderedActiveMenu(object? sender, RenderedActiveMenuEventArgs e)

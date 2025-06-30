@@ -13,9 +13,9 @@ namespace LivestockBazaar;
 /// <summary>Add tile action for opening and closing animal shops</summary>
 public static class OpenBazaar
 {
-    /// <summary>Tile action to open FAB shop</summary>
-    internal static string LivestockShop => $"{ModEntry.ModId}_Shop";
-    internal static string LivestockShopArgs => $"{ModEntry.ModId}_ShopTile";
+    /// <summary>Tile action to open LB shop</summary>
+    internal const string LivestockShop = $"{ModEntry.ModId}_Shop";
+    internal const string LivestockShopArgs = $"{ModEntry.ModId}_ShopTile";
 
     internal static void Register(IModHelper helper)
     {

@@ -14,7 +14,12 @@
       "FixedEdges": "1,1,1,1",
       "Scale": 4,
     },
-    "borderBrown": {
+    "borderWhite": {
+      "SourceRect": "379,357,3,3",
+      "FixedEdges": "1,1,1,1",
+      "Scale": 4,
+    },
+    "inset": {
       "SourceRect": "297,420,14,5",
       "FixedEdges": "1,1,1,2",
       "Scale": 4

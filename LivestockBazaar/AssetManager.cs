@@ -14,7 +14,7 @@ internal static class AssetManager
     internal const string PET_ADOPTION = "PetAdoption";
 
     /// <summary>Shop asset target</summary>
-    private static string BazaarAsset => $"{ModEntry.ModId}/Shops";
+    private const string BazaarAsset = $"{ModEntry.ModId}/Shops";
 
     /// <summary>Backing field for bazaar data</summary>
     private static Dictionary<string, BazaarData>? _bazaarData = null;

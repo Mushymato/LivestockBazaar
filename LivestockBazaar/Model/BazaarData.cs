@@ -24,7 +24,7 @@ public sealed record BazaarData
     /// <summary>
     /// Special owner name, for any case where the NPC is not in the shop but it is open anyways
     /// </summary>
-    internal static readonly string Owner_AwayButOpen = $"{ModEntry.ModId}/AwayButOpen";
+    internal const string Owner_AwayButOpen = $"{ModEntry.ModId}/AwayButOpen";
 
     /// <summary>
     /// List of shop owners, similar to field of same name in Data/Shops.

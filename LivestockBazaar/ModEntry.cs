@@ -14,14 +14,13 @@ public sealed class ModEntry : Mod
 #endif
     private static IMonitor? mon;
     internal static ModConfig Config = null!;
-    internal static string ModId = null!;
+    internal const string ModId = "mushymato.LivestockBazaar";
     internal static Integration.IExtraAnimalConfigApi? EAC = null;
 
     public override void Entry(IModHelper helper)
     {
         I18n.Init(helper.Translation);
         mon = Monitor;
-        ModId = ModManifest.UniqueID;
         Config = Helper.ReadConfig<ModConfig>();
         // events
         helper.Events.GameLoop.GameLaunched += OnGameLaunched;
