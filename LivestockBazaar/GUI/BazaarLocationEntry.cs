@@ -65,7 +65,7 @@ public sealed partial record BazaarBuildingEntry(
             buildingTooltipSb.Append(',');
             buildingTooltipSb.Append(Building.tileY);
             buildingTooltipSb.Append(')');
-            foreach (FarmAnimal animal in GetFarmAnimalsThatLiveHere())
+            foreach (FarmAnimal animal in GetFarmAnimalsThatLiveHere().OrderBy(animal => animal.displayType))
             {
                 buildingTooltipSb.Append('\n');
                 buildingTooltipSb.Append(animal.displayType);

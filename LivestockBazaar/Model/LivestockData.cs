@@ -53,7 +53,7 @@ public sealed record LivestockData
             ShopIcon = SpriteIcon;
         }
 
-        if (data.Skins != null)
+        if (data.Skins != null && data.Skins.Any())
         {
             SkinData.Add(null);
             foreach (FarmAnimalSkin skin in data.Skins)
@@ -204,7 +204,7 @@ public sealed record LivestockData
     public void PopulateAltPurchase(Dictionary<string, LivestockData> LsData)
     {
         AltPurchase.Clear();
-        if (Data.AlternatePurchaseTypes == null)
+        if (Data.AlternatePurchaseTypes == null || !Data.AlternatePurchaseTypes.Any())
             return;
         bool altPurchaseContainsThis = false;
         foreach (AlternatePurchaseAnimals altPurchase in Data.AlternatePurchaseTypes)

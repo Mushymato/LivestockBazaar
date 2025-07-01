@@ -74,6 +74,18 @@ internal static class BazaarMenu
         viewEngine.EnableHotReloadingWithSourceSync();
 #endif
         helper.Events.Display.RenderedActiveMenu += OnRenderedActiveMenu;
+
+        if (helper.ModRegistry.GetApi<IIconicFrameworkApi>("furyx639.ToolbarIcons") is IIconicFrameworkApi iconic)
+        {
+            iconic.AddToolbarIcon(
+                $"{ModEntry.ModId}/AnimalManage",
+                "LooseSprites/emojis",
+                new(36, 45, 9, 9),
+                I18n.GUI_LivestockBazaar_Title,
+                I18n.GUI_AnimalManage_Title,
+                ShowAnimalManage
+            );
+        }
     }
 
     /// <summary>
@@ -112,7 +124,7 @@ internal static class BazaarMenu
         }
     }
 
-    private static void ShowAnimalManageInner(bool asChildMenu)
+    private static void ShowAnimalManageInner()
     {
         try
         {
@@ -127,15 +139,7 @@ internal static class BazaarMenu
         menuCtrl.Closing += AMClosing;
         if (Game1.activeClickableMenu != null)
         {
-            if (asChildMenu)
-            {
-                Game1.activeClickableMenu.SetChildMenu(menuCtrl.Menu);
-            }
-            else
-            {
-                Game1.nextClickableMenu.Add(Game1.activeClickableMenu);
-                Game1.activeClickableMenu = menuCtrl.Menu;
-            }
+            Game1.activeClickableMenu.SetChildMenu(menuCtrl.Menu);
         }
         else
         {
@@ -152,9 +156,9 @@ internal static class BazaarMenu
     /// <summary>
     /// Show the animal manager menu
     /// </summary>
-    internal static void ShowAnimalManage(bool asChildMenu)
+    internal static void ShowAnimalManage()
     {
-        AMMutex.RequestLock(() => ShowAnimalManageInner(asChildMenu), ShowAnimalManageCannot);
+        AMMutex.RequestLock(ShowAnimalManageInner, ShowAnimalManageCannot);
     }
 
     private static void AMClosing()
@@ -164,21 +168,6 @@ internal static class BazaarMenu
         amfaeTooltip.Value = null;
         AMContext = null;
         AMMutex.ReleaseLock();
-    }
-
-    /// <summary>
-    /// Better game menu integration, add animal manage to right click context
-    /// </summary>
-    /// <param name="BGM"></param>
-    public static void RegisterBGMContextMenu(IBetterGameMenuApi BGM)
-    {
-        BGM.OnTabContextMenu(ShowAnimalManageFromBGM);
-    }
-
-    private static void ShowAnimalManageFromBGM(ITabContextMenuEvent evt)
-    {
-        if (evt.Tab == nameof(VanillaTabOrders.Animals))
-            evt.Entries.Add(evt.CreateEntry(I18n.GUI_AnimalManage_Title(), () => ShowAnimalManage(false)));
     }
 
     private static void OnRenderedActiveMenu(object? sender, RenderedActiveMenuEventArgs e)

@@ -20,7 +20,8 @@
   "GUI.SortMode.House": "House",
   "GUI.SortMode.CanBuy": "Can Buy",
   // Animal Manage Menu
-  "GUI.AnimalManage.Title": "Livestock Bazaar: Manage Farm Animals",
-  "GUI.AnimalManage.TitleShort": "Manage Farm Animals",
+  "GUI.LivestockBazaar.Title": "Livestock Bazaar",
+  "GUI.AnimalManage.Title": "Manage Farm Animals",
+  "GUI.CombineTitle": "{{lbTitle}}: {{amTitle}}",
   "GUI.AnimalManage.Cannot": "Another player is currently managing farm animals!"
 }

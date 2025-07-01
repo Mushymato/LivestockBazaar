@@ -316,10 +316,7 @@ public sealed partial record BazaarContextMain : ITopLevelBazaarContext
         };
     }
 
-    public void ShowAnimalManage()
-    {
-        BazaarMenu.ShowAnimalManage(true);
-    }
+    public void ShowAnimalManage() => BazaarMenu.ShowAnimalManage();
 
     // page 1 (shop grid) hover and select
     public void HandleHoverLivestock(BazaarLivestockEntry? livestock = null)

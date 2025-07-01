@@ -20,7 +20,8 @@
   "GUI.SortMode.House": "住所",
   "GUI.SortMode.CanBuy": "可购买",
   // Animal Manage Menu
-  "GUI.AnimalManage.Title": "牲畜集市：管理农场动物",
-  "GUI.AnimalManage.TitleShort": "管理农场动物",
+  "GUI.LivestockBazaar.Title": "牲畜集市",
+  "GUI.AnimalManage.Title": "管理农场动物",
+  "GUI.CombineTitle": "{{lbTitle}}: {{amTitle}}",
   "GUI.AnimalManage.Cannot": "另一个玩家正在管理农场动物！"
 }

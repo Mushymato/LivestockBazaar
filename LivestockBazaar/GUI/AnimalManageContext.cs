@@ -21,8 +21,8 @@ public sealed record AnimalManageFarmAnimalEntry(BazaarBuildingEntry Bld, FarmAn
     private const int MAX_WIDTH = 96;
     private const int MAX_HEIGHT = 96;
 
-    public string DisplayName => Animal.displayName;
-    public string DisplayType => Animal.displayType;
+    public string DisplayName => Animal.displayName ?? "???";
+    public string DisplayType => Animal.displayType ?? "ERROR";
     public IEnumerable<bool> Hearts
     {
         get

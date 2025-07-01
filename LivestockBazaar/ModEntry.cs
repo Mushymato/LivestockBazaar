@@ -41,13 +41,6 @@ public sealed class ModEntry : Mod
         BazaarMenu.Register(Helper);
         Config.Register(Helper, ModManifest);
         EAC = Helper.ModRegistry.GetApi<Integration.IExtraAnimalConfigApi>("selph.ExtraAnimalConfig");
-        if (
-            Helper.ModRegistry.GetApi<Integration.IBetterGameMenuApi>("leclair.bettergamemenu")
-            is Integration.IBetterGameMenuApi BGM
-        )
-        {
-            BazaarMenu.RegisterBGMContextMenu(BGM);
-        }
     }
 
     /// <summary>Warm the cache</summary>
