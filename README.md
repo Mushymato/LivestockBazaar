@@ -2,7 +2,13 @@
 
 Revamp the menu for purchasing farm animals, and provide ways for mod authors to create their own custom animal shop.
 
-## New Menu Overview
+## New in 1.3.0: Animal Manage
+
+You can access a new menu through the hay icon top right of shop: the animal manage menu.
+
+In this menu, you can move animals between buildings conveniently, it also allows moving animals across locations.
+
+## Menu Overview
 
 The primary player facing feature of Livestock Bazaar is the custom animal shop menu, which replaces Marnie's animal purchase menu.
 
