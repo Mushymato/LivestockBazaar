@@ -233,8 +233,8 @@ public sealed partial record BazaarBuildingEntry(
 
         oldEntry.Bld.AdoptAnimal(newEntry.Animal);
         newEntry.Bld.AdoptAnimal(oldEntry.Animal);
-        newEntry.Animal.makeSound();
-        oldEntry.Animal.makeSound();
+        BazaarLivestockEntry.PlayAnimalSound(newEntry.Animal, "coin");
+        BazaarLivestockEntry.PlayAnimalSound(oldEntry.Animal, "coin");
 
         oldEntry.Bld.RefreshAMFAE();
         newEntry.Bld.RefreshAMFAE();
@@ -260,7 +260,7 @@ public sealed partial record BazaarBuildingEntry(
         );
 
         newEntry.Bld.AdoptAnimal(oldEntry.Animal);
-        oldEntry.Animal.makeSound();
+        BazaarLivestockEntry.PlayAnimalSound(oldEntry.Animal, "coin");
 
         oldEntry.Bld.OnPropertyChanged(new(nameof(oldEntry.Bld.BuildingOccupant)));
         oldEntry.Bld.RefreshAMFAE();

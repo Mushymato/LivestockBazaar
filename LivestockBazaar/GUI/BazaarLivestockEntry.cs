@@ -390,6 +390,11 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
     public FarmAnimal MakeTransiantFarmAnimal() =>
         new(Ls.Key, Game1.Multiplayer.getNewID(), Game1.player.UniqueMultiplayerID) { Name = "???" };
 
+    internal static void PlayAnimalSound(FarmAnimal animal, string defaultCue)
+    {
+        Game1.playSound(animal.GetSoundId() ?? defaultCue, 1200 + Game1.random.Next(-200, 201));
+    }
+
     public FarmAnimal? BuyNewFarmAnimal()
     {
         if (selectedPurchase == null)
@@ -408,7 +413,7 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
             else
                 animal.skinID.Value = selectedPurchase.Skin.Skin.Id;
         }
-        Game1.playSound(animal.GetSoundId() ?? "purchase", 1200 + Game1.random.Next(-200, 201));
+        PlayAnimalSound(animal, "purchase");
         RandomizeBuyName();
         return animal;
     }
