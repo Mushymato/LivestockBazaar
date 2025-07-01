@@ -31,8 +31,8 @@
                   sprite={:BuildingSprite}/>
                 <label font="dialogue" text={BuildingOccupant}/>
               </lane>
-              <image *case="1" margin="16" sprite={@Mods/StardewUI/Sprites/CaretLeft}/>
-              <image *case="2" margin="16" sprite={@Mods/StardewUI/Sprites/CaretRight}/>
+              <image *case="2" margin="16" sprite={@Mods/StardewUI/Sprites/CaretLeft}/>
+              <image *case="3" margin="16" sprite={@Mods/StardewUI/Sprites/CaretRight}/>
             </panel>
           </frame>
         </frame>
