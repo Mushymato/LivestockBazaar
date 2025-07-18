@@ -31,6 +31,8 @@ public sealed class ModEntry : Mod
         OpenBazaar.Register(helper);
         // harmony
         Patches.Patch(new Harmony(ModId));
+        // setup pet actions
+        PetFeatures.Register();
     }
 
     /// <summary>Setup config menu</summary>

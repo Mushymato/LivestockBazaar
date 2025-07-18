@@ -4,7 +4,7 @@
   "Changes": [
     {
       "Action": "Include",
-      "FromFile": "data/chicken.json, data/mapedit.json, data/bazaar.json, data/interact.json"
+      "FromFile": "data/chicken.json, data/mapedit.json, data/bazaar.json, data/interact.json, data/petshop.json"
     }
   ]
 }
