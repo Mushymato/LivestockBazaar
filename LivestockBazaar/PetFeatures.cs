@@ -1,18 +1,51 @@
+using System.Reflection;
+using HarmonyLib;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Delegates;
 using StardewValley.GameData.Pets;
 using StardewValley.Internal;
 using StardewValley.Objects;
+using StardewValley.Triggers;
 
 namespace LivestockBazaar;
 
 internal static class PetFeatures
 {
     internal const string ItemQuery_PET_ADOPTION = $"{ModEntry.ModId}_PET_ADOPTION";
+    internal const string Action_AdoptPet = $"{ModEntry.ModId}_AdoptPet";
+    internal static MethodInfo? namePet_Method = AccessTools.DeclaredMethod(typeof(PetLicense), "namePet");
 
     internal static void Register()
     {
         ItemQueryResolver.Register(ItemQuery_PET_ADOPTION, PET_ADOPTION);
+        if (namePet_Method != null)
+            TriggerActionManager.RegisterAction(Action_AdoptPet, DoAdoptPet);
+    }
+
+    private static bool DoAdoptPet(string[] args, TriggerActionContext context, out string error)
+    {
+        if (
+            !ArgUtility.TryGet(args, 1, out string petId, out error, allowBlank: false, name: "string petId")
+            || !ArgUtility.TryGet(args, 2, out string breedId, out error, allowBlank: false, name: "string breedId")
+            || !ArgUtility.TryGet(args, 3, out string petName, out error, allowBlank: false, name: "string petName")
+        )
+        {
+            return false;
+        }
+
+        if (
+            Game1.petData.TryGetValue(petId, out PetData? petDataSpecific)
+            && petDataSpecific.GetBreedById(breedId, allowNull: true) != null
+        )
+        {
+            PetLicense license = new() { Name = string.Concat(petId, "|", breedId) };
+            namePet_Method?.Invoke(license, [petName]);
+            return true;
+        }
+
+        ModEntry.Log($"Invalid pet '{petId}|{breedId}'");
+        return false;
     }
 
     internal static IEnumerable<ItemQueryResult> PET_ADOPTION(
@@ -97,7 +130,7 @@ internal static class PetFeatures
                     continue;
                 }
 
-                ItemQueryResult result = new(new PetLicense() { Name = petDatum.Key + "|" + breed.Id });
+                ItemQueryResult result = new(new PetLicense() { Name = string.Concat(petDatum.Key, "|", breed.Id) });
                 if (!ignoreBasePrice)
                 {
                     result.OverrideBasePrice = breed.AdoptionPrice;
