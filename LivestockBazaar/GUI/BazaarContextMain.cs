@@ -108,7 +108,7 @@ public sealed partial record BazaarContextMain : ITopLevelBazaarContext
     }
 
     // theme
-    public readonly ShopMenu.ShopCachedTheme Theme;
+    private readonly ShopCachedTheme Theme;
     public SDUISprite Theme_WindowBorder =>
         new(
             Theme.WindowBorderTexture,
@@ -143,6 +143,7 @@ public sealed partial record BazaarContextMain : ITopLevelBazaarContext
 
     public Color? Theme_DialogueColor => Theme.DialogueColor ?? Game1.textColor;
     public Color? Theme_DialogueShadowColor => Theme.DialogueShadowColor ?? Game1.textShadowColor;
+    public Color? Theme_ItemRowTextColor => Theme.ItemRowTextColor ?? Game1.textColor;
 
     // layouts
     public readonly string MainBodyLayout;
@@ -186,10 +187,9 @@ public sealed partial record BazaarContextMain : ITopLevelBazaarContext
         ShopData? shopData = Data?.ShopData ?? Data?.PetShopData;
         if (shopData?.OpenSound is string openSound)
             Game1.playSound(openSound);
-        Theme = new ShopMenu.ShopCachedTheme(
-            shopData?.VisualTheme?.FirstOrDefault(
-                (ShopThemeData theme) => GameStateQuery.CheckConditions(theme.Condition)
-            )
+
+        Theme = new ShopCachedTheme(
+            shopData?.VisualTheme?.FirstOrDefault(theme => GameStateQuery.CheckConditions(theme.Condition))
         );
 
         // livestock data
