@@ -5,7 +5,8 @@
       "Target": "mushymato.LivestockBazaar/Shops",
       "Entries": {
         "{{ModId}}_Valgrind": {
-          "ShopId": "{{ModId}}_Valgrind",
+          // "ShopId": "{{ModId}}_Valgrind",
+          "ShopId": "QiGemShop"
         },
         "{{ModId}}_Shane": {
           "ShopId": "{{ModId}}_Shane",

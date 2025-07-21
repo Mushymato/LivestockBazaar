@@ -137,6 +137,7 @@ internal static class BazaarMenu
         }
         var menuCtrl = viewEngine.CreateMenuControllerFromAsset(viewAnimalManage, AMContext);
         menuCtrl.Closing += AMClosing;
+        menuCtrl.EnableCloseButton();
         if (Game1.activeClickableMenu != null)
         {
             Game1.activeClickableMenu.SetChildMenu(menuCtrl.Menu);

@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Item query mushymato.LivestockBazaar_PET_ADOPTION for filtering for specific pet/breed
 
+### Changed
+- Backend changes for android compat
+
 ## [1.3.0] - 2025-07-04
 
 ### Added

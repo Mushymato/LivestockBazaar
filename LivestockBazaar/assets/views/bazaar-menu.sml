@@ -29,7 +29,7 @@
               <image layout="content 64px" margin="0,8" sprite={:ShopIcon} opacity={:ShopIconOpacity} tint={:ShopIconTint} />
               <lane layout="stretch 64px" margin="0,88" orientation="horizontal" opacity={:ShopIconOpacity}>
                 <image layout="48px 48px" sprite={:TradeItem} />
-                <label layout="stretch 48px" text={:TradePriceFmt} font="dialogue" max-lines="1"/>
+                <label layout="stretch 48px" text={:TradePriceFmt} color={:~BazaarContextMain.Theme_ItemRowTextColor} font="dialogue" max-lines="1"/>
               </lane>
               <panel *if={ShowCurrentlyOwnedCount} layout="stretch" horizontal-content-alignment="end">
                 <frame 
@@ -59,10 +59,10 @@
 
         </lane>
         <infobox *context={HoveredLivestock} tint={:ShopIconTint}>
-          <label *if={HasRequiredBuilding} text={:LivestockName} font="dialogue"/>
+          <label *if={HasRequiredBuilding} text={:LivestockName} color={:~BazaarContextMain.Theme_ItemRowTextColor} font="dialogue"/>
           <produce-grid *if={HasRequiredBuilding}/>
-          <label *if={HasRequiredBuilding} text={:Description} font="small" margin="8,0" />
-          <label *!if={HasRequiredBuilding} text={:RequiredBuildingText} font="small" margin="8,8" />
+          <label *if={HasRequiredBuilding} text={:Description} color={:~BazaarContextMain.Theme_ItemRowTextColor} font="small" margin="8,0" />
+          <label *!if={HasRequiredBuilding} text={:RequiredBuildingText} color={:~BazaarContextMain.Theme_ItemRowTextColor} font="small" margin="8,8" />
           <image *!if={HasRequiredBuilding} sprite={:RequiredBuildingSprite} layout="120px 120px" fit="Contain" horizontal-alignment="middle" vertical-alignment="end" />
         </infobox>
       </lane>
@@ -108,7 +108,7 @@
             </lane>
           </button>
           <produce-grid />
-          <label text={:Description} font="small" />
+          <label text={:Description} color={:~BazaarContextMain.Theme_ItemRowTextColor} font="small" />
         </infobox>
       </lane>
 
@@ -136,7 +136,7 @@
                     <lane layout="144px content" padding="8" orientation="vertical" focusable="true" horizontal-content-alignment="middle">
                       <image layout="120px 120px" fit="Contain" horizontal-alignment="middle" vertical-alignment="end"
                         sprite={:BuildingSprite} tint={BuildingSpriteTint}/>
-                      <label font="dialogue" text={BuildingOccupant}/>
+                      <label font="dialogue" text={BuildingOccupant} color={:~BazaarContextMain.Theme_ItemRowTextColor}/>
                     </lane>
                   </frame>
                 </frame>
