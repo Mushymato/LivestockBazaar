@@ -82,7 +82,7 @@ When the shop has a `mushymato.LivestockBazaar/Shops` entry with `ShopwShopDialo
 Usage: mushymato.LivestockBazaar_Shop \<shopName\>
 ```
 
-This is the trigger action way to open a livestock bazaar shop. It can be used from TriggerActions, dialogue, and more. It only accepts the shop name and directly opens the livestock bazaar shop without any question dialog.
+This is the trigger action action way to open a livestock bazaar shop. It can be used from TriggerActions, dialogue, and more. It only accepts the shop name and directly opens the livestock bazaar shop without any question dialog.
 
 ### Custom Asset: mushymato.LivestockBazaar/Shops
 
@@ -163,3 +163,19 @@ CustomFields can be used to control the behavior:
 - mushymato.LivestockBazaar_Shop: directly opens animal shop of this ID.
 
 Quirk with using this is that, should the machine have any item processing rules and you attempt to drop in an item, the menu **WILL** appear even after the item is dropped into machine.
+
+#### Item Query: mushymato.LivestockBazaar_PET_ADOPTION [petId] [breedId] [ignoreBaseProce] [ignoreCanBeAdoptedFromMarnie]
+
+Item query for usage in custom pet shops (NOT animal shops!), works similar to vanilla `PET_ADOPTION` item query but allows filtering.
+- petId (default `T`): this is the top level pet id (i.e. Cat, Dog, Turtle), T means any pet.
+- breedId (default `T`): this is the breed id for particular appearance for pet, T means any breed.
+- ignoreBasePrice (default `false`): breed price is normally sourced from `Data/Pets`, setting this to `true` allows the item query's price field to take effect, otherwise use `false`.
+- ignoreCanBeAdoptedFromMarnie (default `false`): setting this to `true` makes this query ignore the CanBeAdoptedFromMarnie field, which allows you to ban this pet from Marnie's PetAdoption shop but still access it through this item query.
+If no arguments are given then this behaves identical to `PET_ADOPTION`.
+
+#### Trigger Action Action: mushymato.LivestockBazaar_AdoptPet \<petId\> \<breedId\> \<petName\>
+
+Instantly sends a pet to the farm with a specific name, skipping the naming step. All 3 arguments are required.
+- petId: this is the top level pet id (i.e. Cat, Dog, Turtle), must provide specific pet.
+- breedId: this is the breed id for particular appearance for pet, must provide specific breed.
+- petName: this will be the name of the new pet.
