@@ -1,7 +1,10 @@
+using System.Reflection;
 using HarmonyLib;
 using LivestockBazaar.GUI;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using StardewValley;
+using StardewValley.Menus;
 
 namespace LivestockBazaar;
 
@@ -16,6 +19,7 @@ public sealed class ModEntry : Mod
     internal static ModConfig Config = null!;
     internal const string ModId = "mushymato.LivestockBazaar";
     internal static Integration.IExtraAnimalConfigApi? EAC = null;
+    private static Type? AH_AnimalQueryMenu = null;
 
     public override void Entry(IModHelper helper)
     {
@@ -43,6 +47,15 @@ public sealed class ModEntry : Mod
         BazaarMenu.Register(Helper);
         Config.Register(Helper, ModManifest);
         EAC = Helper.ModRegistry.GetApi<Integration.IExtraAnimalConfigApi>("selph.ExtraAnimalConfig");
+
+        // AnimalHusbandryMod
+        IModInfo? modInfo = Helper.ModRegistry.Get("DIGUS.ANIMALHUSBANDRYMOD");
+        if (modInfo?.GetType().GetProperty("Mod")?.GetValue(modInfo) is IMod mod)
+        {
+            Assembly assembly = mod.GetType().Assembly;
+            AH_AnimalQueryMenu = assembly.GetType("AnimalHusbandryMod.animals.AnimalQueryMenuExtended");
+        }
+        Log($"Will use {AH_AnimalQueryMenu ?? typeof(AnimalQueryMenu)}");
     }
 
     /// <summary>Warm the cache</summary>
@@ -53,6 +66,19 @@ public sealed class ModEntry : Mod
     {
         // preload this dict
         var _ = AssetManager.LsData;
+    }
+
+    internal static IClickableMenu GetAnimalQueryMenu(FarmAnimal animal)
+    {
+        if (AH_AnimalQueryMenu != null)
+        {
+            try
+            {
+                return (IClickableMenu)Activator.CreateInstance(AH_AnimalQueryMenu, animal)!;
+            }
+            catch { }
+        }
+        return new AnimalQueryMenu(animal);
     }
 
     /// <summary>SMAPI static monitor Log wrapper</summary>

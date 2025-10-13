@@ -184,7 +184,7 @@ internal static class BazaarMenu
 
     private static void OnMenuChanged(object? sender, MenuChangedEventArgs e)
     {
-        if (AMContext != null && e.OldMenu is AnimalQueryMenu aqm)
+        if (AMContext != null && (e.OldMenu is AnimalQueryMenu aqm))
         {
             aqm.exitFunction();
         }

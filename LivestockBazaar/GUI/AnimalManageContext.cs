@@ -275,7 +275,7 @@ public sealed partial record AnimalManageContext : ITopLevelBazaarContext
             BazaarMenu.AMFAEEntry = null;
 
             Game1.nextClickableMenu.Add(Game1.activeClickableMenu);
-            AnimalQueryMenu aqm = new(amfae.Animal);
+            IClickableMenu aqm = ModEntry.GetAnimalQueryMenu(amfae.Animal);
             Game1.activeClickableMenu = aqm;
             aqm.exitFunction = (IClickableMenu.onExit)
                 Delegate.Combine(aqm.exitFunction, (IClickableMenu.onExit)amfae.Bld.RefreshAMFAE);
