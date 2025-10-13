@@ -59,6 +59,7 @@
           vertical-content-alignment="end"
           focusable="true"
           left-click=|~AnimalManageContext.HandleSelectForSwap(this)|
+          right-click=|~AnimalManageContext.HandleSelectOpenAnimalQuery(this)|
           pointer-enter=|~AnimalManageContext.HandleShowTooltip(this)|>
           <image sprite={:Sprite} fit="Contain" layout={:SpriteLayout} margin="8"/>
         </frame>
@@ -67,6 +68,7 @@
           layout="96px 96px"
           focusable="true"
           left-click=|~AnimalManageContext.HandleSelectForSwap(this)|
+          right-click=|~AnimalManageContext.HandleSelectOpenAnimalQuery(this)|
           pointer-enter=|~AnimalManageContext.HandleShowTooltip(this)|>
         </frame>
       </grid>

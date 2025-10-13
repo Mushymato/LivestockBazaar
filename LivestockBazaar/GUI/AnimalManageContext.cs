@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using PropertyChanged.SourceGenerator;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Menus;
 
 namespace LivestockBazaar.GUI;
 
@@ -261,6 +262,24 @@ public sealed partial record AnimalManageContext : ITopLevelBazaarContext
         prev.Held = false;
         selected.Held = true;
         BazaarMenu.AMFAEEntry = selected;
+    }
+
+    public void HandleSelectOpenAnimalQuery(AnimalManageEntry selected)
+    {
+        if (selected is AnimalManageFarmAnimalEntry amfae)
+        {
+            if (BazaarMenu.AMFAEEntry is AnimalManageEntry prev)
+            {
+                prev.Held = false;
+            }
+            BazaarMenu.AMFAEEntry = null;
+
+            Game1.nextClickableMenu.Add(Game1.activeClickableMenu);
+            AnimalQueryMenu aqm = new(amfae.Animal);
+            Game1.activeClickableMenu = aqm;
+            aqm.exitFunction = (IClickableMenu.onExit)
+                Delegate.Combine(aqm.exitFunction, (IClickableMenu.onExit)amfae.Bld.RefreshAMFAE);
+        }
     }
 
     public int GetCurrentlyOwnedCount(BazaarLivestockEntry livestock)

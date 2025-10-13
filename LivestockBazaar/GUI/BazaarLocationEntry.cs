@@ -104,17 +104,44 @@ public sealed partial record BazaarBuildingEntry(
         OnPropertyChanged(new(nameof(BuildingTooltip)));
     }
 
+    internal static bool TryGetValidAnimal(
+        GameLocation location,
+        long animalId,
+        ref bool notFound,
+        out FarmAnimal? animal
+    )
+    {
+        if (!location.animals.TryGetValue(animalId, out animal))
+        {
+            notFound = true;
+            return false;
+        }
+        if (animal.health.Value <= -1)
+        {
+            location.animals.Remove(animalId);
+            animal = null;
+            return false;
+        }
+        return animal != null;
+    }
+
     internal IEnumerable<FarmAnimal> GetFarmAnimalsThatLiveHere()
     {
         GameLocation parentLocation = Building.GetParentLocation();
         foreach (long animalId in House.animalsThatLiveHere)
         {
-            if (House.animals.TryGetValue(animalId, out FarmAnimal animal))
+            bool notFound = false;
+            if (
+                !TryGetValidAnimal(House, animalId, ref notFound, out FarmAnimal? animal)
+                && !TryGetValidAnimal(parentLocation, animalId, ref notFound, out animal)
+                && notFound
+            )
+            {
+                ModEntry.LogOnce($"Failed to find valid animal {animalId}", LogLevel.Warn);
+                continue;
+            }
+            if (animal != null)
                 yield return animal;
-            else if (parentLocation.animals.TryGetValue(animalId, out animal))
-                yield return animal;
-            else
-                ModEntry.LogOnce($"Failed to find animal {animalId}", LogLevel.Warn);
         }
     }
 

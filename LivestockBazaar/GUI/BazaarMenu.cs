@@ -6,6 +6,7 @@ using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.GameData.Shops;
+using StardewValley.Menus;
 using StardewValley.Network;
 
 namespace LivestockBazaar.GUI;
@@ -74,6 +75,7 @@ internal static class BazaarMenu
         viewEngine.EnableHotReloadingWithSourceSync();
 #endif
         helper.Events.Display.RenderedActiveMenu += OnRenderedActiveMenu;
+        helper.Events.Display.MenuChanged += OnMenuChanged;
 
         if (helper.ModRegistry.GetApi<IIconicFrameworkApi>("furyx639.ToolbarIcons") is IIconicFrameworkApi iconic)
         {
@@ -177,6 +179,14 @@ internal static class BazaarMenu
         {
             float offset = 32 * Game1.options.uiScale;
             amfaeTooltip.Value.Draw(e.SpriteBatch, new Vector2(Game1.getMouseX() + offset, Game1.getMouseY() + offset));
+        }
+    }
+
+    private static void OnMenuChanged(object? sender, MenuChangedEventArgs e)
+    {
+        if (AMContext != null && e.OldMenu is AnimalQueryMenu aqm)
+        {
+            aqm.exitFunction();
         }
     }
 }
