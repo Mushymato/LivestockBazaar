@@ -61,7 +61,7 @@
         <infobox *context={HoveredLivestock} tint={:ShopIconTint}>
           <label *if={HasRequiredBuilding} text={:LivestockName} color={:~BazaarContextMain.Theme_ItemRowTextColor} font="dialogue"/>
           <produce-grid *if={HasRequiredBuilding}/>
-          <label *if={HasRequiredBuilding} text={:Description} color={:~BazaarContextMain.Theme_ItemRowTextColor} font="small" margin="8,0" />
+          <label *if={HasRequiredBuilding} text={:PurchaseLivestockDesc} color={:~BazaarContextMain.Theme_ItemRowTextColor} font="small" margin="8,0" />
           <label *!if={HasRequiredBuilding} text={:RequiredBuildingText} color={:~BazaarContextMain.Theme_ItemRowTextColor} font="small" margin="8,8" />
           <image *!if={HasRequiredBuilding} sprite={:RequiredBuildingSprite} layout="120px 120px" fit="Contain" horizontal-alignment="middle" vertical-alignment="end" />
         </infobox>
@@ -108,7 +108,7 @@
             </lane>
           </button>
           <produce-grid />
-          <label text={:Description} color={:~BazaarContextMain.Theme_ItemRowTextColor} font="small" />
+          <label text={PurchaseLivestockDesc} color={:~BazaarContextMain.Theme_ItemRowTextColor} font="small" />
         </infobox>
       </lane>
 

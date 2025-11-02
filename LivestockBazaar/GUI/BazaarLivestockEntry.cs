@@ -11,6 +11,7 @@ using StardewValley.GameData.Buildings;
 using StardewValley.GameData.FarmAnimals;
 using StardewValley.Internal;
 using StardewValley.ItemTypeDefinitions;
+using StardewValley.TokenizableStrings;
 
 namespace LivestockBazaar.GUI;
 
@@ -20,6 +21,8 @@ public sealed partial record BazaarLivestockPurchaseEntry(LivestockData Ls)
         Ls.Data.ShopDisplayName ?? Ls.Data.DisplayName,
         "???"
     );
+    public string? LivestockDesc = TokenParser.ParseText(Ls.Data.ShopDescription);
+
     public readonly SDUISprite SpriteIcon = Ls.SpriteIcon;
 
     [Notify]
@@ -127,7 +130,6 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
         Ls.Data.ShopDisplayName ?? Ls.Data.DisplayName,
         "???"
     );
-    public readonly string Description = Wheels.ParseTextOrDefault(Ls.Data.ShopDescription, "??? ???? ?? ????? ?");
 
     private const int MAX_PRODUCE_DISPLAY = 35;
 
@@ -349,6 +351,14 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
         "???"
     );
 
+    private readonly string baseLivestockDesc = Wheels.ParseTextOrDefault(
+        Ls.Data.ShopDescription,
+        "??? ???? ?? ????? ?"
+    );
+
+    [Notify]
+    private string purchaseLivestockDesc = Wheels.ParseTextOrDefault(Ls.Data.ShopDescription, "??? ???? ?? ????? ?");
+
     public void HandleSelectedPurchase(BazaarLivestockPurchaseEntry purchase)
     {
         if (selectedPurchase != null)
@@ -360,6 +370,7 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
         spriteHeight = selectedPurchase.Ls.Data.SpriteHeight;
         AnimSpriteSheet = selectedPurchase.SpriteSheet;
         PurchaseLivestockName = selectedPurchase.LivestockName;
+        PurchaseLivestockDesc = selectedPurchase.LivestockDesc ?? baseLivestockDesc;
         OnPropertyChanged(new(nameof(LivestockProduce)));
     }
 
