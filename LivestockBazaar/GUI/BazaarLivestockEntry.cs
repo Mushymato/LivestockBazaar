@@ -17,10 +17,7 @@ namespace LivestockBazaar.GUI;
 
 public sealed partial record BazaarLivestockPurchaseEntry(LivestockData Ls)
 {
-    public readonly string LivestockName = Wheels.ParseTextOrDefault(
-        Ls.Data.ShopDisplayName ?? Ls.Data.DisplayName,
-        "???"
-    );
+    public readonly string LivestockName = Wheels.ParseTextOrDefault(Ls.Data.DisplayName, "???");
     public string? LivestockDesc = TokenParser.ParseText(Ls.Data.ShopDescription);
 
     public readonly SDUISprite SpriteIcon = Ls.SpriteIcon;
@@ -415,8 +412,10 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
         currency.Deduct(TradePrice);
         OnPropertyChanged(new(nameof(TotalCurrency)));
         LivestockData ls = selectedPurchase.Ls;
-        FarmAnimal animal =
-            new(ls.Key, Game1.Multiplayer.getNewID(), Game1.player.UniqueMultiplayerID) { Name = BuyName };
+        FarmAnimal animal = new(ls.Key, Game1.Multiplayer.getNewID(), Game1.player.UniqueMultiplayerID)
+        {
+            Name = BuyName,
+        };
         if (selectedPurchase.SkinId > -1)
         {
             if (selectedPurchase.Skin == null)
