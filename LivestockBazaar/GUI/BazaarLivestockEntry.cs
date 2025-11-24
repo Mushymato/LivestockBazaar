@@ -358,8 +358,7 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
 
     public void HandleSelectedPurchase(BazaarLivestockPurchaseEntry purchase)
     {
-        if (selectedPurchase != null)
-            selectedPurchase.IconOpacity = 0.4f;
+        selectedPurchase?.IconOpacity = 0.4f;
         selectedPurchase = purchase;
         selectedPurchase.IconOpacity = 1f;
         SkinId = selectedPurchase.SkinId;

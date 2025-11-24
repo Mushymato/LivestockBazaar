@@ -160,19 +160,13 @@ public sealed partial record AnimalManageContext : ITopLevelBazaarContext
     public void HandleSelectBuilding1(BazaarBuildingEntry building)
     {
         SelectedBuilding1 = UpdateSelectBuilding(building, SelectedBuilding1, SelectedBuilding2);
-        if (SelectedBuilding1 != null)
-        {
-            SelectedBuilding1.Select = BazaarBuildingEntry.SelectionState.Left;
-        }
+        SelectedBuilding1?.Select = BazaarBuildingEntry.SelectionState.Left;
     }
 
     public void HandleSelectBuilding2(BazaarBuildingEntry building)
     {
         SelectedBuilding2 = UpdateSelectBuilding(building, SelectedBuilding2, SelectedBuilding1);
-        if (SelectedBuilding2 != null)
-        {
-            SelectedBuilding2.Select = BazaarBuildingEntry.SelectionState.Right;
-        }
+        SelectedBuilding2?.Select = BazaarBuildingEntry.SelectionState.Right;
     }
 
     public void UpdateCanLiveHere()
@@ -196,10 +190,8 @@ public sealed partial record AnimalManageContext : ITopLevelBazaarContext
         }
         else
         {
-            if (SelectedBuilding1 != null)
-                SelectedBuilding1.HeldAnimalCanLiveHere = true;
-            if (SelectedBuilding2 != null)
-                SelectedBuilding2.HeldAnimalCanLiveHere = true;
+            SelectedBuilding1?.HeldAnimalCanLiveHere = true;
+            SelectedBuilding2?.HeldAnimalCanLiveHere = true;
         }
     }
 

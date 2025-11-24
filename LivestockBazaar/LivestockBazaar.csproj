@@ -8,7 +8,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>preview</LangVersion>
     <EnableHarmony>true</EnableHarmony>
   </PropertyGroup>
 
@@ -18,7 +18,7 @@
     <Description>Revamp animal shop UI and allow custom animal shops.</Description>
     <UniqueId>mushymato.LivestockBazaar</UniqueId>
     <UpdateKeys>Nexus:29997</UpdateKeys>
-    <Version>1.5.1</Version>
+    <Version>1.5.2</Version>
     <MinimumApiVersion_Behavior>UpdateFull</MinimumApiVersion_Behavior>
     <MinimumGameVersion_Behavior>UpdateFull</MinimumGameVersion_Behavior>
     <Dependencies_VersionBehavior>UpdateFull</Dependencies_VersionBehavior>

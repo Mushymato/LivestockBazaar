@@ -173,7 +173,6 @@ public sealed partial record BazaarBuildingEntry(
     [Notify]
     private SelectionState select = SelectionState.None;
 
-    // public Color SelectedFrameTint => Select != SelectionState.None ? Color.White : Color.Transparent;
     public Color SelectedFrameTint
     {
         get

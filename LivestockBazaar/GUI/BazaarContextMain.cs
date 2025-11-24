@@ -321,8 +321,7 @@ public sealed partial record BazaarContextMain : ITopLevelBazaarContext
     // page 1 (shop grid) hover and select
     public void HandleHoverLivestock(BazaarLivestockEntry? livestock = null)
     {
-        if (HoveredLivestock != null)
-            HoveredLivestock.BackgroundTint = Color.White;
+        HoveredLivestock?.BackgroundTint = Color.White;
         if (livestock == null)
             return;
         livestock.BackgroundTint = Theme.ItemRowBackgroundHoverColor;
@@ -349,8 +348,7 @@ public sealed partial record BazaarContextMain : ITopLevelBazaarContext
     // page 2 (building list) hover and select
     public void HandleHoverBuilding(BazaarBuildingEntry? building = null)
     {
-        if (HoveredBuilding != null)
-            HoveredBuilding.BackgroundTint = Color.White;
+        HoveredBuilding?.BackgroundTint = Color.White;
         if (building == null || building.RemainingSpace == 0)
             return;
         building.BackgroundTint = Theme.ItemRowBackgroundHoverColor;
@@ -369,8 +367,7 @@ public sealed partial record BazaarContextMain : ITopLevelBazaarContext
     {
         if (building.RemainingSpace == 0)
             return;
-        if (selectedBuilding != null)
-            selectedBuilding.Select = BazaarBuildingEntry.SelectionState.None;
+        selectedBuilding?.Select = BazaarBuildingEntry.SelectionState.None;
         selectedBuilding = building;
         selectedBuilding.Select = BazaarBuildingEntry.SelectionState.All;
         ReadyToPurchase = true;
@@ -379,16 +376,10 @@ public sealed partial record BazaarContextMain : ITopLevelBazaarContext
 
     public void ClearSelectedLivestock()
     {
-        if (HoveredBuilding != null)
-        {
-            HoveredBuilding.BackgroundTint = Color.White;
-            HoveredBuilding = null;
-        }
-        if (selectedBuilding != null)
-        {
-            selectedBuilding.Select = BazaarBuildingEntry.SelectionState.None;
-            selectedBuilding = null;
-        }
+        HoveredBuilding?.BackgroundTint = Color.White;
+        HoveredBuilding = null;
+        selectedBuilding?.Select = BazaarBuildingEntry.SelectionState.None;
+        selectedBuilding = null;
         ReadyToPurchase = false;
         SelectedLivestock = null;
     }
