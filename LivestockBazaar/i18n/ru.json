@@ -24,7 +24,7 @@
   "GUI.DaysToProduce.Single.Desc": "Продукция: каждый день",
   "GUI.DaysToProduce.Desc": "Продукция: каждые {{day}} дней",
   // Animal Manage Menu
-  "GUI.LivestockBazaar.Title": "Базар Скота",
+  "GUI.LivestockBazaar.Title": "Скотный Базар",
   "GUI.AnimalManage.Title": "Управление животными",
   "GUI.CombineTitle": "{{lbTitle}}: {{amTitle}}",
   "GUI.AnimalManage.Cannot": "Другой игрок сейчас управляет животными фермы!"
