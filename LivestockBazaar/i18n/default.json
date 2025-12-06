@@ -19,6 +19,10 @@
   "GUI.SortMode.Price": "Price",
   "GUI.SortMode.House": "House",
   "GUI.SortMode.CanBuy": "Can Buy",
+  "GUI.DaysToMature.Single.Desc": "Growth: 1 day",
+  "GUI.DaysToMature.Desc": "Growth: {{day}} days",
+  "GUI.DaysToProduce.Single.Desc": "Produce: every day",
+  "GUI.DaysToProduce.Desc": "Produce: {{day}} days",
   // Animal Manage Menu
   "GUI.LivestockBazaar.Title": "Livestock Bazaar",
   "GUI.AnimalManage.Title": "Manage Farm Animals",

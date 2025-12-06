@@ -3,9 +3,7 @@ using LivestockBazaar.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PropertyChanged.SourceGenerator;
-using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Delegates;
 using StardewValley.GameData;
 using StardewValley.GameData.Buildings;
 using StardewValley.GameData.FarmAnimals;
@@ -17,8 +15,9 @@ namespace LivestockBazaar.GUI;
 
 public sealed partial record BazaarLivestockPurchaseEntry(LivestockData Ls)
 {
-    public readonly string LivestockName = Wheels.ParseTextOrDefault(Ls.Data.DisplayName, "???");
+    public readonly string LivestockName = TokenParser.ParseText(Ls.Data.DisplayName);
     public string? LivestockDesc = TokenParser.ParseText(Ls.Data.ShopDescription);
+    public string LivestockDaysDesc = BazaarLivestockEntry.GetLivestockDaysDesc(Ls.Data);
 
     public readonly SDUISprite SpriteIcon = Ls.SpriteIcon;
 
@@ -342,6 +341,11 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
     public float purchaseOpacity = 1f;
     private BazaarLivestockPurchaseEntry? selectedPurchase;
 
+    private readonly string baseLivestockName = Wheels.ParseTextOrDefault(
+        Ls.Data.ShopDisplayName ?? Ls.Data.DisplayName,
+        "???"
+    );
+
     [Notify]
     private string purchaseLivestockName = Wheels.ParseTextOrDefault(
         Ls.Data.ShopDisplayName ?? Ls.Data.DisplayName,
@@ -356,6 +360,11 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
     [Notify]
     private string purchaseLivestockDesc = Wheels.ParseTextOrDefault(Ls.Data.ShopDescription, "??? ???? ?? ????? ?");
 
+    private string baseLivestockDaysDesc = GetLivestockDaysDesc(Ls.Data);
+
+    [Notify]
+    private string purchaseLivestockDaysDesc = GetLivestockDaysDesc(Ls.Data);
+
     public void HandleSelectedPurchase(BazaarLivestockPurchaseEntry purchase)
     {
         selectedPurchase?.IconOpacity = 0.4f;
@@ -365,9 +374,24 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
         spriteWidth = selectedPurchase.Ls.Data.SpriteWidth;
         spriteHeight = selectedPurchase.Ls.Data.SpriteHeight;
         AnimSpriteSheet = selectedPurchase.SpriteSheet;
-        PurchaseLivestockName = selectedPurchase.LivestockName;
+        PurchaseLivestockName = selectedPurchase.LivestockName ?? baseLivestockName;
         PurchaseLivestockDesc = selectedPurchase.LivestockDesc ?? baseLivestockDesc;
+        PurchaseLivestockDaysDesc = selectedPurchase.LivestockDaysDesc ?? baseLivestockDaysDesc;
         OnPropertyChanged(new(nameof(LivestockProduce)));
+    }
+
+    public static string GetDaysDesc(int days, Func<string> singleDesc, Func<object?, string> multiDesc)
+    {
+        return days == 1 ? singleDesc() : multiDesc(days);
+    }
+
+    public static string GetLivestockDaysDesc(FarmAnimalData baseData)
+    {
+        return string.Concat(
+            GetDaysDesc(baseData.DaysToMature, I18n.GUI_DaysToMature_Single_Desc, I18n.GUI_DaysToMature_Desc),
+            '\n',
+            GetDaysDesc(baseData.DaysToProduce, I18n.GUI_DaysToProduce_Single_Desc, I18n.GUI_DaysToProduce_Desc)
+        );
     }
 
     public void PrevSkin()

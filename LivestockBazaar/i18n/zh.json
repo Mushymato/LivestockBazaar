@@ -19,6 +19,10 @@
   "GUI.SortMode.Price": "价格",
   "GUI.SortMode.House": "住所",
   "GUI.SortMode.CanBuy": "可购买",
+  "GUI.DaysToMature.Single.Desc": "1天成熟",
+  "GUI.DaysToMature.Desc": "{{day}}天成熟",
+  "GUI.DaysToProduce.Single.Desc": "每天产出",
+  "GUI.DaysToProduce.Desc": "每{{day}}天产出",
   // Animal Manage Menu
   "GUI.LivestockBazaar.Title": "牲畜集市",
   "GUI.AnimalManage.Title": "管理农场动物",
