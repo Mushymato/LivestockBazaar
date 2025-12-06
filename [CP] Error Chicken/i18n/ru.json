@@ -1,0 +1,12 @@
+{
+    "ErrorChicken.DisplayName": "Ошибка Курица",
+    "ErrorChicken.ShopDisplayName": "??? Куряца",
+    "ErrorChicken.ShopDescription": "[ОШИБКА: Неверный доступ к курице]",
+    "ErrorChicken.BirthText": "free(): некорректная куряца",
+    "Erregg.Name": "Яйцошибка",
+    "Erregg.Description": "NullReferenceЯйцоception: Ссылка на яйцо не указывает на экземпляр яйца",
+    "EGGFAULT.Name": "ЯЙЦОСБОЙ",
+    "EGGFAULT.Description": "Критическая куряца: ошибка яйцегментации",
+    "Erronnaise.Name": "Ошибконез",
+    "Erronnaise.Description": "418 I'm a teapot\nНа вкус как AccessViolationException"
+}
