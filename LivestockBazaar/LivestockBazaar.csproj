@@ -18,7 +18,7 @@
     <Description>Revamp animal shop UI and allow custom animal shops.</Description>
     <UniqueId>mushymato.LivestockBazaar</UniqueId>
     <UpdateKeys>Nexus:29997,GitHub:Mushymato/LivestockBazaar</UpdateKeys>
-    <Version>1.5.3</Version>
+    <Version>1.5.4</Version>
     <MinimumApiVersion_Behavior>UpdateFull</MinimumApiVersion_Behavior>
     <MinimumGameVersion_Behavior>UpdateFull</MinimumGameVersion_Behavior>
     <Dependencies_VersionBehavior>Ignore</Dependencies_VersionBehavior>

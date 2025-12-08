@@ -76,6 +76,8 @@ There is no change to any animal mechanics.
 
 - Español (by [Diorenis](https://next.nexusmods.com/profile/Diorenis))
 
+- Русский (by [ellatuk](https://github.com/ellatuk))
+
 ## Mod Author Guide
 
 Livestock Bazaar provides a framework to create custom animal vendors besides Marnie, with just a few extra custom fields and a tile action.
