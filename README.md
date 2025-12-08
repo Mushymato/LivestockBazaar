@@ -72,7 +72,7 @@ There is no change to any animal mechanics.
 
 - English
 
-- Simplified Chinese
+- 简体中文
 
 - Español (by [Diorenis](https://next.nexusmods.com/profile/Diorenis))
 
