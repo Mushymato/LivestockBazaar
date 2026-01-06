@@ -1,20 +1,20 @@
 {
   "$schema": "https://smapi.io/schemas/i18n.json",
-  // Shop Messages
+  // Shop Messages Сообщения Магазина
   "shop.time-range": "Открыто с {{openTime}} до {{closeTime}}",
   "shop.time-start": "Открывается в {{openTime}}",
   "shop.time-end": "Закрывается в {{closeTime}}",
-  // Config
+  // Config Конфигурация
   "config.VanillaMarnieStock.name": "Родное меню Марни",
-  "config.VanillaMarnieStock.tooltip": "Не заменять стандартный ассортимент Марни и её меню магазина.",
+  "config.VanillaMarnieStock.tooltip": "Не изменять стандартный ассортимент Марни и её меню магазина.",
   "config.SortMode.name": "Режим сортировки животных",
   "config.SortMode.tooltip": "Текущий режим сортировки в разделе животных магазина. Также можно изменить напрямую в меню магазина животных.",
   "config.SortIsAsc.name": "Сортировка животных по возрастанию",
   "config.SortIsAsc.tooltip": "Текущее направление сортировки в разделе животных магазина. Также можно изменить напрямую в меню магазина животных.",
-  // GUI
+  // GUI Интерфейс 
   "GUI.PurchaseButton": "Купить",
-  "GUI.SortAsc": "{{mode}} (ВОЗР.)",
-  "GUI.SortDesc": "{{mode}} (УБЫВ.)",
+  "GUI.SortAsc": "{{mode}} (↑ ВОЗР.)",
+  "GUI.SortDesc": "{{mode}} (↓ УБЫВ.)",
   "GUI.SortMode.Name": "Название",
   "GUI.SortMode.Price": "Цена",
   "GUI.SortMode.House": "Дом",
@@ -23,7 +23,7 @@
   "GUI.DaysToMature.Desc": "Созреет через: {{day}} дней",
   "GUI.DaysToProduce.Single.Desc": "Продукция: каждый день",
   "GUI.DaysToProduce.Desc": "Продукция: каждые {{day}} дней",
-  // Animal Manage Menu
+  // Animal Manage Menu Меню Управления Животными
   "GUI.LivestockBazaar.Title": "Скотный Базар",
   "GUI.AnimalManage.Title": "Управление животными",
   "GUI.CombineTitle": "{{lbTitle}}: {{amTitle}}",
