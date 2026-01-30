@@ -187,11 +187,9 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
             else
                 prodIter = prodIter.Concat(data.DeluxeProduceItemIds);
 
-
             HashSet<string> seenProduce = [];
             int cnt = 0;
             ItemQueryContext itemQueryContext = new();
-
 
             foreach (FarmAnimalProduce prod in prodIter)
             {

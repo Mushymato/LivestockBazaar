@@ -10,6 +10,7 @@
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
     <EnableHarmony>true</EnableHarmony>
+    <ModZipPath>$(MSBuildThisFileDirectory)/../_releases</ModZipPath>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -19,7 +20,8 @@
     <UniqueId>mushymato.LivestockBazaar</UniqueId>
     <UpdateKeys>Nexus:29997,GitHub:Mushymato/LivestockBazaar</UpdateKeys>
     <Version>1.5.5</Version>
-    <MinimumApiVersion_Behavior>UpdateFull</MinimumApiVersion_Behavior>
+    <BaseManifest>new</BaseManifest>
+    <MinimumApiVersion_Behavior>Update</MinimumApiVersion_Behavior>
     <MinimumGameVersion_Behavior>UpdateFull</MinimumGameVersion_Behavior>
     <Dependencies_VersionBehavior>Ignore</Dependencies_VersionBehavior>
   </PropertyGroup>
