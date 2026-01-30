@@ -177,11 +177,23 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
         get
         {
             FarmAnimalData data = selectedPurchase == null ? Ls.Data : selectedPurchase.Ls.Data;
+            IEnumerable<FarmAnimalProduce>? prodIter = data.ProduceItemIds;
+            if (prodIter == null)
+            {
+                prodIter = data.DeluxeProduceItemIds;
+                if (prodIter == null)
+                    yield break;
+            }
+            else
+                prodIter = prodIter.Concat(data.DeluxeProduceItemIds);
+
+
             HashSet<string> seenProduce = [];
             int cnt = 0;
             ItemQueryContext itemQueryContext = new();
 
-            foreach (FarmAnimalProduce prod in data.ProduceItemIds.Concat(data.DeluxeProduceItemIds))
+
+            foreach (FarmAnimalProduce prod in prodIter)
             {
                 if (string.IsNullOrEmpty(prod.ItemId))
                     continue;
