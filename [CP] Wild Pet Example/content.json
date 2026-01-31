@@ -1,0 +1,35 @@
+{
+  "$schema": "https://smapi.io/schemas/content-patcher.json",
+  "Format": "2.9.0",
+  "Changes": [
+    /*
+debug action mushymato.LivestockBazaar_AddWildPet Here 68 15 Cat 4
+debug action mushymato.LivestockBazaar_RemoveWildPet Here 68 15 Cat 4
+*/
+    {
+      "Action": "EditData",
+      "Target": "Data/TriggerActions",
+      "Entries": {
+        "{{ModId}}_SpawnWildCat": {
+          "Id": "{{ModId}}_SpawnWildCat",
+          "Trigger": "DayStarted",
+          "HostOnly": true,
+          "Action": "mushymato.LivestockBazaar_AddWildPet Forest 68 15 Cat 4 {{ModId}}\\WildPetEvents:AdoptCat4",
+          "MarkActionApplied": false
+        }
+      }
+    },
+    {
+      "Action": "Load",
+      "Target": "{{ModId}}/WildPetEvents",
+      "FromFile": "blank.json"
+    },
+    {
+      "Action": "EditData",
+      "Target": "{{ModId}}/WildPetEvents",
+      "Entries": {
+        "AdoptCat4": "spring_day_ambient/[LB_WildPetPos]/farmer [LB_WildPetPos 0 4] 0/LB_WildPetActor [LB_WildPetPos] up/skippable/faceDirection LB_WildPet down/pause 250/emote LB_WildPet 20/pause 250/emote farmer 20/LB_AdoptWildPet/end"
+      }
+    }
+  ]
+}

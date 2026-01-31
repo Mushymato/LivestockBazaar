@@ -3,6 +3,7 @@ using LivestockBazaar.GUI;
 using LivestockBazaar.Model;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Characters;
 using StardewValley.GameData.Shops;
 using StardewValley.Menus;
 using StardewValley.Triggers;
@@ -29,7 +30,7 @@ internal static class Patches
         }
         catch (Exception err)
         {
-            ModEntry.Log($"Failed to patch LivestockBazaar:\n{err}", LogLevel.Error);
+            ModEntry.Log($"Failed to patch LivestockBazaar(AdoptionDialogueFix):\n{err}", LogLevel.Error);
         }
     }
 
