@@ -34,9 +34,10 @@ public sealed class ModEntry : Mod
         // setup bazaar actions
         OpenBazaar.Register(helper);
         // harmony
-        Patches.Patch(new Harmony(ModId));
+        Harmony harmony = new(ModId);
+        Patches.Patch(harmony);
         // setup pet actions
-        PetFeatures.Register();
+        PetFeatures.Register(harmony, helper);
     }
 
     /// <summary>Setup config menu</summary>
