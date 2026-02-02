@@ -1,6 +1,7 @@
 using System.Reflection;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -27,7 +28,8 @@ internal static class PetFeatures
     internal const string WildPetInteract_Trigger = $"{ModEntry.ModId}_WildPetInteract";
     internal const string WildPetEvent_WildPetPos = "LB_WildPetPos";
     internal const string WildPetEvent_WildPetActorName = "LB_WildPet";
-    internal const string WildPetEvent_WildPetActor = "LB_WildPetActor";
+    internal const string WildPetEvent_AddTargetWildPetActor = "LB_AddTargetWildPetActor";
+    internal const string WildPetEvent_AddWildPetActor = "LB_AddWildPetActor";
     internal const string WildPetEvent_AdoptWildPet = "LB_AdoptWildPet";
 
     internal static MethodInfo? namePet_Method = AccessTools.DeclaredMethod(typeof(PetLicense), "namePet");
@@ -48,7 +50,8 @@ internal static class PetFeatures
         TriggerActionManager.RegisterAction(Action_RemoveWildPet, DoRemoveWildPet);
 
         TokenParser.RegisterParser(WildPetEvent_WildPetPos, TS_WildPetPos);
-        Event.RegisterCommand(WildPetEvent_WildPetActor, Event_WildPetActor);
+        Event.RegisterCommand(WildPetEvent_AddTargetWildPetActor, Event_AddTargetWildPetActor);
+        Event.RegisterCommand(WildPetEvent_AddWildPetActor, Event_AddWildPetActor);
         Event.RegisterCommand(WildPetEvent_AdoptWildPet, Event_AdoptWildPet);
 
         try
@@ -67,34 +70,96 @@ internal static class PetFeatures
         helper.Events.GameLoop.Saving += OnSavingClearWildPets;
     }
 
-    private static void Event_WildPetActor(Event @event, string[] args, EventContext context)
+    private static void Event_AddWildPetActor(Event @event, string[] args, EventContext context)
+    {
+        if (
+            !ArgUtility.TryGet(args, 1, out string petId, out string error, allowBlank: false, name: "string petId")
+            || !ArgUtility.TryGet(args, 2, out string breedId, out error, allowBlank: false, name: "string breedId")
+            || !ArgUtility.TryGetPoint(args, 3, out Point tilePoint, out _, "Point tile")
+            || !ArgUtility.TryGetDirection(args, 5, out int direction, out _, "int facingDirection")
+            || !ArgUtility.TryGetOptional(
+                args,
+                6,
+                out string? portraitAsset,
+                out _,
+                defaultValue: null,
+                name: "string portraitAsset"
+            )
+        )
+        {
+            @event.LogCommandErrorAndSkip(args, error);
+            return;
+        }
+        Pet templatePet = new(tilePoint.X, tilePoint.Y, breedId, petId);
+        templatePet.reloadSprite(true);
+        MakePetActor(@event, tilePoint, direction, templatePet, portraitAsset);
+    }
+
+    private static void Event_AddTargetWildPetActor(Event @event, string[] args, EventContext context)
     {
         if (wildPetEventTarget == null)
         {
-            @event.LogCommandError(args, "'wildPetEventTarget' not set");
+            @event.LogCommandErrorAndSkip(
+                args,
+                "'wildPetEventTarget' not set, use 'LB_AddWildPetActor' for generic pet actor'"
+            );
             return;
         }
-        if (!ArgUtility.TryGetPoint(args, 4, out Point tilePoint, out _, "Point tile"))
+        if (!ArgUtility.TryGetPoint(args, 1, out Point tilePoint, out _, "Point tile"))
         {
             tilePoint = wildPetEventTarget.TilePoint;
         }
-        if (!ArgUtility.TryGetDirection(args, 6, out int direction, out _, "int facingDirection"))
+        if (!ArgUtility.TryGetDirection(args, 3, out int direction, out _, "int facingDirection"))
         {
             direction = wildPetEventTarget.FacingDirection;
         }
-        Pet petActor = new(
-            tilePoint.X,
-            tilePoint.Y,
-            wildPetEventTarget.whichBreed.Value,
-            wildPetEventTarget.petType.Value
+        ArgUtility.TryGetOptional(
+            args,
+            4,
+            out string? portraitAsset,
+            out _,
+            defaultValue: null,
+            name: "string portraitAsset"
+        );
+        MakePetActor(@event, tilePoint, direction, wildPetEventTarget, portraitAsset);
+    }
+
+    private static void MakePetActor(
+        Event @event,
+        Point tilePoint,
+        int direction,
+        Pet templatePet,
+        string portraitAsset
+    )
+    {
+        AnimatedSprite petSprite = new(
+            Game1.temporaryContent,
+            templatePet.Sprite.textureName.Value,
+            0,
+            templatePet.Sprite.SpriteWidth,
+            templatePet.Sprite.SpriteHeight
+        );
+        NPC petActor = new(
+            petSprite,
+            @event.OffsetPosition(new(tilePoint.X * 64f, tilePoint.Y * 64f)),
+            direction,
+            WildPetEvent_WildPetActorName
         )
         {
-            Name = WildPetEvent_WildPetActorName,
-            EventActor = true,
-            FacingDirection = direction,
+            portraitOverridden = true,
+            spriteOverridden = true,
+            Breather = false,
+            HideShadow = true,
         };
-        petActor.modData.CopyFrom(wildPetEventTarget.modData);
-        petActor.forceOneTileWide.Value = true;
+        if (!string.IsNullOrEmpty(portraitAsset) && Game1.temporaryContent.DoesAssetExist<Texture2D>(portraitAsset))
+        {
+            petActor.Portrait = Game1.temporaryContent.Load<Texture2D>(portraitAsset);
+        }
+        else
+        {
+            petActor.Portrait = petSprite.Texture;
+        }
+        petActor.modData.CopyFrom(templatePet.modData);
         @event.actors.Add(petActor);
         @event.CurrentCommand++;
     }
@@ -107,17 +172,15 @@ internal static class PetFeatures
         }
         if (!ArgUtility.TryGetOptional(args, 1, out string petName, out string error, name: "string petName"))
         {
-            @event.LogCommandError(args, error);
+            @event.LogCommandErrorAndSkip(args, error);
             return;
         }
-        if (
-            @event.actors.Find(chara => chara is Pet && chara.Name == WildPetEvent_WildPetActorName) is Pet wildPetActor
-        )
+        if (wildPetEventTarget != null)
         {
             context.Location.characters.Remove(wildPetEventTarget);
             PetLicense license = new()
             {
-                Name = string.Concat(wildPetActor.petType.Value, "|", wildPetActor.whichBreed.Value),
+                Name = string.Concat(wildPetEventTarget.petType.Value, "|", wildPetEventTarget.whichBreed.Value),
             };
             string title = Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1236");
             Game1.activeClickableMenu = new NamingMenu(
@@ -129,6 +192,7 @@ internal static class PetFeatures
                 title,
                 petName
             );
+            wildPetEventTarget = null;
         }
         else
         {
@@ -200,7 +264,10 @@ internal static class PetFeatures
 
         __instance.Halt();
         wildPetEventTarget = __instance;
-        Event wildPetEvent = new(eventScript, parts[0], parts[1], who);
+        Event wildPetEvent = new(eventScript, parts[0], parts[1], who)
+        {
+            eventPositionTileOffset = wildPetEventTarget.TilePoint.ToVector2(),
+        };
         l.startEvent(wildPetEvent);
 
         return false;
@@ -377,6 +444,8 @@ internal static class PetFeatures
     {
         namePet_Method?.Invoke(license, [petName]);
         Game1.exitActiveMenu();
+        Game1.dialogueUp = false;
+        Game1.player.CanMove = true;
     }
 
     internal static IEnumerable<ItemQueryResult> PET_ADOPTION(

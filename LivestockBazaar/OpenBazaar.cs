@@ -180,6 +180,16 @@ public static class OpenBazaar
                 break;
         }
         ShopOwnerData? foundOwnerData = null;
+        string? shopOption = null;
+        string[] parts;
+        if (
+            (parts = shopName.Split("##", StringSplitOptions.TrimEntries)).Length == 2
+            && AssetManager.BazaarData.ContainsKey(parts[0])
+        )
+        {
+            shopName = parts[0];
+            shopOption = parts[1];
+        }
         if (AssetManager.BazaarData.TryGetValue(shopName, out BazaarData? bazaarData))
         {
             var shopOwnerDatas = bazaarData.GetCurrentOwners();
@@ -211,21 +221,6 @@ public static class OpenBazaar
                 return false;
             }
             // check if we need to show a dialog
-            List<Response> responses = [];
-            if (AssetManager.HasAnyLivestockDataForShop(shopName))
-                responses.Add(
-                    new Response("Animals", Wheels.ParseTextOrDefault(bazaarData.ShopDialogAnimals, "Animals"))
-                );
-            if (bazaarData.ShowShopDialog)
-                responses.Insert(
-                    0,
-                    new Response("Supplies", Wheels.ParseTextOrDefault(bazaarData.ShopDialogSupplies, "Supplies"))
-                );
-            if (bazaarData.ShowPetShopDialog)
-                responses.Add(new Response("Adopt", Wheels.ParseTextOrDefault(bazaarData.ShopDialogAdopt, "Adopt")));
-
-            if (responses.Count <= 0)
-                return false;
             void shopHandler(Farmer _, string whichAnswer)
             {
                 switch (whichAnswer)
@@ -244,6 +239,27 @@ public static class OpenBazaar
                         break;
                 }
             }
+            if (shopOption != null)
+            {
+                shopHandler(Game1.player, shopOption);
+                return true;
+            }
+            List<Response> responses = [];
+            if (AssetManager.HasAnyLivestockDataForShop(shopName))
+                responses.Add(
+                    new Response("Animals", Wheels.ParseTextOrDefault(bazaarData.ShopDialogAnimals, "Animals"))
+                );
+            if (bazaarData.ShowShopDialog)
+                responses.Insert(
+                    0,
+                    new Response("Supplies", Wheels.ParseTextOrDefault(bazaarData.ShopDialogSupplies, "Supplies"))
+                );
+            if (bazaarData.ShowPetShopDialog)
+                responses.Add(new Response("Adopt", Wheels.ParseTextOrDefault(bazaarData.ShopDialogAdopt, "Adopt")));
+
+            if (responses.Count <= 0)
+                return false;
+
             if (responses.Count > 1)
             {
                 responses.Add(new Response("Leave", Wheels.ParseTextOrDefault(bazaarData.ShopDialogLeave)));

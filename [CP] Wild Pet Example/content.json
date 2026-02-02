@@ -28,7 +28,7 @@ debug action mushymato.LivestockBazaar_RemoveWildPet Here 68 15 Cat 4
       "Action": "EditData",
       "Target": "{{ModId}}/WildPetEvents",
       "Entries": {
-        "AdoptCat4": "spring_day_ambient/[LB_WildPetPos]/farmer [LB_WildPetPos 0 4] 0/LB_WildPetActor [LB_WildPetPos] up/skippable/faceDirection LB_WildPet down/pause 250/emote LB_WildPet 20/pause 250/emote farmer 20/LB_AdoptWildPet/end"
+        "AdoptCat4": "spring_day_ambient/[LB_WildPetPos]/farmer [LB_WildPetPos 0 4] 0/LB_AddTargetWildPetActor [LB_WildPetPos 0 0] up/LB_AddWildPetActor Cat 3 [LB_WildPetPos 3 -2] left/skippable/pause 50/faceDirection LB_WildPet left/pause 50/faceDirection LB_WildPet down/advancedMove LB_WildPet false 0 3/pause 250/emote LB_WildPet 20/pause 250/emote farmer 20/LB_AdoptWildPet/end"
       }
     }
   ]
