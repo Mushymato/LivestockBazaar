@@ -92,7 +92,14 @@ internal static class PetFeatures
         }
         Pet templatePet = new(tilePoint.X, tilePoint.Y, breedId, petId);
         templatePet.reloadSprite(true);
-        MakePetActor(@event, tilePoint, direction, templatePet, portraitAsset);
+        MakePetActor(
+            @event,
+            tilePoint,
+            direction,
+            templatePet,
+            portraitAsset,
+            string.Concat(WildPetEvent_WildPetActorName, '_', petId, '_', breedId)
+        );
     }
 
     private static void Event_AddTargetWildPetActor(Event @event, string[] args, EventContext context)
@@ -121,7 +128,7 @@ internal static class PetFeatures
             defaultValue: null,
             name: "string portraitAsset"
         );
-        MakePetActor(@event, tilePoint, direction, wildPetEventTarget, portraitAsset);
+        MakePetActor(@event, tilePoint, direction, wildPetEventTarget, portraitAsset, WildPetEvent_WildPetActorName);
     }
 
     private static void MakePetActor(
@@ -129,7 +136,8 @@ internal static class PetFeatures
         Point tilePoint,
         int direction,
         Pet templatePet,
-        string portraitAsset
+        string portraitAsset,
+        string name
     )
     {
         AnimatedSprite petSprite = new(
@@ -139,12 +147,7 @@ internal static class PetFeatures
             templatePet.Sprite.SpriteWidth,
             templatePet.Sprite.SpriteHeight
         );
-        NPC petActor = new(
-            petSprite,
-            @event.OffsetPosition(new(tilePoint.X * 64f, tilePoint.Y * 64f)),
-            direction,
-            WildPetEvent_WildPetActorName
-        )
+        NPC petActor = new(petSprite, @event.OffsetPosition(new(tilePoint.X * 64f, tilePoint.Y * 64f)), direction, name)
         {
             portraitOverridden = true,
             spriteOverridden = true,
