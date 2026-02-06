@@ -163,6 +163,7 @@ internal static class PetFeatures
             petActor.Portrait = petSprite.Texture;
         }
         petActor.modData.CopyFrom(templatePet.modData);
+        petActor.forceOneTileWide.Value = true;
         @event.actors.Add(petActor);
         @event.CurrentCommand++;
     }
@@ -302,6 +303,11 @@ internal static class PetFeatures
             return false;
         }
 
+        if (!ValidatePetIds(ref petId, ref breedId, out _, out error))
+        {
+            return false;
+        }
+
         if (!TryGetLocationFromName(locationName, ref error, out GameLocation location))
         {
             return false;
@@ -330,7 +336,7 @@ internal static class PetFeatures
         pet.update(Game1.currentGameTime, location);
         pet.CurrentBehavior = "SitDown";
         pet.OnNewBehavior();
-        ModEntry.Log($"Add wild pet {petId}/{breedId} to {locationName}{pnt}");
+        ModEntry.Log($"Add wild pet '{wildPetKey}' to {locationName}{pnt}");
 
         return true;
     }
@@ -403,9 +409,37 @@ internal static class PetFeatures
         return true;
     }
 
+    private static bool ValidatePetIds(
+        ref string petId,
+        ref string breedId,
+        out PetData? petDataSpecific,
+        out string error
+    )
+    {
+        if (!Game1.petData.TryGetValue(petId, out petDataSpecific))
+        {
+            error = $"No pet with id '{petId}'";
+            return false;
+        }
+
+        if (breedId.EqualsIgnoreCase("RANDOM"))
+        {
+            breedId = Random.Shared.ChooseFrom(petDataSpecific.Breeds.Select(breed => breed.Id).ToList());
+        }
+
+        if (petDataSpecific.GetBreedById(breedId, allowNull: true) is null)
+        {
+            error = $"No pet with id '{breedId}'";
+            return false;
+        }
+
+        error = null!;
+        return true;
+    }
+
     private static string FormWildPetKey(Point pnt, string petId, string breedId)
     {
-        return $"{pnt.X},{pnt.Y}:{petId}/{breedId}";
+        return $"{pnt.X},{pnt.Y}:{petId}_{breedId}";
     }
 
     private static bool DoAdoptPet(string[] args, TriggerActionContext context, out string error)
@@ -420,10 +454,7 @@ internal static class PetFeatures
             return false;
         }
 
-        if (
-            Game1.petData.TryGetValue(petId, out PetData? petDataSpecific)
-            && petDataSpecific.GetBreedById(breedId, allowNull: true) != null
-        )
+        if (ValidatePetIds(ref petId, ref breedId, out PetData? petDataSpecific, out error))
         {
             PetLicense license = new() { Name = string.Concat(petId, "|", breedId) };
 

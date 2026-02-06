@@ -14,7 +14,7 @@ debug action mushymato.LivestockBazaar_RemoveWildPet Here 68 15 Cat 4
           "Id": "{{ModId}}_SpawnWildCat",
           "Trigger": "DayStarted",
           "HostOnly": true,
-          "Action": "mushymato.LivestockBazaar_AddWildPet Forest 68 15 Cat 4 {{ModId}}\\WildPetEvents:AdoptCat4",
+          "Action": "mushymato.LivestockBazaar_AddWildPet Forest 68 15 Cat RANDOM {{ModId}}\\WildPetEvents:AdoptCat",
           "MarkActionApplied": false
         }
       }
@@ -28,7 +28,8 @@ debug action mushymato.LivestockBazaar_RemoveWildPet Here 68 15 Cat 4
       "Action": "EditData",
       "Target": "{{ModId}}/WildPetEvents",
       "Entries": {
-        "AdoptCat4": "spring_day_ambient/[LB_WildPetPos]/farmer [LB_WildPetPos 0 4] 0/LB_AddTargetWildPetActor [LB_WildPetPos 0 0] up/LB_AddWildPetActor Cat 3 [LB_WildPetPos 3 -2] left/skippable/pause 50/faceDirection LB_WildPet left/pause 50/faceDirection LB_WildPet down/advancedMove LB_WildPet false 0 3/pause 250/emote LB_WildPet 20/pause 250/emote farmer 20/LB_AdoptWildPet/end"
+        // "AdoptCat4": "spring_day_ambient/[LB_WildPetPos]/farmer [LB_WildPetPos 0 4] 0/LB_AddTargetWildPetActor [LB_WildPetPos 0 0] up/LB_AddWildPetActor Cat 3 [LB_WildPetPos 3 -2] left/skippable/pause 50/faceDirection LB_WildPet left/pause 50/faceDirection LB_WildPet down/advancedMove LB_WildPet false 0 3/pause 250/emote LB_WildPet 20/pause 250/emote farmer 20/LB_AdoptWildPet/end"
+        "AdoptCat": "spring_day_ambient/-100 -100/farmer [LB_WildPetPos 0 3] 0/LB_AddTargetWildPetActor [LB_WildPetPos 0 0] down/pause 500/viewport LB_WildPet true/animate LB_WildPet false true 200 19 20 21 22/pause 500/emote farmer 16/pause 1500/stopAnimation LB_WildPet/move farmer 0 -1 up/move LB_WildPet 0 -1 down/move farmer 0 -1 up/move LB_WildPet 0 -1 down/pause 100/message \"The cat is wary of you.\"/quickQuestion #Try to pet#Carefully approach#CAT!!!#Leave(break)move farmer 0 -2 up\\move LB_WildPet 100 0 right true\\faceDirection farmer right\\emote farmer 28(break)move farmer 0 -1 up\\animate farmer false true 400 82 83 82 83\\emote farmer 20(break)move farmer 0 -2 up\\move LB_WildPet -100 0 left true\\faceDirection farmer left\\emote farmer 60(break)move farmer 0 100 down true/pause 500/end"
       }
     }
   ]
