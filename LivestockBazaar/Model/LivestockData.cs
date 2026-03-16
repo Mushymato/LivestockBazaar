@@ -167,6 +167,7 @@ public sealed record LivestockData
         {
             issues.Add(new("BabyTexture", data.BabyTexture));
         }
+        // TODO: fix scenario where the base animal is invalid but all of it's alt purchase types are
         if (data.Skins != null)
         {
             foreach (FarmAnimalSkin skin in data.Skins)

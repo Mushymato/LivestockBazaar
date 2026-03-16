@@ -1,4 +1,5 @@
 {
+  "$schema": "https://smapi.io/schemas/content-patcher.json",
   "Changes": [
     {
       "Action": "EditData",
@@ -48,13 +49,21 @@
     // Island Trader
     {
       "Action": "EditMap",
-      "Target": "Maps/Island_N_Trader",
-      "FromFile": "assets/PatchThese5TilesAsWholeOtherSheetForRidiculousReasons.tmx",
-      "ToArea": {
-        "X": 2,
-        "Y": 7,
-        "Width": 5,
-        "Height": 1
+      "Target": "Maps/Island_FieldOffice",
+      "MapTiles": [
+        {
+          "Layer": "Buildings",
+          "Position": {
+            "X": 7,
+            "Y": 5
+          },
+          "SetProperties": {
+            "Action": "mushymato.LivestockBazaar_Shop {{ModId}}_FieldOffice"
+          }
+        }
+      ],
+      "When": {
+        "Ostrich": true
       },
       "Priority": "Late"
     },

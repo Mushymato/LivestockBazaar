@@ -67,9 +67,9 @@
           "RequiredBuilding": "Deluxe Barn",
           "CustomFields": {
             "mushymato.LivestockBazaar/BuyFrom.Marnie": "{{query: {{AvailableFromMarnie}} AND {{Ostrich}}}}",
-            "mushymato.LivestockBazaar/BuyFrom.IslandTrade": "{{Ostrich}}",
-            "mushymato.LivestockBazaar/TradeItemId.IslandTrade": "(O)848",
-            "mushymato.LivestockBazaar/TradeItemAmount.IslandTrade": 40,
+            "mushymato.LivestockBazaar/BuyFrom.{{ModId}}_FieldOffice": "{{Ostrich}}",
+            "mushymato.LivestockBazaar/TradeItemId.{{ModId}}_FieldOffice": "(O)848",
+            "mushymato.LivestockBazaar/TradeItemAmount.{{ModId}}_FieldOffice": 30,
           }
         }
       }
