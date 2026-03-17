@@ -16,18 +16,30 @@ public static class OpenBazaar
     /// <summary>Tile action to open LB shop</summary>
     internal const string LivestockShop = $"{ModEntry.ModId}_Shop";
     internal const string LivestockShopArgs = $"{ModEntry.ModId}_ShopTile";
+    internal const string GSQ_SHOP_HAS_STOCK = $"{ModEntry.ModId}_HAS_STOCK";
 
     internal static void Register(IModHelper helper)
     {
         GameLocation.RegisterTileAction(LivestockShop, TileAction_ShowLivestockShop);
         TriggerActionManager.RegisterAction(LivestockShop, Action_ShowLivestockShop);
+        GameStateQuery.Register(GSQ_SHOP_HAS_STOCK, HAS_STOCK);
         helper.ConsoleCommands.Add("lb-shop", "Open a custom livestock shop by id", Console_ShowLivestockShop);
+    }
+
+    private static bool HAS_STOCK(string[] query, GameStateQueryContext context)
+    {
+        if (!ArgUtility.TryGet(query, 1, out string shopName, out string? error, allowBlank: true, "string shopId"))
+        {
+            ModEntry.Log(error, LogLevel.Error);
+            return false;
+        }
+        return AssetManager.HasAnyLivestockDataForShop(shopName);
     }
 
     /// <summary>Show livestock bazaar menu</summary>
     /// <param name="command"></param>
     /// <param name="args"></param>
-    private static bool Args_ShowLivestockShop(string[] args, out string error)
+    private static bool Args_ShowLivestockShop(string[] args, out string? error)
     {
         if (!ArgUtility.TryGet(args, 0, out var shopName, out error, allowBlank: true, "string shopId"))
         {
@@ -44,10 +56,10 @@ public static class OpenBazaar
             ModEntry.Log("Must load save first.", LogLevel.Error);
             return;
         }
-        Args_ShowLivestockShop(args, out string _);
+        Args_ShowLivestockShop(args, out _);
     }
 
-    private static bool Action_ShowLivestockShop(string[] args, TriggerActionContext context, out string error)
+    private static bool Action_ShowLivestockShop(string[] args, TriggerActionContext context, out string? error)
     {
         return Args_ShowLivestockShop(args, out error);
     }
@@ -138,7 +150,7 @@ public static class OpenBazaar
     private static bool TileAction_ShowLivestockShop(GameLocation location, string[] action, Farmer who, Point tile)
     {
         if (
-            !ArgUtility.TryGet(action, 1, out var shopName, out string error, allowBlank: true, "string shopId")
+            !ArgUtility.TryGet(action, 1, out var shopName, out string? error, allowBlank: true, "string shopId")
             || !ArgUtility.TryGetOptional(
                 action,
                 2,

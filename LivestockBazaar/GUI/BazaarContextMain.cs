@@ -86,11 +86,13 @@ public sealed partial record BazaarContextMain : ITopLevelBazaarContext
     {
         if (building.isUnderConstruction())
             return;
-        BuildingData buildingData = building.GetData();
+        if (building.GetData() is not BuildingData buildingData)
+            return;
         if (buildingData?.ValidOccupantTypes == null || building.GetIndoors() is not AnimalHouse)
             return;
-        GameLocation parentLocation = building.GetParentLocation();
-        if (!allAnimalHouseLocations.ContainsKey(building.GetParentLocation()))
+        if (building.GetParentLocation() is not GameLocation parentLocation)
+            return;
+        if (!allAnimalHouseLocations.ContainsKey(parentLocation))
             allAnimalHouseLocations[parentLocation] = new(mainContext, parentLocation, []);
         BazaarLocationEntry locationEntry = allAnimalHouseLocations[parentLocation];
         BazaarBuildingEntry buildingEntry = new(locationEntry, building, buildingData);

@@ -105,14 +105,15 @@ public sealed partial record BazaarBuildingEntry(
     }
 
     internal static bool TryGetValidAnimal(
-        GameLocation location,
+        GameLocation? location,
         long animalId,
         ref bool notFound,
         out FarmAnimal? animal
     )
     {
-        if (!location.animals.TryGetValue(animalId, out animal))
+        if (!(location?.animals.TryGetValue(animalId, out animal) ?? false))
         {
+            animal = null;
             notFound = true;
             return false;
         }
@@ -127,7 +128,7 @@ public sealed partial record BazaarBuildingEntry(
 
     internal IEnumerable<FarmAnimal> GetFarmAnimalsThatLiveHere()
     {
-        GameLocation parentLocation = Building.GetParentLocation();
+        GameLocation? parentLocation = Building.GetParentLocation();
         foreach (long animalId in House.animalsThatLiveHere)
         {
             bool notFound = false;
@@ -214,7 +215,8 @@ public sealed partial record BazaarBuildingEntry(
     )
     {
         locAndHouse = null;
-        GameLocation loc = entry.Bld.Building.GetParentLocation();
+        if (entry.Bld.Building.GetParentLocation() is not GameLocation loc)
+            return false;
         AnimalHouse house = entry.Bld.House;
         if (!loc.animals.ContainsKey(entry.Animal.myID.Value) && !house.animals.ContainsKey(entry.Animal.myID.Value))
             return false;

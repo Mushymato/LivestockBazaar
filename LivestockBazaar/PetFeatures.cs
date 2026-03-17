@@ -451,12 +451,12 @@ internal static class PetFeatures
         return true;
     }
 
-    private static bool DoAdoptPet(string[] args, TriggerActionContext context, out string error)
+    private static bool DoAdoptPet(string[] args, TriggerActionContext context, out string? error)
     {
         if (
-            !ArgUtility.TryGet(args, 1, out string petId, out error, allowBlank: false, name: "string petId")
-            || !ArgUtility.TryGet(args, 2, out string breedId, out error, allowBlank: false, name: "string breedId")
-            || !ArgUtility.TryGet(args, 3, out string petName, out error, allowBlank: false, name: "string petName")
+            !ArgUtility.TryGet(args, 1, out string? petId, out error, allowBlank: false, name: "string petId")
+            || !ArgUtility.TryGet(args, 2, out string? breedId, out error, allowBlank: false, name: "string breedId")
+            || !ArgUtility.TryGet(args, 3, out string? petName, out error, allowBlank: false, name: "string petName")
             || !ArgUtility.TryGetOptionalBool(args, 4, out bool showNamingMenu, out error, name: "bool showNamingMenu")
         )
         {
@@ -496,7 +496,7 @@ internal static class PetFeatures
         string arguments,
         ItemQueryContext context,
         bool avoidRepeat,
-        HashSet<string> avoidItemIds,
+        HashSet<string>? avoidItemIds,
         Action<string, string> logError
     )
     {
@@ -506,7 +506,7 @@ internal static class PetFeatures
                 args,
                 0,
                 out string petId,
-                out string error,
+                out string? error,
                 defaultValue: "T",
                 allowBlank: false,
                 name: "string petId"

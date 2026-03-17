@@ -63,8 +63,7 @@ internal static class CurrencyFactory
 
     private static BaseCurrency? GetOrCreate(string tradeItemId)
     {
-        ParsedItemData itemData = ItemRegistry.GetData(tradeItemId);
-        if (itemData == null)
+        if (ItemRegistry.GetData(tradeItemId) is not ParsedItemData itemData)
             return null;
         if (itemData.QualifiedItemId == "(O)GoldCoin")
             return new MoneyCurrency(itemData);

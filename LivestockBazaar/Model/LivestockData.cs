@@ -152,16 +152,25 @@ public sealed record LivestockData
         return (int)(price * mult);
     }
 
-    public static bool IsValid(string key, FarmAnimalData data)
+    public static bool IsValid(string key, FarmAnimalData data, out bool needValidAltPurchase)
     {
+        needValidAltPurchase = false;
         if (data == null)
             return false;
         bool isValid = true;
         List<(string, string)> issues = [];
         if (string.IsNullOrEmpty(data.Texture) || !Game1.content.DoesAssetExist<Texture2D>(data.Texture))
         {
-            issues.Add(new("Texture", data.Texture));
-            isValid = false;
+            if (data.AlternatePurchaseTypes?.Any() ?? false)
+            {
+                needValidAltPurchase = true;
+                return false;
+            }
+            else
+            {
+                issues.Add(new("Texture", data.Texture));
+                isValid = false;
+            }
         }
         if (!string.IsNullOrEmpty(data.BabyTexture) && !Game1.content.DoesAssetExist<Texture2D>(data.BabyTexture))
         {
@@ -207,7 +216,6 @@ public sealed record LivestockData
         AltPurchase.Clear();
         if (Data.AlternatePurchaseTypes == null || !Data.AlternatePurchaseTypes.Any())
             return;
-        bool altPurchaseContainsThis = false;
         foreach (AlternatePurchaseAnimals altPurchase in Data.AlternatePurchaseTypes)
         {
             if (!Wheels.GSQCheckNoRandom(altPurchase.Condition))
@@ -217,20 +225,11 @@ public sealed record LivestockData
                 if (LsData.TryGetValue(animalId, out LivestockData? altPurchaseData))
                 {
                     if (animalId == Key)
-                    {
-                        altPurchaseContainsThis = true;
                         AltPurchase.Insert(0, altPurchaseData);
-                    }
                     else
-                    {
                         AltPurchase.Add(altPurchaseData);
-                    }
                 }
             }
-        }
-        if (!altPurchaseContainsThis)
-        {
-            AltPurchase.Insert(0, this);
         }
     }
 }

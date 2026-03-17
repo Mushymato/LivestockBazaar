@@ -164,6 +164,11 @@ CustomFields can be used to control the behavior:
 
 Quirk with using this is that, should the machine have any item processing rules and you attempt to drop in an item, the menu **WILL** appear even after the item is dropped into machine.
 
+#### Game State Query: mushymato.LivestockBazaar_HAS_STOCK \<shopName\>
+
+This game state query checks if there are any animals for sale from a particular shopName.
+It is the same logic used to determine if the animal shop option should appear as an option on tile action `mushymato.LivestockBazaar_Shop`.
+
 #### Item Query: mushymato.LivestockBazaar_PET_ADOPTION [petId] [breedId] [ignoreBaseProce] [ignoreCanBeAdoptedFromMarnie]
 
 Item query for usage in custom pet shops (NOT animal shops!), works similar to vanilla `PET_ADOPTION` item query but allows filtering.

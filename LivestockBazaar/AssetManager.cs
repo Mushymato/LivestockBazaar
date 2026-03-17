@@ -1,4 +1,5 @@
 using LivestockBazaar.Model;
+using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.GameData.FarmAnimals;
@@ -40,13 +41,47 @@ internal static class AssetManager
             if (_lsData == null)
             {
                 _lsData = [];
+                Dictionary<string, FarmAnimalData> altPurchaseValidate = [];
                 foreach ((string key, FarmAnimalData data) in Game1.farmAnimalData)
                 {
-                    if (LivestockData.IsValid(key, data))
+                    if (LivestockData.IsValid(key, data, out bool needValidAltPurchase))
                         _lsData[key] = new(key, data);
+                    else if (needValidAltPurchase)
+                        altPurchaseValidate[key] = data;
+                }
+                foreach ((string key, FarmAnimalData data) in altPurchaseValidate)
+                {
+                    ValidateAtLeastOneAltPurchase(_lsData, key, data);
                 }
             }
             return _lsData;
+        }
+    }
+
+    /// <summary>Handle an edge case where animal is not valid, but has valid alt purchases</summary>
+    private static void ValidateAtLeastOneAltPurchase(
+        Dictionary<string, LivestockData> _lsData,
+        string key,
+        FarmAnimalData data
+    )
+    {
+        foreach (AlternatePurchaseAnimals altPurchase in data.AlternatePurchaseTypes)
+        {
+            if (GameStateQuery.IsImmutablyFalse(altPurchase.Condition))
+                continue;
+            foreach (string animalId in altPurchase.AnimalIds)
+            {
+                if (_lsData.TryGetValue(animalId, out LivestockData? altPurchaseData))
+                {
+                    ModEntry.Log(
+                        $"Set animal '{key}' texture to {altPurchaseData.Data.Texture} (from '{animalId}')",
+                        LogLevel.Debug
+                    );
+                    data.Texture = altPurchaseData.Data.Texture;
+                    _lsData[key] = new(key, data);
+                    return;
+                }
+            }
         }
     }
 

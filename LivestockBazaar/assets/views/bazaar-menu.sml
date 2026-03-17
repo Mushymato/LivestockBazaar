@@ -80,7 +80,7 @@
             <image margin="0,12" layout="48px 48px" sprite={:TradeItem} />
             <image margin="12,0" layout="48px 48px" sprite={:TradeItem} />
           </panel>
-          <label layout="content 48px" text={TotalCurrency} font="dialogue" max-lines="1" />
+          <label layout="content 48px" font="dialogue" max-lines="1" focusable="true" text={TotalCurrency}/>
         </lane>
         <infobox tint={AnimTint}>
           <lane *if={HasSkin} layout="stretch content" orientation="horizontal" margin="0,-48,0,0" horizontal-content-alignment="middle" z-index="2">
@@ -153,7 +153,7 @@
 
 <template name="infobox">
   <lane layout="content[256..] stretch" orientation="vertical" horizontal-content-alignment="middle">
-      <image layout="content content[64..]" fit="Contain" horizontal-alignment="middle" vertical-alignment="end"
+      <image layout="content content[64..]" fit="Contain" horizontal-alignment="middle" vertical-alignment="end" 
       tint={&tint} sprite={AnimSprite} sprite-effects={AnimFlip} />
     <outlet/>
   </lane>
