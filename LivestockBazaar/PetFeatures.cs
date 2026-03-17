@@ -21,6 +21,8 @@ internal static class PetFeatures
 {
     internal const string ItemQuery_PET_ADOPTION = $"{ModEntry.ModId}_PET_ADOPTION";
     internal const string Action_AdoptPet = $"{ModEntry.ModId}_AdoptPet";
+
+#if NEW_PET_FEATURES
     internal const string Action_AddWildPet = $"{ModEntry.ModId}_AddWildPet";
     internal const string Action_RemoveWildPet = $"{ModEntry.ModId}_RemoveWildPet";
     internal const string ModData_WildPet = $"{ModEntry.ModId}/WildPet";
@@ -32,8 +34,10 @@ internal static class PetFeatures
     internal const string WildPetEvent_AddWildPetActor = "LB_AddWildPetActor";
     internal const string WildPetEvent_AdoptWildPet = "LB_AdoptWildPet";
 
-    internal static MethodInfo? namePet_Method = AccessTools.DeclaredMethod(typeof(PetLicense), "namePet");
     internal static Pet? wildPetEventTarget = null;
+#endif
+
+    internal static MethodInfo? namePet_Method = AccessTools.DeclaredMethod(typeof(PetLicense), "namePet");
 
     internal static void Register(Harmony patcher, IModHelper helper)
     {
@@ -46,6 +50,8 @@ internal static class PetFeatures
         {
             TriggerActionManager.RegisterAction(Action_AdoptPet, DoAdoptPet);
         }
+
+#if NEW_PET_FEATURES
         TriggerActionManager.RegisterAction(Action_AddWildPet, DoAddWildPet);
         TriggerActionManager.RegisterAction(Action_RemoveWildPet, DoRemoveWildPet);
 
@@ -68,8 +74,10 @@ internal static class PetFeatures
         TriggerActionManager.RegisterTrigger(WildPetInteract_Trigger);
 
         helper.Events.GameLoop.Saving += OnSavingClearWildPets;
+#endif
     }
 
+#if NEW_PET_FEATURES
     private static void Event_AddWildPetActor(Event @event, string[] args, EventContext context)
     {
         if (
@@ -409,6 +417,12 @@ internal static class PetFeatures
         return true;
     }
 
+    private static string FormWildPetKey(Point pnt, string petId, string breedId)
+    {
+        return $"{pnt.X},{pnt.Y}:{petId}_{breedId}";
+    }
+#endif
+
     private static bool ValidatePetIds(
         ref string petId,
         ref string breedId,
@@ -435,11 +449,6 @@ internal static class PetFeatures
 
         error = null!;
         return true;
-    }
-
-    private static string FormWildPetKey(Point pnt, string petId, string breedId)
-    {
-        return $"{pnt.X},{pnt.Y}:{petId}_{breedId}";
     }
 
     private static bool DoAdoptPet(string[] args, TriggerActionContext context, out string error)
