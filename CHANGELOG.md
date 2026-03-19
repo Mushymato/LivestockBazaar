@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.6] - 2026-03-18
+
+### Added
+- New GSQ mushymato.LivestockBazaar_HAS_STOCK \<shopName\> for checking if an animal shop has any livestock for sale.
+
+### Fixed
+- Animals that are invalid themselves but has valid alternate purchase types now properly appear for sale
+- Extra Animal Config produced item display issue on alternate purchases
+- Hopefully make gamepad work a little better by adding another focusable
+
 ## [1.5.5] - 2026-01-29
 
 ### Fixed

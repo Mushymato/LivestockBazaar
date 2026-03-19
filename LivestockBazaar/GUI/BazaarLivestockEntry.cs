@@ -176,16 +176,16 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
     {
         get
         {
-            FarmAnimalData data = selectedPurchase == null ? Ls.Data : selectedPurchase.Ls.Data;
-            IEnumerable<FarmAnimalProduce>? prodIter = data.ProduceItemIds;
+            LivestockData ls = selectedPurchase == null ? Ls : selectedPurchase.Ls;
+            IEnumerable<FarmAnimalProduce>? prodIter = ls.Data.ProduceItemIds;
             if (prodIter == null)
             {
-                prodIter = data.DeluxeProduceItemIds;
+                prodIter = ls.Data.DeluxeProduceItemIds;
                 if (prodIter == null)
                     yield break;
             }
             else
-                prodIter = prodIter.Concat(data.DeluxeProduceItemIds);
+                prodIter = prodIter.Concat(ls.Data.DeluxeProduceItemIds);
 
             HashSet<string> seenProduce = [];
             int cnt = 0;
@@ -197,7 +197,7 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
                     continue;
 
                 if (
-                    GetEACItemQueryOverrides(itemQueryContext, Ls.Key, prod.ItemId, ref cnt, ref seenProduce)
+                    GetEACItemQueryOverrides(itemQueryContext, ls.Key, prod.ItemId, ref cnt, ref seenProduce)
                     is List<ParsedItemData> eacIqOverrides1
                 )
                 {
@@ -224,12 +224,12 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
                 }
             }
 
-            if (ModEntry.EAC?.GetExtraDrops(Ls.Key) is Dictionary<string, List<string>> extraDrops)
+            if (ModEntry.EAC?.GetExtraDrops(ls.Key) is Dictionary<string, List<string>> extraDrops)
             {
                 foreach (string itemId in extraDrops.Values.SelectMany(id => id))
                 {
                     if (
-                        GetEACItemQueryOverrides(itemQueryContext, Ls.Key, itemId, ref cnt, ref seenProduce)
+                        GetEACItemQueryOverrides(itemQueryContext, ls.Key, itemId, ref cnt, ref seenProduce)
                         is List<ParsedItemData> eacIqOverrides2
                     )
                     {

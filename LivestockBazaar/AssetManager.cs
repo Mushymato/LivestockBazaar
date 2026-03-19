@@ -75,7 +75,7 @@ internal static class AssetManager
                 {
                     ModEntry.Log(
                         $"Set animal '{key}' texture to {altPurchaseData.Data.Texture} (from '{animalId}')",
-                        LogLevel.Debug
+                        LogLevel.Info
                     );
                     data.Texture = altPurchaseData.Data.Texture;
                     _lsData[key] = new(key, data);
