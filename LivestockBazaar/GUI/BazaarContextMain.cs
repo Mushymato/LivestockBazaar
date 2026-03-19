@@ -41,6 +41,8 @@ public sealed partial record BazaarContextMain : ITopLevelBazaarContext
             .Values.Where((loc) => loc.ValidLivestockBuildings.Any())
             .OrderByDescending((loc) => loc.TotalRemainingSpaceCount);
 
+    public bool HasAnyBuildings => AnimalHouseByLocation.Any();
+
     public bool HasSpaceForLivestock(BazaarLivestockEntry livestock)
     {
         return AnimalHouseByLocation.Values.Any((loc) => loc.GetTotalRemainingSpaceCount(livestock) > 0);
