@@ -10,33 +10,34 @@
       padding="8"
       layout="stretch content"
       orientation="vertical"
-      wheel=|ScrollLocations($Direction)| 
       button-press=|PageLocations($Button)|>
-      <lane horizontal-content-alignment="middle" layout="stretch 64px">
+      <lane horizontal-content-alignment="middle" layout="stretch 64px" wheel=|~AnimalManageContext.ScrollLocations($Direction)| >
         <image *if={~AnimalManageContext.ShowNav} sprite={@Mods/StardewUI/Sprites/LargeLeftArrow} left-click=|~AnimalManageContext.PrevLocation()|/>
         <banner padding="8" text={:LocationName} layout="stretch"/>
         <image *if={~AnimalManageContext.ShowNav} sprite={@Mods/StardewUI/Sprites/LargeRightArrow} left-click=|~AnimalManageContext.NextLocation()|/>
       </lane>
-      <grid item-layout="length:164">
-        <frame *repeat={:AllLivestockBuildings}
-          background={@mushymato.LivestockBazaar/sprites/cursors:shopBg}
-          left-click=|~AnimalManageContext.HandleSelectBuilding1(this)|
-          right-click=|~AnimalManageContext.HandleSelectBuilding2(this)|
-          background-tint="#FFFFFF"
-          +hover:background-tint="#F5DEB3">
-          <frame layout="stretch content" background={@mushymato.LivestockBazaar/sprites/cursors:borderWhite} margin="4" background-tint={SelectedFrameTint}>
-            <panel *switch={Select}>
-              <lane layout="144px content" padding="8" orientation="vertical" focusable="true" horizontal-content-alignment="middle">
-                <image layout="120px 120px" fit="Contain" horizontal-alignment="middle" vertical-alignment="end"
-                  sprite={:BuildingSprite}/>
-                <label font="dialogue" text={BuildingOccupant}/>
-              </lane>
-              <image *case="2" margin="16" sprite={@Mods/StardewUI/Sprites/CaretLeft}/>
-              <image *case="3" margin="16" sprite={@Mods/StardewUI/Sprites/CaretRight}/>
-            </panel>
+      <scrollable peeking="128" layout="100% 200px" scrollbar-visibility="Hidden">
+        <grid item-layout="length:164">
+          <frame *repeat={:AllLivestockBuildings}
+            background={@mushymato.LivestockBazaar/sprites/cursors:shopBg}
+            left-click=|~AnimalManageContext.HandleSelectBuilding1(this)|
+            right-click=|~AnimalManageContext.HandleSelectBuilding2(this)|
+            background-tint="#FFFFFF"
+            +hover:background-tint="#F5DEB3">
+            <frame layout="stretch content" background={@mushymato.LivestockBazaar/sprites/cursors:borderWhite} margin="4" background-tint={SelectedFrameTint}>
+              <panel *switch={Select}>
+                <lane layout="144px content" padding="8" orientation="vertical" focusable="true" horizontal-content-alignment="middle">
+                  <image layout="120px 120px" fit="Contain" horizontal-alignment="middle" vertical-alignment="end"
+                    sprite={:BuildingSprite}/>
+                  <label font="dialogue" text={BuildingOccupant}/>
+                </lane>
+                <image *case="2" margin="16" sprite={@Mods/StardewUI/Sprites/CaretLeft}/>
+                <image *case="3" margin="16" sprite={@Mods/StardewUI/Sprites/CaretRight}/>
+              </panel>
+            </frame>
           </frame>
-        </frame>
-      </grid>
+        </grid>
+      </scrollable>
     </lane>
     <image sprite={@Mods/StardewUI/Sprites/ThinHorizontalDivider} layout="1236px content" margin="0,4,8,0" fit="Stretch"/>
     <lane orientation="horizontal" layout="content stretch">

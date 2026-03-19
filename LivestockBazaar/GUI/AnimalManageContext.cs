@@ -270,8 +270,17 @@ public sealed partial record AnimalManageContext : ITopLevelBazaarContext
             IClickableMenu aqm = ModEntry.GetAnimalQueryMenu(amfae.Animal);
             Game1.activeClickableMenu = aqm;
             aqm.exitFunction = (IClickableMenu.onExit)
-                Delegate.Combine(aqm.exitFunction, (IClickableMenu.onExit)amfae.Bld.RefreshAMFAE);
+                Delegate.Combine(aqm.exitFunction, (IClickableMenu.onExit)(() => OnAnimalQueryMenuExit(amfae)));
         }
+    }
+
+    public void OnAnimalQueryMenuExit(AnimalManageFarmAnimalEntry amfae)
+    {
+        if (amfae.Animal.health.Value < 0)
+        {
+            amfae.Animal.currentLocation.animals.Remove(amfae.Animal.myID.Value);
+        }
+        amfae.Bld.RefreshAMFAE();
     }
 
     public int GetCurrentlyOwnedCount(BazaarLivestockEntry livestock)
