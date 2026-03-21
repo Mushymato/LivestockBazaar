@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
@@ -5,9 +6,11 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Buildings;
 using StardewValley.Characters;
 using StardewValley.Delegates;
 using StardewValley.Extensions;
+using StardewValley.GameData.FarmAnimals;
 using StardewValley.GameData.Pets;
 using StardewValley.Internal;
 using StardewValley.Menus;
@@ -20,45 +23,51 @@ namespace LivestockBazaar;
 internal static class PetFeatures
 {
     internal const string ItemQuery_PET_ADOPTION = $"{ModEntry.ModId}_PET_ADOPTION";
+    internal const string GSQ_HAS_PETBOWL = $"{ModEntry.ModId}_HAVE_PETBOWL";
+    internal const string GSQ_HAS_HOUSING = $"{ModEntry.ModId}_HAVE_HOUSING";
+
     internal const string Action_AdoptPet = $"{ModEntry.ModId}_AdoptPet";
+    internal const string Action_AdoptFarmAnimal = $"{ModEntry.ModId}_AdoptFarmAnimal";
 
-#if NEW_PET_FEATURES
-    internal const string Action_AddWildPet = $"{ModEntry.ModId}_AddWildPet";
-    internal const string Action_RemoveWildPet = $"{ModEntry.ModId}_RemoveWildPet";
-    internal const string ModData_WildPet = $"{ModEntry.ModId}/WildPet";
-    internal const string ModData_WildPetInteract = $"{ModEntry.ModId}/WildPetInteract";
-    internal const string WildPetInteract_Trigger = $"{ModEntry.ModId}_WildPetInteract";
-    internal const string WildPetEvent_WildPetPos = "LB_WildPetPos";
-    internal const string WildPetEvent_WildPetActorName = "LB_WildPet";
-    internal const string WildPetEvent_AddTargetWildPetActor = "LB_AddTargetWildPetActor";
-    internal const string WildPetEvent_AddWildPetActor = "LB_AddWildPetActor";
-    internal const string WildPetEvent_AdoptWildPet = "LB_AdoptWildPet";
+    internal const string Action_AddWild = $"{ModEntry.ModId}_AddWild";
+    internal const string Action_RemoveWild = $"{ModEntry.ModId}_RemoveWild";
+    internal const string ModData_Wild = $"{ModEntry.ModId}/Wild";
+    internal const string ModData_WildInteract = $"{ModEntry.ModId}/WildInteract";
+    internal const string WildInteract_Trigger = $"{ModEntry.ModId}_WildInteract";
+    internal const string WildEvent_WildPos = "LB_WildPos";
+    internal const string WildEvent_WildActorName = "LB_Wild";
+    internal const string WildEvent_AddTargetWildActor = "LB_AddTargetWildActor";
+    internal const string WildEvent_AddWildActor = "LB_AddWildActor";
+    internal const string WildEvent_AdoptWild = "LB_AdoptWild";
 
-    internal static Pet? wildPetEventTarget = null;
-#endif
+    internal static Pet? WildEventTarget = null;
 
     internal static MethodInfo? namePet_Method = AccessTools.DeclaredMethod(typeof(PetLicense), "namePet");
 
     internal static void Register(Harmony patcher, IModHelper helper)
     {
+        // adoptions
         ItemQueryResolver.Register(ItemQuery_PET_ADOPTION, PET_ADOPTION);
         if (namePet_Method == null)
         {
-            ModEntry.Log($"Failed to reflect PetLicense.namePet, '{Action_AdoptPet}' unavailable", LogLevel.Error);
-        }
-        else
-        {
-            TriggerActionManager.RegisterAction(Action_AdoptPet, DoAdoptPet);
+            ModEntry.Log($"Failed to reflect PetLicense.namePet, pet adoption features unavailable", LogLevel.Error);
+            return;
         }
 
-#if NEW_PET_FEATURES
-        TriggerActionManager.RegisterAction(Action_AddWildPet, DoAddWildPet);
-        TriggerActionManager.RegisterAction(Action_RemoveWildPet, DoRemoveWildPet);
+        GameStateQuery.Register(GSQ_HAS_PETBOWL, HAS_PETBOWL);
+        GameStateQuery.Register(GSQ_HAS_HOUSING, HAS_HOUSING);
 
-        TokenParser.RegisterParser(WildPetEvent_WildPetPos, TS_WildPetPos);
-        Event.RegisterCommand(WildPetEvent_AddTargetWildPetActor, Event_AddTargetWildPetActor);
-        Event.RegisterCommand(WildPetEvent_AddWildPetActor, Event_AddWildPetActor);
-        Event.RegisterCommand(WildPetEvent_AdoptWildPet, Event_AdoptWildPet);
+        TriggerActionManager.RegisterAction(Action_AdoptPet, DoAdoptPet);
+        TriggerActionManager.RegisterAction(Action_AdoptFarmAnimal, DoAdoptFarmAnimal);
+
+        // wild pet event
+        TriggerActionManager.RegisterAction(Action_AddWild, DoAddWild);
+        TriggerActionManager.RegisterAction(Action_RemoveWild, DoRemoveWild);
+
+        TokenParser.RegisterParser(WildEvent_WildPos, TS_WildPos);
+        Event.RegisterCommand(WildEvent_AddTargetWildActor, Event_AddTargetWildActor);
+        Event.RegisterCommand(WildEvent_AddWildActor, Event_AddWildActor);
+        Event.RegisterCommand(WildEvent_AdoptWild, Event_AdoptWild);
 
         try
         {
@@ -71,14 +80,12 @@ internal static class PetFeatures
         {
             ModEntry.Log($"Failed to patch LivestockBazaar(PetAction):\n{err}", LogLevel.Error);
         }
-        TriggerActionManager.RegisterTrigger(WildPetInteract_Trigger);
+        TriggerActionManager.RegisterTrigger(WildInteract_Trigger);
 
-        helper.Events.GameLoop.Saving += OnSavingClearWildPets;
-#endif
+        helper.Events.GameLoop.Saving += OnSavingClearWilds;
     }
 
-#if NEW_PET_FEATURES
-    private static void Event_AddWildPetActor(Event @event, string[] args, EventContext context)
+    private static void Event_AddWildActor(Event @event, string[] args, EventContext context)
     {
         if (
             !ArgUtility.TryGet(args, 1, out string petId, out string error, allowBlank: false, name: "string petId")
@@ -106,27 +113,27 @@ internal static class PetFeatures
             direction,
             templatePet,
             portraitAsset,
-            string.Concat(WildPetEvent_WildPetActorName, '_', petId, '_', breedId)
+            string.Concat(WildEvent_WildActorName, '_', petId, '_', breedId)
         );
     }
 
-    private static void Event_AddTargetWildPetActor(Event @event, string[] args, EventContext context)
+    private static void Event_AddTargetWildActor(Event @event, string[] args, EventContext context)
     {
-        if (wildPetEventTarget == null)
+        if (WildEventTarget == null)
         {
             @event.LogCommandErrorAndSkip(
                 args,
-                "'wildPetEventTarget' not set, use 'LB_AddWildPetActor' for generic pet actor'"
+                "'WildEventTarget' not set, use 'LB_AddWildActor' for generic pet actor'"
             );
             return;
         }
         if (!ArgUtility.TryGetPoint(args, 1, out Point tilePoint, out _, "Point tile"))
         {
-            tilePoint = wildPetEventTarget.TilePoint;
+            tilePoint = WildEventTarget.TilePoint;
         }
         if (!ArgUtility.TryGetDirection(args, 3, out int direction, out _, "int facingDirection"))
         {
-            direction = wildPetEventTarget.FacingDirection;
+            direction = WildEventTarget.FacingDirection;
         }
         ArgUtility.TryGetOptional(
             args,
@@ -136,7 +143,7 @@ internal static class PetFeatures
             defaultValue: null,
             name: "string portraitAsset"
         );
-        MakePetActor(@event, tilePoint, direction, wildPetEventTarget, portraitAsset, WildPetEvent_WildPetActorName);
+        MakePetActor(@event, tilePoint, direction, WildEventTarget, portraitAsset, WildEvent_WildActorName);
     }
 
     private static void MakePetActor(
@@ -176,7 +183,7 @@ internal static class PetFeatures
         @event.CurrentCommand++;
     }
 
-    private static void Event_AdoptWildPet(Event @event, string[] args, EventContext context)
+    private static void Event_AdoptWild(Event @event, string[] args, EventContext context)
     {
         if (Game1.activeClickableMenu is NamingMenu)
         {
@@ -187,12 +194,12 @@ internal static class PetFeatures
             @event.LogCommandErrorAndSkip(args, error);
             return;
         }
-        if (wildPetEventTarget != null)
+        if (WildEventTarget != null)
         {
-            context.Location.characters.Remove(wildPetEventTarget);
+            context.Location.characters.Remove(WildEventTarget);
             PetLicense license = new()
             {
-                Name = string.Concat(wildPetEventTarget.petType.Value, "|", wildPetEventTarget.whichBreed.Value),
+                Name = string.Concat(WildEventTarget.petType.Value, "|", WildEventTarget.whichBreed.Value),
             };
             string title = Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1236");
             Game1.activeClickableMenu = new NamingMenu(
@@ -204,7 +211,7 @@ internal static class PetFeatures
                 title,
                 petName
             );
-            wildPetEventTarget = null;
+            WildEventTarget = null;
         }
         else
         {
@@ -212,32 +219,32 @@ internal static class PetFeatures
         }
     }
 
-    private static bool TS_WildPetPos(string[] query, out string replacement, Random random, Farmer player)
+    private static bool TS_WildPos(string[] query, out string replacement, Random random, Farmer player)
     {
-        if (wildPetEventTarget == null)
+        if (WildEventTarget == null)
         {
-            ModEntry.Log("'wildPetEventTarget' not set", LogLevel.Error);
+            ModEntry.Log("'WildEventTarget' not set", LogLevel.Error);
             replacement = "0 0";
             return false;
         }
-        Point wildPetEventPos = wildPetEventTarget.TilePoint;
+        Point WildEventPos = WildEventTarget.TilePoint;
         if (ArgUtility.TryGetPoint(query, 1, out Point offset, out _, name: "Point offset"))
         {
-            replacement = $"{wildPetEventPos.X + offset.X} {wildPetEventPos.Y + offset.Y}";
+            replacement = $"{WildEventPos.X + offset.X} {WildEventPos.Y + offset.Y}";
             return true;
         }
-        replacement = $"{wildPetEventPos.X} {wildPetEventPos.Y}";
+        replacement = $"{WildEventPos.X} {WildEventPos.Y}";
         return true;
     }
 
-    private static void OnSavingClearWildPets(object? sender, SavingEventArgs e)
+    private static void OnSavingClearWilds(object? sender, SavingEventArgs e)
     {
-        wildPetEventTarget = null;
+        WildEventTarget = null;
         Utility.ForEachLocation(
             (location) =>
             {
                 location.characters.RemoveWhere(chara =>
-                    chara is Pet petChara && petChara.modData.ContainsKey(ModData_WildPet)
+                    chara is Pet petChara && petChara.modData.ContainsKey(ModData_Wild)
                 );
                 return true;
             }
@@ -246,18 +253,19 @@ internal static class PetFeatures
 
     internal static bool Pet_checkAction_Prefix(Pet __instance, Farmer who, GameLocation l)
     {
-        if (!__instance.modData.ContainsKey(ModData_WildPet))
+        if (!__instance.modData.ContainsKey(ModData_Wild))
         {
             return true;
         }
-        if (!__instance.modData.TryGetValue(ModData_WildPetInteract, out string triggerOrEvent))
+
+        if (!__instance.modData.TryGetValue(ModData_WildInteract, out string triggerOrEvent))
         {
             triggerOrEvent = "TRIGGER";
         }
 
         if (triggerOrEvent.EqualsIgnoreCase("TRIGGER"))
         {
-            TriggerActionManager.Raise(WildPetInteract_Trigger);
+            TriggerActionManager.Raise(WildInteract_Trigger);
             return false;
         }
 
@@ -275,21 +283,21 @@ internal static class PetFeatures
         }
 
         __instance.Halt();
-        wildPetEventTarget = __instance;
-        Event wildPetEvent = new(eventScript, parts[0], parts[1], who)
+        WildEventTarget = __instance;
+        Event WildEvent = new(eventScript, parts[0], parts[1], who)
         {
-            eventPositionTileOffset = wildPetEventTarget.TilePoint.ToVector2(),
+            eventPositionTileOffset = WildEventTarget.TilePoint.ToVector2(),
         };
-        l.startEvent(wildPetEvent);
+        l.startEvent(WildEvent);
 
         return false;
     }
 
-    private static bool DoAddWildPet(string[] args, TriggerActionContext context, out string error)
+    private static bool DoAddWild(string[] args, TriggerActionContext context, out string? error)
     {
         if (!Context.IsMainPlayer)
         {
-            error = $"Only the main player can use '{Action_AddWildPet}'";
+            error = $"Only the main player can use '{Action_AddWild}'";
             return false;
         }
         if (
@@ -321,39 +329,39 @@ internal static class PetFeatures
             return false;
         }
 
-        string wildPetKey = FormWildPetKey(pnt, petId, breedId);
+        string WildKey = FormWildKey(pnt, petId, breedId);
         foreach (Character chara in location.characters)
         {
             if (
                 chara is Pet prevPet
-                && prevPet.modData.TryGetValue(ModData_WildPet, out string prevWildPetKey)
-                && prevWildPetKey == wildPetKey
+                && prevPet.modData.TryGetValue(ModData_Wild, out string prevWildKey)
+                && prevWildKey == WildKey
             )
             {
-                // already spawned, simply update ModData_WildPetInteract
-                prevPet.modData[ModData_WildPetInteract] = triggerOrEvent;
+                // already spawned, simply update ModData_WildInteract
+                prevPet.modData[ModData_WildInteract] = triggerOrEvent;
                 return true;
             }
         }
 
         Pet pet = new(pnt.X, pnt.Y, breedId, petId);
         pet.hideFromAnimalSocialMenu.Value = true;
-        pet.modData[ModData_WildPet] = wildPetKey;
-        pet.modData[ModData_WildPetInteract] = triggerOrEvent;
+        pet.modData[ModData_Wild] = WildKey;
+        pet.modData[ModData_WildInteract] = triggerOrEvent;
         location.characters.Add(pet);
         pet.update(Game1.currentGameTime, location);
         pet.CurrentBehavior = "SitDown";
         pet.OnNewBehavior();
-        ModEntry.Log($"Add wild pet '{wildPetKey}' to {locationName}{pnt}");
+        ModEntry.Log($"Add wild pet '{WildKey}' to {locationName}{pnt}");
 
         return true;
     }
 
-    private static bool DoRemoveWildPet(string[] args, TriggerActionContext context, out string error)
+    private static bool DoRemoveWild(string[] args, TriggerActionContext context, out string? error)
     {
         if (!Context.IsMainPlayer)
         {
-            error = $"Only the main player can use '{Action_RemoveWildPet}'";
+            error = $"Only the main player can use '{Action_RemoveWild}'";
             return false;
         }
         if (!ArgUtility.TryGet(args, 1, out string locationName, out error, allowBlank: false, name: "string location"))
@@ -369,7 +377,7 @@ internal static class PetFeatures
         if (!ArgUtility.TryGetPoint(args, 2, out Point pnt, out error, name: "Point pnt"))
         {
             location.characters.RemoveWhere(chara =>
-                chara is Pet petChara && petChara.modData.ContainsKey(ModData_WildPet)
+                chara is Pet petChara && petChara.modData.ContainsKey(ModData_Wild)
             );
             return true;
         }
@@ -389,21 +397,21 @@ internal static class PetFeatures
             return false;
         }
 
-        string wildPetKey = FormWildPetKey(pnt, petId, breedId);
-        RemoveWildPetByKey(location, wildPetKey);
+        string WildKey = FormWildKey(pnt, petId, breedId);
+        RemoveWildByKey(location, WildKey);
         return true;
     }
 
-    private static void RemoveWildPetByKey(GameLocation location, string wildPetKey)
+    private static void RemoveWildByKey(GameLocation location, string WildKey)
     {
         location.characters.RemoveWhere(chara =>
             chara is Pet petChara
-            && petChara.modData.TryGetValue(ModData_WildPet, out string prevWildPetKey)
-            && prevWildPetKey == wildPetKey
+            && petChara.modData.TryGetValue(ModData_Wild, out string prevWildKey)
+            && prevWildKey == WildKey
         );
     }
 
-    private static bool TryGetLocationFromName(string locationName, ref string error, out GameLocation location)
+    private static bool TryGetLocationFromName(string locationName, ref string? error, out GameLocation location)
     {
         if (locationName.EqualsIgnoreCase("Here"))
             location = Game1.currentLocation;
@@ -417,17 +425,129 @@ internal static class PetFeatures
         return true;
     }
 
-    private static string FormWildPetKey(Point pnt, string petId, string breedId)
+    private static string FormWildKey(Point pnt, string petId, string breedId)
     {
         return $"{pnt.X},{pnt.Y}:{petId}_{breedId}";
     }
-#endif
+
+    private static bool HAS_HOUSING(string[] query, GameStateQueryContext context)
+    {
+        if (
+            !ArgUtility.TryGet(
+                query,
+                1,
+                out string? farmAnimalId,
+                out string error,
+                allowBlank: false,
+                name: "string farmAnimalId"
+            )
+        )
+        {
+            ModEntry.Log(error, LogLevel.Error);
+            return false;
+        }
+
+        FarmAnimal animal = new(farmAnimalId, Game1.Multiplayer.getNewID(), -1L);
+        bool result = false;
+        Utility.ForEachBuilding(building =>
+        {
+            if (animal.CanLiveIn(building))
+            {
+                result = true;
+                return false;
+            }
+            return true;
+        });
+        return result;
+    }
+
+    private static bool HAS_PETBOWL(string[] query, GameStateQueryContext context)
+    {
+        foreach (Building building in Game1.getFarm().buildings)
+        {
+            if (building is PetBowl petBowl && !petBowl.HasPet())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void AdoptFarmAnimalToBuilding(Building building, FarmAnimal animal, string farmAnimalName)
+    {
+        ModEntry.Log($"Adopted {animal.type.Value}({animal.skinID.Value}) with name '{farmAnimalName}'");
+        animal.displayName = farmAnimalName;
+        (building.GetIndoors() as AnimalHouse)?.adoptAnimal(animal);
+    }
+
+    private static bool DoAdoptFarmAnimal(string[] args, TriggerActionContext context, out string error)
+    {
+        if (
+            !ArgUtility.TryGet(
+                args,
+                1,
+                out string? farmAnimalId,
+                out error,
+                allowBlank: false,
+                name: "string farmAnimalId"
+            )
+            || !ArgUtility.TryGet(args, 2, out string? skinId, out error, allowBlank: false, name: "string skinId")
+            || !ArgUtility.TryGet(
+                args,
+                3,
+                out string? farmAnimalName,
+                out error,
+                allowBlank: false,
+                name: "string petName"
+            )
+            || !ArgUtility.TryGetOptionalBool(args, 4, out bool showNamingMenu, out error, name: "bool showNamingMenu")
+        )
+        {
+            return false;
+        }
+
+        if (!Game1.farmAnimalData.TryGetValue(farmAnimalId, out FarmAnimalData? farmAnimalDataSpecific))
+        {
+            error = $"No farm animal with id '{farmAnimalId}'";
+            return false;
+        }
+
+        FarmAnimal animal = new(farmAnimalId, Game1.Multiplayer.getNewID(), Game1.player.UniqueMultiplayerID);
+        if (!skinId.EqualsIgnoreCase("RANDOM"))
+        {
+            animal.skinID.Value = skinId;
+        }
+
+        Utility.ForEachBuilding(building =>
+        {
+            if (animal.CanLiveIn(building))
+            {
+                if (showNamingMenu)
+                {
+                    string title = Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1236");
+                    Game1.activeClickableMenu = new NamingMenu(
+                        (s) => AdoptFarmAnimalToBuilding(building, animal, s),
+                        title,
+                        farmAnimalName
+                    );
+                }
+                else
+                {
+                    AdoptFarmAnimalToBuilding(building, animal, farmAnimalName);
+                }
+                return false;
+            }
+            return true;
+        });
+        ModEntry.Log($"Did not find building for {animal.type.Value}({animal.skinID.Value}) to live in", LogLevel.Info);
+        return true;
+    }
 
     private static bool ValidatePetIds(
         ref string petId,
         ref string breedId,
         out PetData? petDataSpecific,
-        out string error
+        [NotNullWhen(false)] out string? error
     )
     {
         if (!Game1.petData.TryGetValue(petId, out petDataSpecific))
@@ -447,7 +567,7 @@ internal static class PetFeatures
             return false;
         }
 
-        error = null!;
+        error = null;
         return true;
     }
 
