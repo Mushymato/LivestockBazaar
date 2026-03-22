@@ -1,0 +1,46 @@
+{
+  "$schema": "https://smapi.io/schemas/content-patcher.json",
+  "Format": "2.9.0",
+  "Changes": [
+    /*
+    debug action mushymato.LivestockBazaar_AddWildPet Here 68 15 Cat 4
+    debug action mushymato.LivestockBazaar_RemoveWildPet Here 68 15 Cat 4
+    */
+    {
+      "Action": "EditData",
+      "Target": "Data/TriggerActions",
+      "Entries": {
+        "{{ModId}}_SpawnWildCat": {
+          "Id": "{{ModId}}_SpawnWildCat",
+          "Trigger": "DayStarted",
+          "HostOnly": true,
+          "Condition": "mushymato.LivestockBazaar_HAVE_PETBOWL",
+          "Action": "mushymato.LivestockBazaar_AddWildPet Forest 68 15 Cat RANDOM T {{ModId}}\\WildEvents:AdoptCat",
+          "MarkActionApplied": false
+        },
+        "{{ModId}}_SpawnWildCow": {
+          "Id": "{{ModId}}_SpawnWildCow",
+          "Trigger": "DayStarted",
+          "HostOnly": true,
+          "Condition": "mushymato.LivestockBazaar_HAVE_HOUSING 7thAxis.HnH_BarnOwl.Brown",
+          "Action": "mushymato.LivestockBazaar_AddWildFarmAnimal BusStop 24 14 7thAxis.HnH_BarnOwl.Brown RANDOM ADULT {{ModId}}\\WildEvents:AdoptCat",
+          "MarkActionApplied": false
+        }
+      }
+    },
+    {
+      "Action": "Load",
+      "Target": "{{ModId}}/WildEvents",
+      "FromFile": "blank.json"
+    },
+    {
+      "Action": "EditData",
+      "Target": "{{ModId}}/WildEvents",
+      "Entries": {
+        // "AdoptCat4": "spring_day_ambient/[mushymato.LivestockBazaar_WildPos]/farmer [mushymato.LivestockBazaar_WildPos 0 4] 0/mushymato.LivestockBazaar_AddTargetWildActor [mushymato.LivestockBazaar_WildPos 0 0] up/mushymato.LivestockBazaar_AddWildActor Cat 3 [mushymato.LivestockBazaar_WildPos 3 -2] left/skippable/pause 50/faceDirection mushymato.LivestockBazaar_Wild left/pause 50/faceDirection mushymato.LivestockBazaar_Wild down/advancedMove mushymato.LivestockBazaar_Wild false 0 3/pause 250/emote mushymato.LivestockBazaar_Wild 20/pause 250/emote farmer 20/mushymato.LivestockBazaar_AdoptWild/end"
+        "AdoptCat": "spring_day_ambient/-100 -100/farmer [mushymato.LivestockBazaar_WildPos 0 3] 0/mushymato.LivestockBazaar_AddTargetWildActor [mushymato.LivestockBazaar_WildPos 0 0] down/pause 500/viewport mushymato.LivestockBazaar_Wild true/animate mushymato.LivestockBazaar_Wild false true 200 19 20 21 22/pause 500/emote farmer 16/pause 1500/stopAnimation mushymato.LivestockBazaar_Wild/move farmer 0 -1 up/move mushymato.LivestockBazaar_Wild 0 -1 down/move farmer 0 -1 up/move mushymato.LivestockBazaar_Wild 0 -1 down/pause 100/message \"The [mushymato.LivestockBazaar_WildName] is wary of you.\"/quickQuestion #Try to pet#Carefully approach#CAT!!!#Leave(break)move farmer 0 -2 up\\move mushymato.LivestockBazaar_Wild 100 0 right true\\faceDirection farmer right\\emote farmer 28(break)move farmer 0 -1 up\\animate farmer false true 400 82 83 82 83\\emote farmer 20\\mushymato.LivestockBazaar_AdoptWild(break)move farmer 0 -2 up\\move mushymato.LivestockBazaar_Wild -100 0 left true\\faceDirection farmer left\\emote farmer 60(break)move farmer 0 100 down true/pause 500/end"
+      }
+    }
+    //
+  ]
+}

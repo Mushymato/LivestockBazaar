@@ -448,6 +448,7 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
         FarmAnimal animal = new(ls.Key, Game1.Multiplayer.getNewID(), Game1.player.UniqueMultiplayerID)
         {
             Name = BuyName,
+            displayName = BuyName,
         };
         if (selectedPurchase.SkinId > -1)
         {
