@@ -25,7 +25,7 @@
             pointer-enter=|~BazaarContextMain.HandleHoverLivestock(this)|
             pointer-leave=|~BazaarContextMain.HandleHoverLivestock()|
             left-click=|~BazaarContextMain.HandleSelectLivestock(this)| >
-            <panel layout="160px 144px" horizontal-content-alignment="middle" focusable="true">
+            <panel layout="160px 144px" horizontal-content-alignment="middle" focusable="true" screen-read={:ShopScreenRead}>
               <image layout="content 64px" margin="0,8" sprite={:ShopIcon} opacity={:ShopIconOpacity} tint={:ShopIconTint} />
               <lane layout="stretch 64px" margin="0,88" orientation="horizontal" opacity={:ShopIconOpacity}>
                 <image layout="48px 48px" sprite={:TradeItem} />
@@ -51,7 +51,7 @@
             <image sprite={@mushymato.LivestockBazaar/sprites/cursors2:dotdotdot} layout="48px 48px"/>
             <image sprite={@mushymato.LivestockBazaar/sprites/cursors:organize} layout="30px 36px" margin="9,8" +hover:scale="1.2" +transition:scale="100ms EaseInSine"/>
           </panel>
-          <textinput layout="stretch 48px" margin="0,2,0,0" text={<>NameFilter}/>
+          <textinput layout="stretch 48px" margin="0,2,0,0" text={<>NameFilter} placeholder={#GUI.Search}/>
           <panel *if={~BazaarContextMain.HasAnyBuildings} focusable="true" margin="4,0,0,0" left-click=|ShowAnimalManage()| tooltip={#GUI.AnimalManage.Title}>
             <image sprite={@mushymato.LivestockBazaar/sprites/cursors2:dotdotdot} layout="48px 48px"/>
             <image sprite={@mushymato.LivestockBazaar/sprites/springobjects:hay} layout="32px 32px" margin="8,8,8,8" +hover:scale="1.2" +transition:scale="100ms EaseInSine"/>

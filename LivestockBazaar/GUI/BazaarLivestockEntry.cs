@@ -69,6 +69,31 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
     public bool ShowCurrentlyOwnedCount => CurrentlyOwnedCount > 0;
     public int CurrentlyOwnedCount => Main.GetCurrentlyOwnedCount(this);
 
+    public string ShopScreenRead
+    {
+        get
+        {
+            if (!HasRequiredBuilding)
+            {
+                return I18n.GUI_ScreenReadCantBuy(LivestockName, RequiredBuildingText);
+            }
+            if (!HasEnoughTradeItems)
+            {
+                return I18n.GUI_ScreenReadCantBuy(
+                    LivestockName,
+                    I18n.GUI_ScreenReadCantBuyPrice(TradePrice, TradeItem.DisplayName)
+                );
+            }
+            return I18n.GUI_ScreenRead(
+                LivestockName,
+                TradePrice,
+                TradeItem.DisplayName,
+                PurchaseLivestockDaysDesc,
+                PurchaseLivestockDesc
+            );
+        }
+    }
+
     public bool HasThisType(string type) => Ls.Key == type || AltPurchase.Any((alt) => alt.Ls.Key == type);
 
     // has required animal building

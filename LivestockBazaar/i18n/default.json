@@ -23,9 +23,13 @@
   "GUI.DaysToMature.Desc": "Growth: {{day}} days",
   "GUI.DaysToProduce.Single.Desc": "Produce: every day",
   "GUI.DaysToProduce.Desc": "Produce: {{day}} days",
+  "GUI.ScreenRead_CantBuy": "Cannot buy {{name}}, Reason: {{reason}}",
+  "GUI.ScreenRead_CantBuy_Price": "Need {{price}} {{item}}",
+  "GUI.ScreenRead": "{{name}}, Price: {{price}} {{item}}, Summary: {{summary}}, Description: {{description}}",
+  "GUI.Search": "Search...",
   // Animal Manage Menu
   "GUI.LivestockBazaar.Title": "Livestock Bazaar",
   "GUI.AnimalManage.Title": "Manage Farm Animals",
   "GUI.CombineTitle": "{{lbTitle}}: {{amTitle}}",
-  "GUI.AnimalManage.Cannot": "Another player is currently managing farm animals!"
+  "GUI.AnimalManage.Cannot": "Another player is currently managing farm animals!",
 }

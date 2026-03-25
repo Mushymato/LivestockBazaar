@@ -23,6 +23,9 @@
   "GUI.DaysToMature.Desc": "{{day}}天成熟",
   "GUI.DaysToProduce.Single.Desc": "每天产出",
   "GUI.DaysToProduce.Desc": "每{{day}}天产出",
+  "GUI.ScreenRead_CantBuy": "无法购买{{name}}，原因：{{reason}}",
+  "GUI.ScreenRead_CantBuy_Price": "需要{{price}}个{{item}}",
+  "GUI.ScreenRead": "{{name}}，价格：{{price}} {{item}}，概括:{{summary}}，描述：{{description}}",
   // Animal Manage Menu
   "GUI.LivestockBazaar.Title": "牲畜集市",
   "GUI.AnimalManage.Title": "管理农场动物",
