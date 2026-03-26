@@ -23,6 +23,8 @@ namespace LivestockBazaar;
 
 internal static class PetFeatures
 {
+    internal const string WildAnimal_ManifestKey = $"{ModEntry.ModId}_WildAnimals";
+
     internal const string ItemQuery_PET_ADOPTION = $"{ModEntry.ModId}_PET_ADOPTION";
     internal const string GSQ_HAS_PETBOWL = $"{ModEntry.ModId}_HAVE_PETBOWL";
     internal const string GSQ_HAS_HOUSING = $"{ModEntry.ModId}_HAVE_HOUSING";
@@ -65,6 +67,17 @@ internal static class PetFeatures
 
         TriggerActionManager.RegisterAction(Action_AdoptPet, DoAdoptPet);
         TriggerActionManager.RegisterAction(Action_AdoptFarmAnimal, DoAdoptFarmAnimal);
+
+        // these feature require wild animal to be enabled
+        if (
+            !helper
+                .ModRegistry.GetAll()
+                .Any(modInfo => modInfo.Manifest.ExtraFields.ContainsKey(WildAnimal_ManifestKey))
+        )
+        {
+            ModEntry.Log($"No mod has manifest key '{WildAnimal_ManifestKey}', wild animal features are disabled");
+            return;
+        }
 
         // wild pet event
         TriggerActionManager.RegisterAction(Action_AddWildPet, DoAddWild);

@@ -30,6 +30,15 @@ public sealed partial record BazaarBuildingEntry(
         buildingTooltipSb.Append(Wheels.ParseTextOrDefault(name));
     }
 
+    private void PutBuildingCoord()
+    {
+        buildingTooltipSb.Append(" (");
+        buildingTooltipSb.Append(Building.tileX);
+        buildingTooltipSb.Append(',');
+        buildingTooltipSb.Append(Building.tileY);
+        buildingTooltipSb.Append(')');
+    }
+
     public string BuildingName
     {
         get
@@ -60,11 +69,7 @@ public sealed partial record BazaarBuildingEntry(
         {
             buildingTooltipSb.Clear();
             PutBuildingName();
-            buildingTooltipSb.Append(" (");
-            buildingTooltipSb.Append(Building.tileX);
-            buildingTooltipSb.Append(',');
-            buildingTooltipSb.Append(Building.tileY);
-            buildingTooltipSb.Append(')');
+            PutBuildingCoord();
             foreach (FarmAnimal animal in GetFarmAnimalsThatLiveHere().OrderBy(animal => animal.displayType))
             {
                 buildingTooltipSb.Append('\n');
@@ -75,6 +80,29 @@ public sealed partial record BazaarBuildingEntry(
             return buildingTooltipSb.ToString();
         }
     }
+
+    public string BuildingManageTooltip
+    {
+        get
+        {
+            buildingTooltipSb.Clear();
+            buildingTooltipSb.Append(LocationEntry.LocationName);
+            buildingTooltipSb.Append(": ");
+            PutBuildingName();
+            PutBuildingCoord();
+            switch (Select)
+            {
+                case SelectionState.Left:
+                    buildingTooltipSb.Append(I18n.GUI_BuildingSelect_Left());
+                    break;
+                case SelectionState.Right:
+                    buildingTooltipSb.Append(I18n.GUI_BuildingSelect_Right());
+                    break;
+            }
+            return buildingTooltipSb.ToString();
+        }
+    }
+
     public string BuildingOccupant => $"{House.animalsThatLiveHere.Count}/{House.animalLimit.Value}";
     public SDUISprite BuildingSprite => new(Building.texture.Value, Building.getSourceRect());
     public Color BuildingSpriteTint => Color.White * (RemainingSpace > 0 ? 1f : 0.5f);

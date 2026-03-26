@@ -75,16 +75,16 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
         {
             if (!HasRequiredBuilding)
             {
-                return I18n.GUI_ScreenReadCantBuy(LivestockName, RequiredBuildingText);
+                return I18n.GUI_ScreenRead_ShopCantBuy(LivestockName, RequiredBuildingText);
             }
             if (!HasEnoughTradeItems)
             {
-                return I18n.GUI_ScreenReadCantBuy(
+                return I18n.GUI_ScreenRead_ShopCantBuy(
                     LivestockName,
-                    I18n.GUI_ScreenReadCantBuyPrice(TradePrice, TradeItem.DisplayName)
+                    I18n.GUI_ScreenRead_ShopPrice(TradePrice, TradeItem.DisplayName)
                 );
             }
-            return I18n.GUI_ScreenRead(
+            return I18n.GUI_ScreenRead_Shop(
                 LivestockName,
                 TradePrice,
                 TradeItem.DisplayName,
@@ -93,6 +93,9 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
             );
         }
     }
+
+    public string PurchaseScreenRead =>
+        string.Concat(I18n.GUI_PurchaseButton(), " ", I18n.GUI_ScreenRead_ShopPrice(TradePrice, TradeItem.DisplayName));
 
     public bool HasThisType(string type) => Ls.Key == type || AltPurchase.Any((alt) => alt.Ls.Key == type);
 

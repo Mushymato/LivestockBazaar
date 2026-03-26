@@ -92,14 +92,15 @@
           </lane>
           <label text={PurchaseLivestockName} margin="0,4" font="dialogue"/>
           <lane orientation="horizontal" margin="0,16">
-            <textinput layout="196px 48px" text={<>BuyName}/>
+            <textinput layout="196px 48px" text={<>BuyName} screen-read={#GUI.ScreenRead.AnimalName}/>
             <image sprite={@mushymato.LivestockBazaar/sprites/cursors:dice} layout="32px 32px" margin="8" focusable="true"
               left-click=|RandomizeBuyName()| />
           </lane>
           <button layout="content[256..] content" margin="8,0"
             opacity={~BazaarContextMain.ReadyToPurchaseOpacity}
             hover-background={@Mods/StardewUI/Sprites/ButtonLight}
-            left-click=|~BazaarContextMain.HandlePurchaseAnimal()| >
+            left-click=|~BazaarContextMain.HandlePurchaseAnimal()|
+            screen-read={:PurchaseScreenRead} >
             <lane orientation="vertical" horizontal-content-alignment="start">
               <label layout="content content" text={#GUI.PurchaseButton} font="small"/>
               <lane orientation="horizontal" horizontal-content-alignment="end">
@@ -120,12 +121,13 @@
           <lane orientation="vertical">
             <grid *if={:HasAltPurchase} margin="8" item-layout="length: 96+" horizontal-item-alignment="middle" >
               <frame *repeat={:AltPurchase} focusable="true"
-                left-click=|~BazaarLivestockEntry.HandleSelectedPurchase(this)| >
+                left-click=|~BazaarLivestockEntry.HandleSelectedPurchase(this)|
+                screen-read={:LivestockName} >
                 <image fit="Contain" horizontal-alignment="middle" sprite={:SpriteIcon} opacity={IconOpacity}/>
               </frame>
             </grid>
             <lane padding="8" *repeat={:~BazaarContextMain.BazaarLocationEntries} layout="stretch content" orientation="vertical">
-              <banner padding="8" text={:LocationName}/>
+              <banner padding="8" text={:LocationName} focusable="true"/>
               <grid layout="stretch content" item-layout="length:164">
                 <frame *repeat={:ValidLivestockBuildings}
                   background={:~BazaarContextMain.Theme_ItemRowBackground}

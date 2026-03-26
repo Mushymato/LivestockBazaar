@@ -12,9 +12,19 @@
       orientation="vertical"
       button-press=|PageLocations($Button)|>
       <lane horizontal-content-alignment="middle" layout="stretch 64px" wheel=|~AnimalManageContext.ScrollLocations($Direction)| >
-        <image *if={~AnimalManageContext.ShowNav} sprite={@Mods/StardewUI/Sprites/LargeLeftArrow} left-click=|~AnimalManageContext.PrevLocation()|/>
-        <banner padding="8" text={:LocationName} layout="stretch"/>
-        <image *if={~AnimalManageContext.ShowNav} sprite={@Mods/StardewUI/Sprites/LargeRightArrow} left-click=|~AnimalManageContext.NextLocation()|/>
+        <image *if={~AnimalManageContext.ShowNav}
+          sprite={@Mods/StardewUI/Sprites/LargeLeftArrow}
+          left-click=|~AnimalManageContext.PrevLocation()|
+          screen-read={#GUI.ScreenRead.PrevLocation}
+          focusable="true"
+        />
+        <banner padding="8" text={:LocationName} layout="stretch" focusable="true"/>
+        <image *if={~AnimalManageContext.ShowNav}
+          sprite={@Mods/StardewUI/Sprites/LargeRightArrow}
+          left-click=|~AnimalManageContext.NextLocation()|
+          screen-read={#GUI.ScreenRead.NextLocation}
+          focusable="true"
+        />
       </lane>
       <scrollable peeking="128" layout="100% 200px" scrollbar-visibility="Hidden">
         <grid item-layout="length:164">
@@ -24,8 +34,8 @@
             right-click=|~AnimalManageContext.HandleSelectBuilding2(this)|
             background-tint="#FFFFFF"
             +hover:background-tint="#F5DEB3">
-            <frame layout="stretch content" background={@mushymato.LivestockBazaar/sprites/cursors:borderWhite} margin="4" background-tint={SelectedFrameTint}>
-              <panel *switch={Select}>
+            <frame layout="stretch content" background={@mushymato.LivestockBazaar/sprites/cursors:borderWhite} margin="4" tooltip={BuildingManageTooltip} background-tint={SelectedFrameTint}>
+              <panel *switch={Select} >
                 <lane layout="144px content" padding="8" orientation="vertical" focusable="true" horizontal-content-alignment="middle">
                   <image layout="120px 120px" fit="Contain" horizontal-alignment="middle" vertical-alignment="end"
                     sprite={:BuildingSprite}/>
