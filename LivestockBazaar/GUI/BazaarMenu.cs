@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using LivestockBazaar.Integration;
 using LivestockBazaar.Model;
 using Microsoft.Xna.Framework;
@@ -16,10 +17,10 @@ internal static class BazaarMenu
 {
     private const string MutexId = $"{ModEntry.ModId}/AnimalManageLock";
     private static IViewEngine viewEngine = null!;
-    private static string viewAssetPrefix = null!;
-    private static string viewBazaarMenu = null!;
-    private static string viewAnimalManage = null!;
-    private static string viewAnimalManageTooltip = null!;
+    private const string VIEW_ASSET_PREFIX = $"{ModEntry.ModId}/views";
+    private const string VIEW_BAZAAR_MENU = $"{VIEW_ASSET_PREFIX}/bazaar-menu";
+    private const string VIEW_ANIMAL_MANAGE = $"{VIEW_ASSET_PREFIX}/animal-manage";
+    private const string VIEW_ANIMAL_MANAGE_TOOLTIP = $"{VIEW_ASSET_PREFIX}/includes/animal-manage-tooltip";
 
     private static readonly PerScreen<BazaarContextMain?> shopContext = new();
 
@@ -48,7 +49,7 @@ internal static class BazaarMenu
             if (AMContext == null)
                 return;
             amfaeEntry.Value = value;
-            amfaeTooltip.Value ??= viewEngine.CreateDrawableFromAsset(viewAnimalManageTooltip);
+            amfaeTooltip.Value ??= viewEngine.CreateDrawableFromAsset(VIEW_ANIMAL_MANAGE_TOOLTIP);
             if (value is AnimalManageFarmAnimalEntry amfaee)
             {
                 amfaeTooltip.Value.Context = amfaee;
@@ -64,13 +65,11 @@ internal static class BazaarMenu
 
     internal static void Register(IModHelper helper)
     {
+        // nonsense is happening
         viewEngine = helper.ModRegistry.GetApi<IViewEngine>("focustense.StardewUI")!;
         viewEngine.RegisterSprites($"{ModEntry.ModId}/sprites", "assets/sprites");
-        viewAssetPrefix = $"{ModEntry.ModId}/views";
-        viewBazaarMenu = $"{viewAssetPrefix}/bazaar-menu";
-        viewAnimalManage = $"{viewAssetPrefix}/animal-manage";
-        viewAnimalManageTooltip = $"{viewAssetPrefix}/includes/animal-manage-tooltip";
-        viewEngine.RegisterViews(viewAssetPrefix, "assets/views");
+        viewEngine.RegisterViews(VIEW_ASSET_PREFIX, "assets/views");
+        viewEngine.PreloadAssets();
 #if DEBUG
         viewEngine.EnableHotReloadingWithSourceSync();
 #endif
@@ -99,9 +98,8 @@ internal static class BazaarMenu
     /// <returns></returns>
     internal static bool ShowFor(string shopName, ShopOwnerData? ownerData = null, BazaarData? bazaarData = null)
     {
-        ModEntry.Log($"Show bazaar shop '{shopName}'");
         ShopContext = new(shopName, ownerData, bazaarData);
-        var menuCtrl = viewEngine.CreateMenuControllerFromAsset(viewBazaarMenu, ShopContext);
+        var menuCtrl = viewEngine.CreateMenuControllerFromAsset(VIEW_BAZAAR_MENU, ShopContext);
         menuCtrl.CloseAction = ShopCloseAction;
         menuCtrl.EnableCloseButton();
         Game1.activeClickableMenu = menuCtrl.Menu;
@@ -113,9 +111,9 @@ internal static class BazaarMenu
     /// </summary>
     public static void ShopCloseAction()
     {
-        if (ShopContext!.SelectedLivestock != null)
+        if (ShopContext?.SelectedLivestock != null)
         {
-            ShopContext!.ClearSelectedLivestock();
+            ShopContext?.ClearSelectedLivestock();
         }
         else
         {
@@ -137,7 +135,7 @@ internal static class BazaarMenu
             ModEntry.Log("No animal buildings to manage.", LogLevel.Info);
             return;
         }
-        var menuCtrl = viewEngine.CreateMenuControllerFromAsset(viewAnimalManage, AMContext);
+        var menuCtrl = viewEngine.CreateMenuControllerFromAsset(VIEW_ANIMAL_MANAGE, AMContext);
         menuCtrl.Closing += AMClosing;
         menuCtrl.EnableCloseButton();
         if (Game1.activeClickableMenu != null)

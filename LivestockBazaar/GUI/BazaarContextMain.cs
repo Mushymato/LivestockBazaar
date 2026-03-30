@@ -9,7 +9,6 @@ using StardewValley.Buildings;
 using StardewValley.Extensions;
 using StardewValley.GameData.Buildings;
 using StardewValley.GameData.Shops;
-using StardewValley.Menus;
 
 namespace LivestockBazaar.GUI;
 

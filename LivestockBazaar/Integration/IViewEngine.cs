@@ -140,6 +140,21 @@ public interface IViewEngine
     /// <param name="modDirectory">The physical directory where the asset files are located, relative to the mod
     /// directory. Typically a path such as <c>assets/views</c>.</param>
     public void RegisterViews(string assetPrefix, string modDirectory);
+
+    /// <summary>
+    /// Begins preloading assets found in this mod's registered asset directories.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Preloading is performed in the background, and can typically help reduce first-time latency for showing menus or
+    /// drawables, without any noticeable lag in game startup.
+    /// </para>
+    /// <para>
+    /// Must be called after asset registration (<see cref="RegisterViews"/>, <see cref="RegisterSprites"/> and so on)
+    /// in order to be effective, and must not be called more than once per mod otherwise errors or crashes may occur.
+    /// </para>
+    /// </remarks>
+    void PreloadAssets();
 }
 
 /// <summary>

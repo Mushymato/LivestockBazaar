@@ -38,7 +38,7 @@ internal static class Patches
     {
         if (onMenuOpened == null && !ModEntry.Config.VanillaMarnieStock)
         {
-            ModEntry.Log("Replace original animal shop menu.");
+            ModEntry.LogOnce("Replace original animal shop menu.");
             ShopOwnerData? marnieOwnerData = null;
             if (AssetManager.BazaarData.TryGetValue(Wheels.MARNIE, out BazaarData? bazaarData))
             {

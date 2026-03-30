@@ -1,6 +1,7 @@
 using System.Reflection;
 using HarmonyLib;
 using LivestockBazaar.GUI;
+using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
