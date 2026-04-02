@@ -14,9 +14,12 @@ public partial record AnimalManageEntry(BazaarBuildingEntry Bld)
     public bool IsPlacehold => this is AnimalManagePlaceholder;
 }
 
-public sealed record AnimalManagePlaceholder(BazaarBuildingEntry Bld) : AnimalManageEntry(Bld);
+public sealed record AnimalManagePlaceholder(BazaarBuildingEntry Bld) : AnimalManageEntry(Bld)
+{
+    public string ScreenRead => $"{I18n.GUI_ScreenRead_EmptySpot()} {Bld.BuildingManageTooltip}";
+}
 
-public sealed record AnimalManageFarmAnimalEntry(BazaarBuildingEntry Bld, FarmAnimal Animal) : AnimalManageEntry(Bld)
+public record AnimalManageFarmAnimalEntry(BazaarBuildingEntry Bld, FarmAnimal Animal) : AnimalManageEntry(Bld)
 {
     private const int SCALE = 4;
     private const int MAX_WIDTH = 96;
@@ -24,6 +27,7 @@ public sealed record AnimalManageFarmAnimalEntry(BazaarBuildingEntry Bld, FarmAn
 
     public string DisplayName => Animal.displayName ?? "???";
     public string DisplayType => Animal.displayType ?? "ERROR";
+    public string ScreenRead => $"{DisplayType} {DisplayName} {Bld.BuildingManageTooltip}";
     public IEnumerable<bool> Hearts
     {
         get

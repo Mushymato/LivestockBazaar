@@ -71,7 +71,8 @@
           focusable="true"
           left-click=|~AnimalManageContext.HandleSelectForSwap(this)|
           right-click=|~AnimalManageContext.HandleSelectOpenAnimalQuery(this)|
-          pointer-enter=|~AnimalManageContext.HandleShowTooltip(this)|>
+          pointer-enter=|~AnimalManageContext.HandleShowTooltip(this)|
+          screen-read={:ScreenRead}>
           <image sprite={:Sprite} fit="Contain" layout={:SpriteLayout} margin="8"/>
         </frame>
         <frame *repeat={AMFAEPlaceholds}
@@ -80,7 +81,8 @@
           focusable="true"
           left-click=|~AnimalManageContext.HandleSelectForSwap(this)|
           right-click=|~AnimalManageContext.HandleSelectOpenAnimalQuery(this)|
-          pointer-enter=|~AnimalManageContext.HandleShowTooltip(this)|>
+          pointer-enter=|~AnimalManageContext.HandleShowTooltip(this)|
+          screen-read={:ScreenRead}>
         </frame>
       </grid>
     </lane>

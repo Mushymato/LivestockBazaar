@@ -38,5 +38,7 @@
   "GUI.ScreenRead.AnimalName": "Animal Name",
   "GUI.ScreenRead.AnimalNameRandom": "Randomize Animal Name",
   "GUI.ScreenRead.PrevLocation": "Previous Location",
-  "GUI.ScreenRead.NextLocation": "Next Location"
+  "GUI.ScreenRead.NextLocation": "Next Location",
+  "GUI.ScreenRead.EmptySpot": "Empty Spot",
+  "GUI.ScreenRead.HeldAnimal": "Held",
 }
