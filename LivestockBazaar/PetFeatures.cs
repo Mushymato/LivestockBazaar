@@ -50,7 +50,9 @@ internal static class PetFeatures
 
     internal static PerScreen<Character?> WildEventTarget = new();
 
-    internal static MethodInfo? namePet_Method = AccessTools.DeclaredMethod(typeof(PetLicense), "namePet");
+    internal static Action<PetLicense, string>? namePet_Method = AccessTools
+        .DeclaredMethod(typeof(PetLicense), "namePet")
+        ?.CreateDelegate<Action<PetLicense, string>>();
 
     internal static void Register(Harmony patcher, IModHelper helper)
     {
@@ -75,7 +77,10 @@ internal static class PetFeatures
                 .Any(modInfo => modInfo.Manifest.ExtraFields.ContainsKey(WildAnimal_ManifestKey))
         )
         {
-            ModEntry.Log($"No mod has manifest key '{WildAnimal_ManifestKey}', wild animal features are disabled");
+            ModEntry.Log(
+                $"No mod has manifest key '{WildAnimal_ManifestKey}', wild animal features are disabled",
+                LogLevel.Info
+            );
             return;
         }
 
@@ -228,6 +233,7 @@ internal static class PetFeatures
                             );
                             adoptAnimal.skinID.Value = animal.skinID.Value;
                             adoptAnimal.age.Value = animal.age.Value;
+                            adoptAnimal.ReloadTextureIfNeeded(true);
                             FinishAdoptFarmAnimal(building, adoptAnimal, s);
                             @event.CurrentCommand++;
                         },
@@ -258,7 +264,7 @@ internal static class PetFeatures
         }
         if (wildChara is Pet pet)
         {
-            replacement = pet.GetPetData()?.DisplayName ?? pet.petType.Value;
+            replacement = pet.displayName ?? pet.petType.Value;
             return true;
         }
         else if (wildChara is FarmAnimal animal)
@@ -326,7 +332,7 @@ internal static class PetFeatures
         if (!TryInteractTriggerOrEvent(__instance, who, l, out string? error))
         {
             ModEntry.Log(error, LogLevel.Error);
-            l.characters.Remove(__instance);
+            DelayedAction.functionAfterDelay(() => l.characters.Remove(__instance), 0);
         }
         return false;
     }
@@ -378,11 +384,10 @@ internal static class PetFeatures
         if (chara is FarmAnimal animal)
         {
             l.animals.Remove(animal.myID.Value);
-            wildEvent.eventCommands.Any(cmd => cmd.StartsWith(WildEvent_AdoptWild));
         }
         else if (chara is Pet pet)
         {
-            l.characters.Remove(pet);
+            DelayedAction.functionAfterDelay(() => l.characters.Remove(pet), 0);
         }
 
         l.startEvent(wildEvent);
@@ -829,7 +834,7 @@ internal static class PetFeatures
 
     private static void FinishAdoptPet(string petName, PetLicense license)
     {
-        namePet_Method?.Invoke(license, [petName]);
+        namePet_Method?.Invoke(license, petName);
         Game1.exitActiveMenu();
         Game1.dialogueUp = false;
         Game1.player.CanMove = true;

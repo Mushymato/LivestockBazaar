@@ -1,6 +1,6 @@
 {
   "$schema": "https://smapi.io/schemas/content-patcher.json",
-  "Format": "2.9.0",
+  "Format": "2.8.0",
   "Changes": [
     /*
     debug action mushymato.LivestockBazaar_AddWildPet Here 68 15 Cat 4
@@ -23,7 +23,7 @@
           "Trigger": "DayStarted",
           "HostOnly": true,
           "Condition": "mushymato.LivestockBazaar_HAVE_HOUSING 7thAxis.HnH_BarnOwl.Brown",
-          "Action": "mushymato.LivestockBazaar_AddWildFarmAnimal BusStop 24 14 7thAxis.HnH_BarnOwl.Brown RANDOM ADULT {{ModId}}\\WildEvents:AdoptCat",
+          "Action": "mushymato.LivestockBazaar_AddWildFarmAnimal BusStop 24 14 7thAxis.HnH_BarnOwl.Brown RANDOM BABY {{ModId}}\\WildEvents:AdoptCat",
           "MarkActionApplied": false
         }
       }
