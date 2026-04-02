@@ -182,5 +182,60 @@ If no arguments are given then this behaves identical to `PET_ADOPTION`.
 
 Instantly sends a pet to the farm with a specific name, skipping the naming step. All 3 arguments are required.
 - petId: this is the top level pet id (i.e. Cat, Dog, Turtle), must provide specific pet.
-- breedId: this is the breed id for particular appearance for pet, must provide specific breed.
+- breedId: this is the breed id for particular appearance for pet, can use RANDOM for a random breed.
 - petName: this will be the name of the new pet.
+
+#### Trigger Action Action: mushymato.LivestockBazaar_AdoptFarmAnimal \<farmAnimalId\> \<skinId\> \<farmAnimalName\>
+
+Instantly sends a farm animal to an open farm building with a specific name, skipping the naming step. All 3 arguments are required.
+- farmAnimalId: this is the top level farm animal id (i.e. "White Cow"), must provide specific farm animal.
+- skinId: this is the skin id for the farm animal, can use RANDOM for a random skin.
+- farmAnimalName: this will be the name of the new farm animal.
+
+This action does nothing if there are no free spaces in any buildings.
+
+### Wild Pets and Farm Animals
+
+This is a system that allows wild pets and farm animals to be spawned, these trigger an event on interaction.
+
+To use this, you must have `"mushymato.LivestockBazaar_WildAnimals": "T",` in your mod manifest.
+
+See [[CP] Wild Example](%5BCP%5D%20Wild%20Example) for example usage.
+
+#### Spawning and Removing
+
+Only the host can run these actions
+
+`mushymato.LivestockBazaar_AddWildPet <location> <X> <Y> <petId> <breedId> <extraArgs> <triggerOrEvent>`
+
+This spawns a pet of the given `petId` and `breedId` at a particular location, and then assocate them with either the `mushymato.LivestockBazaar_WildInteract` trigger or a special event script asset:key.
+
+`mushymato.LivestockBazaar_AddWildFarmAnimal <location> <X> <Y> <petId> <breedId> <extraArgs> <triggerOrEvent>`
+
+This spawns a farm animal of the given `petId` and `breedId` at a particular location, and then assocate them with either the `mushymato.LivestockBazaar_WildInteract` trigger or a special event script asset:key.
+
+The `extraArgs` value accepts `"ADULT"` to spawn the farm animal as adult.
+
+`mushymato.LivestockBazaar_RemoveWildPet <location> <X> <Y> <petId> <breedId>`
+
+Removes the wild pet spawned to that tile.
+
+`mushymato.LivestockBazaar_RemoveWildFarmAnimal <location> <X> <Y> <petId> <breedId>`
+
+Removes the wild farm animal spawned to that tile.
+
+Even if you don't call a remove action, the pet or farm animal will be removed at end of day or after event interaction.
+
+#### Interaction Events
+
+The event script that you can pass to wild pet/farm animal is special.
+
+Instead of specifically `Data/Events/<location>` entry this a `<asset>:<key>` value that can pull from any string asset. There are no preconditions as the activation is solely "interact with this wild pet".
+
+These tokenizable string works within this special event:
+- `[mushymato.LivestockBazaar_WildPos <relX> <relY>]`: Get a `x y` pair that is relative to the pet/farm animal's position.
+- `[mushymato.LivestockBazaar_WildName]`: Get the display name of the pet/farm animal.
+
+These event commands work within this special event:
+- `mushymato.LivestockBazaar_AddTargetWildActor <X> <Y> <facing>`: Add the target wild pet/farm animal as event actor.
+- `mushymato.LivestockBazaar_AdoptWild [defaultName]`: Show a naming menu for adopting this wild pet/farm animal.
