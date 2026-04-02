@@ -42,7 +42,7 @@ jobs:
                   artifacts: '_releases/*.zip'
                   name: ${{github.ref_name}}
                   body: |
-                      [CHANGELOG.md](CHANGELOG.md#${{github.ref_name}}) and [attestation](${{steps.create-artifacts.outputs.attestation-url}}).
+                      [CHANGELOG.md](CHANGELOG.md) and [attestation](${{steps.create-artifacts.outputs.attestation-url}}).
 
             - name: Upload to Nexus Mods
               uses: Nexus-Mods/upload-action@v1.0.0-beta.3
