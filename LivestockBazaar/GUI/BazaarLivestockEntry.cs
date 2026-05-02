@@ -212,8 +212,14 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
                 if (prodIter == null)
                     yield break;
             }
+            else if (ls.Data.DeluxeProduceItemIds == null)
+            {
+                yield break;
+            }
             else
+            {
                 prodIter = prodIter.Concat(ls.Data.DeluxeProduceItemIds);
+            }
 
             HashSet<string> seenProduce = [];
             int cnt = 0;
