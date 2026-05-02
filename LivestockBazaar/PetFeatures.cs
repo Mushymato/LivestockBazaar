@@ -25,8 +25,8 @@ internal static class PetFeatures
     internal const string WildAnimal_ManifestKey = $"{ModEntry.ModId}_WildAnimals";
 
     internal const string ItemQuery_PET_ADOPTION = $"{ModEntry.ModId}_PET_ADOPTION";
-    internal const string GSQ_HAS_PETBOWL = $"{ModEntry.ModId}_HAVE_PETBOWL";
-    internal const string GSQ_HAS_HOUSING = $"{ModEntry.ModId}_HAVE_HOUSING";
+    internal const string GSQ_HAVE_PETBOWL = $"{ModEntry.ModId}_HAVE_PETBOWL";
+    internal const string GSQ_HAVE_HOUSING = $"{ModEntry.ModId}_HAVE_HOUSING";
 
     internal const string Action_AdoptPet = $"{ModEntry.ModId}_AdoptPet";
     internal const string Action_AdoptFarmAnimal = $"{ModEntry.ModId}_AdoptFarmAnimal";
@@ -63,8 +63,8 @@ internal static class PetFeatures
             return;
         }
 
-        GameStateQuery.Register(GSQ_HAS_PETBOWL, HAS_PETBOWL);
-        GameStateQuery.Register(GSQ_HAS_HOUSING, HAS_HOUSING);
+        GameStateQuery.Register(GSQ_HAVE_PETBOWL, HAVE_PETBOWL);
+        GameStateQuery.Register(GSQ_HAVE_HOUSING, HAVE_HOUSING);
 
         TriggerActionManager.RegisterAction(Action_AdoptPet, DoAdoptPet);
         TriggerActionManager.RegisterAction(Action_AdoptFarmAnimal, DoAdoptFarmAnimal);
@@ -632,7 +632,7 @@ internal static class PetFeatures
         return $"{pnt.X},{pnt.Y}:{petId}_{breedId}";
     }
 
-    private static bool HAS_HOUSING(string[] query, GameStateQueryContext context)
+    private static bool HAVE_HOUSING(string[] query, GameStateQueryContext context)
     {
         if (
             !ArgUtility.TryGet(
@@ -663,7 +663,7 @@ internal static class PetFeatures
         return result;
     }
 
-    private static bool HAS_PETBOWL(string[] query, GameStateQueryContext context)
+    private static bool HAVE_PETBOWL(string[] query, GameStateQueryContext context)
     {
         foreach (Building building in Game1.getFarm().buildings)
         {

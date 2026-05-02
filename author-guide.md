@@ -169,6 +169,16 @@ Quirk with using this is that, should the machine have any item processing rules
 This game state query checks if there are any animals for sale from a particular shopName.
 It is the same logic used to determine if the animal shop option should appear as an option on tile action `mushymato.LivestockBazaar_Shop`.
 
+#### Game State Query: mushymato.LivestockBazaar_HAVE_PETBOWL
+
+This game state query checks if there are available pet bowls on the farm.
+Only the main farm is considered.
+
+#### Game State Query: mushymato.LivestockBazaar_HAVE_HOUSING \<farmAnimalId\>
+
+This game state query checks if there are available animal house that would accept the given farm animal.
+All buildable locations are considered.
+
 #### Item Query: mushymato.LivestockBazaar_PET_ADOPTION [petId] [breedId] [ignoreBaseProce] [ignoreCanBeAdoptedFromMarnie]
 
 Item query for usage in custom pet shops (NOT animal shops!), works similar to vanilla `PET_ADOPTION` item query but allows filtering.
