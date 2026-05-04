@@ -11,6 +11,8 @@
   "config.SortMode.tooltip": "改变动物商店排序的排序模式。可在商店菜单中直接更改。",
   "config.SortIsAsc.name": "动物商店排序为升序",
   "config.SortIsAsc.tooltip": "改变动物商店排序的排序方向。可在商店菜单中直接更改。",
+  "config.ShowInternalId.name": "动物商店显示实际ID",
+  "config.ShowInternalId.tooltip": "在动物商店里显示此动物的实际ID。",
   // GUI
   "GUI.PurchaseButton": "购买",
   "GUI.SortAsc": "{{mode}} (升序)",
@@ -23,12 +25,22 @@
   "GUI.DaysToMature.Desc": "{{day}}天成熟",
   "GUI.DaysToProduce.Single.Desc": "每天产出",
   "GUI.DaysToProduce.Desc": "每{{day}}天产出",
-  "GUI.ScreenRead_CantBuy": "无法购买{{name}}，原因：{{reason}}",
-  "GUI.ScreenRead_CantBuy_Price": "需要{{price}}个{{item}}",
-  "GUI.ScreenRead": "{{name}}，价格：{{price}} {{item}}，概括:{{summary}}，描述：{{description}}",
+  "GUI.Search": "搜索...",
   // Animal Manage Menu
   "GUI.LivestockBazaar.Title": "牲畜集市",
   "GUI.AnimalManage.Title": "管理农场动物",
   "GUI.CombineTitle": "{{lbTitle}}: {{amTitle}}",
-  "GUI.AnimalManage.Cannot": "另一个玩家正在管理农场动物！"
+  "GUI.AnimalManage.Cannot": "另一个玩家正在管理农场动物！",
+  "GUI.BuildingSelect.Left": " [左]",
+  "GUI.BuildingSelect.Right": " [右]",
+  // Screen Read
+  "GUI.ScreenRead.Shop_CantBuy": "无法购买{{name}}, 原因:{{reason}}",
+  "GUI.ScreenRead.Shop_Price": "需要 {{price}} {{item}}",
+  "GUI.ScreenRead.Shop": "{{name}}, 价格: {{price}} {{item}}, 简略: {{summary}}, 描述: {{description}}",
+  "GUI.ScreenRead.AnimalName": "动物名",
+  "GUI.ScreenRead.AnimalNameRandom": "随机动物名",
+  "GUI.ScreenRead.PrevLocation": "下一个地点",
+  "GUI.ScreenRead.NextLocation": "上一个地点",
+  "GUI.ScreenRead.EmptySpot": "空位置",
+  "GUI.ScreenRead.HeldAnimal": "选中",
 }

@@ -53,6 +53,9 @@ public sealed partial record BazaarLivestockPurchaseEntry(LivestockData Ls)
 
 public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, string? ShopName, LivestockData Ls)
 {
+    // config
+    public bool ShowInternalId => ModEntry.Config.ShowInternalId;
+
     // icon
     public readonly SDUISprite ShopIcon = Ls.ShopIcon;
     public Color ShopIconTint => HasRequiredBuilding ? Color.White : Color.Black * 0.4f;

@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.1] - 2026-05-04
+
+### Added
+- Option to display a farm animal's internal ID on the shop menu (default off).
+- More stardew access screen reads pt2.
+
+### Fixed
+- NRE when animal has null deluxe produce
+
 ## [1.6.0] - 2026-04-02
 
 ### Added

@@ -37,10 +37,16 @@ internal sealed class ModConfig
     /// <summary>Sort mode asc/desc, normally changed in the shop UI</summary>
     public bool SortIsAsc { get; set; } = true;
 
+    /// <summary>Show the animal's internal ID in the shop UI</summary>
+    public bool ShowInternalId { get; set; } = false;
+
     /// <summary>Restore default config values</summary>
     private void Reset()
     {
         VanillaMarnieStock = false;
+        SortMode = LivestockSortMode.Name;
+        SortIsAsc = true;
+        ShowInternalId = false;
     }
 
     public void SaveConfig()
@@ -93,6 +99,13 @@ internal sealed class ModConfig
             setValue: (value) => SortIsAsc = value,
             name: I18n.Config_SortIsAsc_Name,
             tooltip: I18n.Config_SortIsAsc_Tooltip
+        );
+        GMCM.AddBoolOption(
+            mod: mod,
+            getValue: () => ShowInternalId,
+            setValue: (value) => ShowInternalId = value,
+            name: I18n.Config_ShowInternalId_Name,
+            tooltip: I18n.Config_ShowInternalId_Tooltip
         );
     }
 }

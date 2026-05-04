@@ -154,9 +154,10 @@
 </lane>
 
 <template name="infobox">
-  <lane layout="content[256..] stretch" orientation="vertical" horizontal-content-alignment="middle">
-      <image layout="content content[64..]" fit="Contain" horizontal-alignment="middle" vertical-alignment="end" 
-      tint={&tint} sprite={AnimSprite} sprite-effects={AnimFlip} />
+  <lane margin="0,4" layout="content[256..] stretch" orientation="vertical" horizontal-content-alignment="middle">
+    <label *if={:ShowInternalId} text={:Ls.Key} color="#0006"/>
+    <image layout="content content[64..]" fit="Contain" horizontal-alignment="middle" vertical-alignment="end" 
+    tint={&tint} sprite={AnimSprite} sprite-effects={AnimFlip} />
     <outlet/>
   </lane>
 </template>
