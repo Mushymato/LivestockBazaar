@@ -1,0 +1,46 @@
+{
+  "$schema": "https://smapi.io/schemas/i18n.json",
+  // Shop Messages
+  "shop.time-range": "Ouvert de {{openTime}} à {{closeTime}}",
+  "shop.time-start": "Ouverture à {{openTime}}",
+  "shop.time-end": "Fermeture à {{closeTime}}",
+  // Config
+  "config.VanillaMarnieStock.name": "Menu classique de Marnie",
+  "config.VanillaMarnieStock.tooltip": "Ne pas remplacer le stock classique ou le menu de la boutique de Marnie.",
+  "config.SortMode.name": "Mode de tri des animaux",
+  "config.SortMode.tooltip": "Mode de tri actuel de la section des animaux de la boutique, peut également être modifié directement depuis le menu personnalisé de la boutique d'animaux.",
+  "config.SortIsAsc.name": "Tri par ordre croissant",
+  "config.SortIsAsc.tooltip": "Direction de tri actuelle de la section des animaux de la boutique, peut également être modifiée directement depuis le menu personnalisé de la boutique d'animaux.",
+  "config.ShowInternalId.name": "Afficher l'ID interne de l'animal",
+  "config.ShowInternalId.tooltip": "Afficher l'ID interne de l'animal de la ferme dans le menu.",
+  // GUI
+  "GUI.PurchaseButton": "Acheter",
+  "GUI.SortAsc": "{{mode}} (ASC)",
+  "GUI.SortDesc": "{{mode}} (DESC)",
+  "GUI.SortMode.Name": "Nom",
+  "GUI.SortMode.Price": "Prix",
+  "GUI.SortMode.House": "Logement",
+  "GUI.SortMode.CanBuy": "Achetable",
+  "GUI.DaysToMature.Single.Desc": "Croissance : 1 jour",
+  "GUI.DaysToMature.Desc": "Croissance : {{day}} jours",
+  "GUI.DaysToProduce.Single.Desc": "Production : tous les jours",
+  "GUI.DaysToProduce.Desc": "Production : {{day}} jours",
+  "GUI.Search": "Rechercher...",
+  // Animal Manage Menu
+  "GUI.LivestockBazaar.Title": "Bazar des animaux",
+  "GUI.AnimalManage.Title": "Gérer les animaux de la ferme",
+  "GUI.CombineTitle": "{{lbTitle}} : {{amTitle}}",
+  "GUI.AnimalManage.Cannot": "Un autre joueur gère actuellement les animaux de la ferme!",
+  "GUI.BuildingSelect.Left": " [GAUCHE]",
+  "GUI.BuildingSelect.Right": " [DROITE]",
+  // Screen Read
+  "GUI.ScreenRead.Shop_CantBuy": "Impossible d'acheter {{name}}, raison : {{reason}}",
+  "GUI.ScreenRead.Shop_Price": "Requiert {{price}} {{item}}",
+  "GUI.ScreenRead.Shop": "{{name}}, Prix : {{price}} {{item}}, Résumé : {{summary}}, Description : {{description}}",
+  "GUI.ScreenRead.AnimalName": "Nom de l'animal",
+  "GUI.ScreenRead.AnimalNameRandom": "Nom d'animal aléatoire",
+  "GUI.ScreenRead.PrevLocation": "Emplacement précédent",
+  "GUI.ScreenRead.NextLocation": "Emplacement suivant",
+  "GUI.ScreenRead.EmptySpot": "Emplacement vide",
+  "GUI.ScreenRead.HeldAnimal": "Tenu"
+}
