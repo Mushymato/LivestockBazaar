@@ -51,26 +51,27 @@ public sealed partial record BazaarLivestockPurchaseEntry(LivestockData Ls)
     }
 }
 
-public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, string? ShopName, LivestockData Ls)
+public sealed partial class BazaarLivestockEntry(ITopLevelBazaarContext main, string? shopName, LivestockData ls)
 {
     // config
     public bool ShowInternalId => ModEntry.Config.ShowInternalId;
+    public LivestockData Ls => ls;
 
     // icon
-    public readonly SDUISprite ShopIcon = Ls.ShopIcon;
+    public readonly SDUISprite ShopIcon = ls.ShopIcon;
     public Color ShopIconTint => HasRequiredBuilding ? Color.White : Color.Black * 0.4f;
 
     // currency
-    private readonly BaseCurrency currency = Ls.GetTradeCurrency(ShopName);
+    private readonly BaseCurrency currency = ls.GetTradeCurrency(shopName);
     public bool CurrencyIsMoney => currency is MoneyCurrency;
     public ParsedItemData TradeItem => currency.TradeItem;
-    public int TradePrice = Ls.GetTradePrice(ShopName);
+    public int TradePrice = ls.GetTradePrice(shopName);
     public string TradePriceFmt => TradePrice > 99999 ? $"{TradePrice / 1000f}k" : TradePrice.ToString();
     public bool HasEnoughTradeItems => currency.HasEnough(TradePrice);
     public int TotalCurrency => currency.GetTotal();
-    public float ShopIconOpacity => HasEnoughTradeItems && Main.HasSpaceForLivestock(this) ? 1f : 0.5f;
+    public float ShopIconOpacity => HasEnoughTradeItems && main.HasSpaceForLivestock(this) ? 1f : 0.5f;
     public bool ShowCurrentlyOwnedCount => CurrentlyOwnedCount > 0;
-    public int CurrentlyOwnedCount => Main.GetCurrentlyOwnedCount(this);
+    public int CurrentlyOwnedCount => main.GetCurrentlyOwnedCount(this);
 
     public string ShopScreenRead
     {
@@ -100,40 +101,40 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
     public string PurchaseScreenRead =>
         string.Concat(I18n.GUI_PurchaseButton(), " ", I18n.GUI_ScreenRead_ShopPrice(TradePrice, TradeItem.DisplayName));
 
-    public bool HasThisType(string type) => Ls.Key == type || AltPurchase.Any((alt) => alt.Ls.Key == type);
+    public bool HasThisType(string type) => ls.Key == type || AltPurchase.Any((alt) => alt.Ls.Key == type);
 
     // has required animal building
-    public string House => Ls.Data.House;
+    public string House => ls.Data.House;
     private BuildingData? requiredBuildingData = null;
     public BuildingData? RequiredBuildingData
     {
         get
         {
-            if (Ls.Data.RequiredBuilding == null)
+            if (ls.Data.RequiredBuilding == null)
                 return null;
             if (requiredBuildingData != null)
                 return requiredBuildingData;
-            if (Game1.buildingData.TryGetValue(Ls.Data.RequiredBuilding, out requiredBuildingData))
+            if (Game1.buildingData.TryGetValue(ls.Data.RequiredBuilding, out requiredBuildingData))
                 return requiredBuildingData;
             return null;
         }
     }
-    public string RequiredBuilding => Ls.Data.RequiredBuilding;
+    public string RequiredBuilding => ls.Data.RequiredBuilding;
     private bool? hasRequiredBuilding = null;
     public bool HasRequiredBuilding
     {
         get
         {
-            if (Ls.Data.RequiredBuilding == null)
+            if (ls.Data.RequiredBuilding == null)
                 return true;
-            hasRequiredBuilding ??= Main.HasRequiredBuilding(this);
+            hasRequiredBuilding ??= main.HasRequiredBuilding(this);
             return hasRequiredBuilding ?? false;
         }
     }
     public string? RequiredBuildingText =>
         Wheels.ParseTextOrDefault(
-            Ls.Data.ShopMissingBuildingDescription,
-            Wheels.ParseTextOrDefault(RequiredBuildingData?.Name ?? Ls.Data.RequiredBuilding ?? "???")
+            ls.Data.ShopMissingBuildingDescription,
+            Wheels.ParseTextOrDefault(RequiredBuildingData?.Name ?? ls.Data.RequiredBuilding ?? "???")
         );
     public SDUISprite? RequiredBuildingSprite =>
         RequiredBuildingData != null
@@ -154,7 +155,7 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
     public const int ROW_REPEAT_MAX = 2;
 
     public readonly string LivestockName = Wheels.ParseTextOrDefault(
-        Ls.Data.ShopDisplayName ?? Ls.Data.DisplayName,
+        ls.Data.ShopDisplayName ?? ls.Data.DisplayName,
         "???"
     );
 
@@ -307,7 +308,7 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
     private int animFrame = 0;
     private int rowRepeat = 0;
     public SpriteEffects AnimFlip =>
-        Ls.Data.UseFlippedRightForLeft && AnimRow == 3 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+        ls.Data.UseFlippedRightForLeft && AnimRow == 3 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
     public void ResetAnim()
     {
@@ -317,16 +318,16 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
     }
 
     [Notify]
-    private Texture2D animSpriteSheet = Ls.SpriteSheet;
-    private int spriteWidth = Ls.Data.SpriteWidth;
-    private int spriteHeight = Ls.Data.SpriteHeight;
+    private Texture2D animSpriteSheet = ls.SpriteSheet;
+    private int spriteWidth = ls.Data.SpriteWidth;
+    private int spriteHeight = ls.Data.SpriteHeight;
 
     public SDUISprite AnimSprite
     {
         get
         {
             int realFrame = AnimRow * FRAME_PER_ROW + AnimFrame;
-            if (Ls.Data.UseFlippedRightForLeft && AnimRow == 3)
+            if (ls.Data.UseFlippedRightForLeft && AnimRow == 3)
                 realFrame -= 8;
             return new(
                 AnimSpriteSheet,
@@ -374,11 +375,11 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
         {
             if (altPurchase == null)
             {
-                altPurchase = Ls.AltPurchase.Select((ls) => new BazaarLivestockPurchaseEntry(ls)).ToList();
+                altPurchase = ls.AltPurchase.Select((ls) => new BazaarLivestockPurchaseEntry(ls)).ToList();
                 if (altPurchase.Any())
                     HandleSelectedPurchase(altPurchase[0]);
                 else
-                    HandleSelectedPurchase(new BazaarLivestockPurchaseEntry(Ls));
+                    HandleSelectedPurchase(new BazaarLivestockPurchaseEntry(ls));
             }
             return altPurchase;
         }
@@ -389,28 +390,28 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
     private BazaarLivestockPurchaseEntry? selectedPurchase;
 
     private readonly string baseLivestockName = Wheels.ParseTextOrDefault(
-        Ls.Data.ShopDisplayName ?? Ls.Data.DisplayName,
+        ls.Data.ShopDisplayName ?? ls.Data.DisplayName,
         "???"
     );
 
     [Notify]
     private string purchaseLivestockName = Wheels.ParseTextOrDefault(
-        Ls.Data.ShopDisplayName ?? Ls.Data.DisplayName,
+        ls.Data.ShopDisplayName ?? ls.Data.DisplayName,
         "???"
     );
 
     private readonly string baseLivestockDesc = Wheels.ParseTextOrDefault(
-        Ls.Data.ShopDescription,
+        ls.Data.ShopDescription,
         "??? ???? ?? ????? ?"
     );
 
     [Notify]
-    private string purchaseLivestockDesc = Wheels.ParseTextOrDefault(Ls.Data.ShopDescription, "??? ???? ?? ????? ?");
+    private string purchaseLivestockDesc = Wheels.ParseTextOrDefault(ls.Data.ShopDescription, "??? ???? ?? ????? ?");
 
-    private string baseLivestockDaysDesc = GetLivestockDaysDesc(Ls.Data);
+    private string baseLivestockDaysDesc = GetLivestockDaysDesc(ls.Data);
 
     [Notify]
-    private string purchaseLivestockDaysDesc = GetLivestockDaysDesc(Ls.Data);
+    private string purchaseLivestockDaysDesc = GetLivestockDaysDesc(ls.Data);
 
     public void HandleSelectedPurchase(BazaarLivestockPurchaseEntry purchase)
     {
@@ -466,7 +467,7 @@ public sealed partial record BazaarLivestockEntry(ITopLevelBazaarContext Main, s
     private string buyName = Dialogue.randomName();
 
     public FarmAnimal MakeTransiantFarmAnimal() =>
-        new(Ls.Key, Game1.Multiplayer.getNewID(), Game1.player.UniqueMultiplayerID) { Name = "???" };
+        new(ls.Key, Game1.Multiplayer.getNewID(), Game1.player.UniqueMultiplayerID) { Name = "???" };
 
     internal static void PlayAnimalSound(FarmAnimal animal, string defaultCue)
     {

@@ -3,7 +3,6 @@ using LivestockBazaar.GUI;
 using LivestockBazaar.Model;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Characters;
 using StardewValley.GameData.Shops;
 using StardewValley.Menus;
 using StardewValley.Triggers;
