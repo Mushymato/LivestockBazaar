@@ -27,7 +27,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <SMAPIDependency Include="focustense.StardewUI" Required="true" Version="0.6.1" />
+    <SMAPIDependency Include="focustense.StardewUI" Required="true" Version="0.6.3-unofficial-mushymato.1" />
   </ItemGroup>
 
   <ItemGroup>
