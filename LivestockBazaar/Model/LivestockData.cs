@@ -20,6 +20,7 @@ public sealed record LivestockData
     public const string TRADE_ITEM_ID = "TradeItemId";
     public const string TRADE_ITEM_AMOUNT = "TradeItemAmount";
     public const string TRADE_ITEM_MULT = "TradeItemMult";
+    public const string SHOP_DISPLAY_PRODUCE = "ShopDisplayProduce";
 
     public readonly string Key;
     public readonly FarmAnimalData Data;

@@ -264,6 +264,8 @@
             "mushymato.LivestockBazaar/TradeItemAmount.{{ModId}}_Valgrind": 297,
             // allow chicken to be bought from Generic the default shop
             "mushymato.LivestockBazaar/BuyFrom.{{ModId}}_Generic": true,
+            // override the produced items shown, instead of letting LB automatically compute from data
+            "mushymato.LivestockBazaar/ShopDisplayProduce": "(O){{ModId}}_LICENSE {{ModId}}_EGGFAULT",
           }
         },
       }

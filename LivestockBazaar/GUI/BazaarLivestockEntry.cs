@@ -209,86 +209,110 @@ public sealed partial class BazaarLivestockEntry(ITopLevelBazaarContext main, st
         get
         {
             LivestockData ls = selectedPurchase == null ? Ls : selectedPurchase.Ls;
-            IEnumerable<FarmAnimalProduce>? prodIter = ls.Data.ProduceItemIds;
-            if (prodIter == null)
+            int cnt = 0;
+            if (
+                (
+                    ls.Data.CustomFields?.TryGetValue(
+                        string.Concat(ModEntry.ModId, "/", LivestockData.SHOP_DISPLAY_PRODUCE),
+                        out string? displayProduce
+                    ) ?? false
+                ) && !string.IsNullOrEmpty(displayProduce)
+            )
             {
-                prodIter = ls.Data.DeluxeProduceItemIds;
-                if (prodIter == null)
-                    yield break;
-            }
-            else if (ls.Data.DeluxeProduceItemIds == null)
-            {
-                yield break;
+                string[] itemIds = ArgUtility.SplitBySpaceQuoteAware(displayProduce);
+                foreach (string itemId in itemIds)
+                {
+                    if (ItemRegistry.GetData(itemId) is ParsedItemData itemData)
+                    {
+                        cnt++;
+                        yield return itemData;
+                        if (cnt >= MAX_PRODUCE_DISPLAY)
+                            yield break;
+                    }
+                }
             }
             else
             {
-                prodIter = prodIter.Concat(ls.Data.DeluxeProduceItemIds);
-            }
-
-            HashSet<string> seenProduce = [];
-            int cnt = 0;
-            ItemQueryContext itemQueryContext = new();
-
-            foreach (FarmAnimalProduce prod in prodIter)
-            {
-                if (string.IsNullOrEmpty(prod.ItemId))
-                    continue;
-
-                if (
-                    GetEACItemQueryOverrides(itemQueryContext, ls.Key, prod.ItemId, ref cnt, ref seenProduce)
-                    is List<ParsedItemData> eacIqOverrides1
-                )
+                IEnumerable<FarmAnimalProduce>? prodIter = ls.Data.ProduceItemIds;
+                if (prodIter == null)
                 {
-                    foreach (ParsedItemData itemData1 in eacIqOverrides1)
-                        yield return itemData1;
-                    if (cnt >= MAX_PRODUCE_DISPLAY)
+                    prodIter = ls.Data.DeluxeProduceItemIds;
+                    if (prodIter == null)
                         yield break;
-                    continue;
+                }
+                else if (ls.Data.DeluxeProduceItemIds == null)
+                {
+                    yield break;
                 }
                 else
                 {
-                    string qualifiedItemId2 = ItemRegistry.type_object + prod.ItemId;
-                    if (
-                        !seenProduce.Contains(qualifiedItemId2)
-                        && ItemRegistry.GetData(qualifiedItemId2) is ParsedItemData itemData2
-                    )
-                    {
-                        cnt++;
-                        yield return itemData2;
-                        seenProduce.Add(qualifiedItemId2);
-                        if (cnt >= MAX_PRODUCE_DISPLAY)
-                            yield break;
-                    }
+                    prodIter = prodIter.Concat(ls.Data.DeluxeProduceItemIds);
                 }
-            }
 
-            if (ModEntry.EAC?.GetExtraDrops(ls.Key) is Dictionary<string, List<string>> extraDrops)
-            {
-                foreach (string itemId in extraDrops.Values.SelectMany(id => id))
+                HashSet<string> seenProduce = [];
+                ItemQueryContext itemQueryContext = new();
+
+                foreach (FarmAnimalProduce prod in prodIter)
                 {
+                    if (string.IsNullOrEmpty(prod.ItemId))
+                        continue;
+
                     if (
-                        GetEACItemQueryOverrides(itemQueryContext, ls.Key, itemId, ref cnt, ref seenProduce)
-                        is List<ParsedItemData> eacIqOverrides2
+                        GetEACItemQueryOverrides(itemQueryContext, ls.Key, prod.ItemId, ref cnt, ref seenProduce)
+                        is List<ParsedItemData> eacIqOverrides1
                     )
                     {
-                        foreach (ParsedItemData itemData1 in eacIqOverrides2)
+                        foreach (ParsedItemData itemData1 in eacIqOverrides1)
                             yield return itemData1;
                         if (cnt >= MAX_PRODUCE_DISPLAY)
                             yield break;
+                        continue;
                     }
                     else
                     {
-                        string qualifiedItemId1 = ItemRegistry.type_object + itemId;
+                        string qualifiedItemId2 = ItemRegistry.type_object + prod.ItemId;
                         if (
-                            !seenProduce.Contains(qualifiedItemId1)
-                            && ItemRegistry.GetData(qualifiedItemId1) is ParsedItemData itemData3
+                            !seenProduce.Contains(qualifiedItemId2)
+                            && ItemRegistry.GetData(qualifiedItemId2) is ParsedItemData itemData2
                         )
                         {
                             cnt++;
-                            yield return itemData3;
-                            seenProduce.Add(qualifiedItemId1);
+                            yield return itemData2;
+                            seenProduce.Add(qualifiedItemId2);
                             if (cnt >= MAX_PRODUCE_DISPLAY)
                                 yield break;
+                        }
+                    }
+                }
+
+                if (ModEntry.EAC?.GetExtraDrops(ls.Key) is Dictionary<string, List<string>> extraDrops)
+                {
+                    foreach (string itemId in extraDrops.Values.SelectMany(id => id))
+                    {
+                        if (
+                            GetEACItemQueryOverrides(itemQueryContext, ls.Key, itemId, ref cnt, ref seenProduce)
+                            is List<ParsedItemData> eacIqOverrides2
+                        )
+                        {
+                            foreach (ParsedItemData itemData1 in eacIqOverrides2)
+                                yield return itemData1;
+                            if (cnt >= MAX_PRODUCE_DISPLAY)
+                                yield break;
+                        }
+                        else
+                        {
+                            string qualifiedItemId1 = ItemRegistry.type_object + itemId;
+                            if (
+                                !seenProduce.Contains(qualifiedItemId1)
+                                && ItemRegistry.GetData(qualifiedItemId1) is ParsedItemData itemData3
+                            )
+                            {
+                                cnt++;
+                                yield return itemData3;
+                                seenProduce.Add(qualifiedItemId1);
+                                if (cnt >= MAX_PRODUCE_DISPLAY)
+                                    yield break;
+                            }
                         }
                     }
                 }
