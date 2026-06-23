@@ -1,17 +1,19 @@
 {
   "$schema": "https://smapi.io/schemas/i18n.json",
-  // Shop Messages Сообщения Магазина
+  // Shop Messages
   "shop.time-range": "Открыто с {{openTime}} до {{closeTime}}",
   "shop.time-start": "Открывается в {{openTime}}",
   "shop.time-end": "Закрывается в {{closeTime}}",
-  // Config Конфигурация
+  // Config
   "config.VanillaMarnieStock.name": "Родное меню Марни",
   "config.VanillaMarnieStock.tooltip": "Не изменять стандартный ассортимент Марни и её меню магазина.",
   "config.SortMode.name": "Режим сортировки животных",
-  "config.SortMode.tooltip": "Текущий режим сортировки в разделе животных магазина. Также можно изменить напрямую в меню магазина животных.",
+  "config.SortMode.tooltip": "Текущий режим сортировки в разделе животных магазина. Можно изменить напрямую из меню магазина животных.",
   "config.SortIsAsc.name": "Сортировка животных по возрастанию",
-  "config.SortIsAsc.tooltip": "Текущее направление сортировки в разделе животных магазина. Также можно изменить напрямую в меню магазина животных.",
-  // GUI Интерфейс 
+  "config.SortIsAsc.tooltip": "Текущее направление сортировки в разделе животных магазина. Можно изменить напрямую из меню магазина животных.",
+  "config.ShowInternalId.name": "Показывать внутренний ID животных",
+  "config.ShowInternalId.tooltip": "Отображать внутренний ID животного в меню магазина.",
+  // GUI
   "GUI.PurchaseButton": "Купить",
   "GUI.SortAsc": "{{mode}} (↑ ВОЗР.)",
   "GUI.SortDesc": "{{mode}} (↓ УБЫВ.)",
@@ -23,9 +25,22 @@
   "GUI.DaysToMature.Desc": "Созреет через: {{day}} дней",
   "GUI.DaysToProduce.Single.Desc": "Продукция: каждый день",
   "GUI.DaysToProduce.Desc": "Продукция: каждые {{day}} дней",
-  // Animal Manage Menu Меню Управления Животными
+  "GUI.Search": "Поиск...",
+  // Animal Manage Menu
   "GUI.LivestockBazaar.Title": "Скотный Базар",
   "GUI.AnimalManage.Title": "Управление животными",
   "GUI.CombineTitle": "{{lbTitle}}: {{amTitle}}",
-  "GUI.AnimalManage.Cannot": "Другой игрок сейчас управляет животными фермы!"
+  "GUI.AnimalManage.Cannot": "Другой игрок сейчас управляет животными фермы!",
+  "GUI.BuildingSelect.Left": " [ВЛЕВО]",
+  "GUI.BuildingSelect.Right": " [ВПРАВО]",
+  // Screen Read
+  "GUI.ScreenRead.Shop_CantBuy": "Нельзя купить «{{name}}». Причина: {{reason}}",
+  "GUI.ScreenRead.Shop_Price": "Нужно {{price}} {{item}}",
+  "GUI.ScreenRead.Shop": "{{name}}, цена: {{price}} {{item}}, сводка: {{summary}}, описание: {{description}}",
+  "GUI.ScreenRead.AnimalName": "Имя животного",
+  "GUI.ScreenRead.AnimalNameRandom": "Случайное имя",
+  "GUI.ScreenRead.PrevLocation": "Предыдущее местоположение",
+  "GUI.ScreenRead.NextLocation": "Следующее местоположение",
+  "GUI.ScreenRead.EmptySpot": "Пустое место",
+  "GUI.ScreenRead.HeldAnimal": "На руках"
 }
