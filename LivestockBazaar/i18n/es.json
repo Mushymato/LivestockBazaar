@@ -11,6 +11,8 @@
   "config.SortMode.tooltip": "Modo de orden actual de la sección de ganado en la tienda, también puede cambiarse directamente desde el menú de animales personalizado.",
   "config.SortIsAsc.name": "Orden Ascendente del Ganado",
   "config.SortIsAsc.tooltip": "Dirección de orden actual de la sección de ganado en la tienda, también puede cambiarse directamente desde el menú de animales personalizado.",
+  "config.ShowInternalId.name": "Mostrar ID Interno del Ganado",
+  "config.ShowInternalId.tooltip": "Muestra el ID interno del animal de granja en el menú.",
   // Interfaz Gráfica (GUI)
   "GUI.PurchaseButton": "Comprar",
   "GUI.SortAsc": "{{mode}} (ASC)",
@@ -18,5 +20,27 @@
   "GUI.SortMode.Name": "Nombre",
   "GUI.SortMode.Price": "Precio",
   "GUI.SortMode.House": "Casa",
-  "GUI.SortMode.CanBuy": "Puede comprar"
+  "GUI.SortMode.CanBuy": "Puede comprar",
+  "GUI.DaysToMature.Single.Desc": "Crecimiento: 1 día",
+  "GUI.DaysToMature.Desc": "Crecimiento: {{day}} días",
+  "GUI.DaysToProduce.Single.Desc": "Produce: cada día",
+  "GUI.DaysToProduce.Desc": "Produce: cada {{day}} días",
+  "GUI.Search": "Buscar...",
+  // Menú de Gestión de Animales
+  "GUI.LivestockBazaar.Title": "Bazar Ganadero",
+  "GUI.AnimalManage.Title": "Gestionar Animales de Granja",
+  "GUI.CombineTitle": "{{lbTitle}}: {{amTitle}}",
+  "GUI.AnimalManage.Cannot": "¡Otro jugador ya está gestionando los animales de granja!",
+  "GUI.BuildingSelect.Left": " [IZQUIERDA]",
+  "GUI.BuildingSelect.Right": " [DERECHA]",
+  // Lectura de Pantalla
+  "GUI.ScreenRead.Shop_CantBuy": "No se puede comprar {{name}}, Razón: {{reason}}",
+  "GUI.ScreenRead.Shop_Price": "Necesitas {{price}} {{item}}",
+  "GUI.ScreenRead.Shop": "{{name}}, Precio: {{price}} {{item}}, Resumen: {{summary}}, Descripción: {{description}}",
+  "GUI.ScreenRead.AnimalName": "Nombre del Animal",
+  "GUI.ScreenRead.AnimalNameRandom": "Nombre Aleatorio",
+  "GUI.ScreenRead.PrevLocation": "Ubicación Anterior",
+  "GUI.ScreenRead.NextLocation": "Ubicación Siguiente",
+  "GUI.ScreenRead.EmptySpot": "Lugar Vacío",
+  "GUI.ScreenRead.HeldAnimal": "En Brazos"
 }
