@@ -1,0 +1,22 @@
+{
+  "Name": "[CP] Wild Pet Example",
+  "Author": "mushymato",
+  "Version": "0.1.0",
+  "Description": "A wild pet, with adoption event",
+  "UniqueID": "mushymato.WildPetExample",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [
+    "Nexus:???"
+  ],
+  "ContentPackFor": {
+    "UniqueID": "Pathoschild.ContentPatcher"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "mushymato.LivestockBazaar",
+      "IsRequired": true
+    }
+  ],
+  "mushymato.LivestockBazaar_WildAnimals": "T",
+  "mushymato.LivestockBazaar_TalkingAnimals": "T"
+}
