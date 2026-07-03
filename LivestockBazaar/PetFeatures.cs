@@ -1,4 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -20,9 +22,173 @@ using StardewValley.Triggers;
 
 namespace LivestockBazaar;
 
+#region yoinked from TrinketTinker
+public sealed class ChatterLinesData
+{
+    /// <summary>Game state query condition</summary>
+    public string? Condition { get; set; } = null;
+
+    /// <summary>Precedence of this chatter line, lower is earlier</summary>
+    public int Precedence { get; set; } = 0;
+
+    /// <summary>Setting priority means setting a negative precedence</summary>
+    public int Priority
+    {
+        set => Precedence = -value;
+    }
+
+    /// <summary>Ordered dialogue lines, one will be picked at random. Supports translation keys.</summary>
+    public List<string>? Lines { get; set; } = null;
+
+    /// <summary>Response dialogue lines, used for $q and other cross dialogue key things. Supports translation keys.</summary>
+    public Dictionary<string, string>? Responses { get; set; } = null;
+
+    public static implicit operator ChatterLinesData(string value) => new() { Lines = [value] };
+}
+
+public sealed class AnimalTalkCtx(string dialogueAsset, string? portraitAsset)
+{
+    private const string QQQ = "???";
+    private Dialogue? chosenDialogue = null;
+    private readonly FieldInfo dialogueField = typeof(NPC).GetField(
+        "dialogue",
+        BindingFlags.NonPublic | BindingFlags.Instance
+    )!;
+    private readonly FieldInfo portraitField = typeof(NPC).GetField(
+        "portrait",
+        BindingFlags.NonPublic | BindingFlags.Instance
+    )!;
+    private readonly NPC speakerNPC = new(null, Vector2.Zero, "", 0, QQQ, null, eventActor: false) { Name = QQQ };
+    private Dictionary<string, ChatterLinesData> Chatter =>
+        Game1.content.Load<Dictionary<string, ChatterLinesData>>(dialogueAsset);
+    private Texture2D? Portrait =>
+        portraitAsset != null && Game1.content.DoesAssetExist<Texture2D>(portraitAsset)
+            ? Game1.content.Load<Texture2D>(portraitAsset)
+            : null;
+    private readonly HashSet<string> seenToday = [];
+
+    public bool TryShowDialogue(string speakerName, Farmer who, GameLocation l)
+    {
+        if (Game1.activeClickableMenu != null)
+        {
+            return false;
+        }
+        if (!chosenDialogue?.isDialogueFinished() ?? false)
+        {
+            Game1.DrawDialogue(chosenDialogue);
+            return true;
+        }
+        chosenDialogue = null;
+        ChatterLinesData? foundLines;
+        GameStateQueryContext ctx = new(l, who, null, null, Random.Shared);
+        // choose chatter data, either from next chatter key proc'd by ability or by conds
+        if (
+            Chatter
+                .Where(
+                    (kv) =>
+                        GameStateQuery.CheckConditions(kv.Value.Condition, ctx)
+                        && kv.Value.Lines != null
+                        && kv.Value.Lines.Except(seenToday).Any()
+                )
+                .ToList()
+                is List<KeyValuePair<string, ChatterLinesData>> foundLinesKV
+            && foundLinesKV.Count > 0
+        )
+        {
+            int minPrecedence = foundLinesKV.Min(kv => kv.Value?.Precedence ?? 0);
+            foundLines = Random
+                .Shared.ChooseFrom(foundLinesKV.Where(kv => (kv.Value?.Precedence ?? 0) == minPrecedence).ToList())
+                .Value;
+            if (foundLines?.Lines == null)
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+        IEnumerable<string> linePool = foundLines.Lines.Except(seenToday);
+        if (!linePool.Any())
+        {
+            // ran out of not yet seen
+            return false;
+        }
+
+        string? chosen = ctx.Random.ChooseFrom(linePool.ToList());
+        if (chosen == null)
+        {
+            return false;
+        }
+        seenToday.Add(chosen);
+
+        // draw the dialogue
+        portraitField.SetValue(speakerNPC, Portrait);
+        speakerNPC.displayName = speakerName;
+
+        if (foundLines.Responses != null)
+        {
+            Dictionary<string, string> TranslatedResponses = foundLines
+                .Responses.Select((kv) => new KeyValuePair<string, string>(kv.Key, ParseText(kv.Value, speakerName)))
+                .ToDictionary((kv) => kv.Key, (kv) => kv.Value);
+            dialogueField.SetValue(speakerNPC, TranslatedResponses);
+        }
+        chosenDialogue = new(speakerNPC, chosen, ParseText(chosen, speakerName));
+        Game1.DrawDialogue(chosenDialogue);
+        return true;
+    }
+
+    private static string ParseText(string text, string speakerName)
+    {
+        return (TokenParser.ParseText(text) ?? text).Replace("%lbspeaker", speakerName);
+    }
+
+    internal static AnimalTalkCtx? MakeForPet(Pet pet)
+    {
+        if (pet.GetPetData() is not PetData petData)
+            return null;
+        if (!petData.CustomFields.TryGetValue(PetFeatures.TalkingAnimals_CustomField, out string? talks))
+            return null;
+        if (string.IsNullOrEmpty(talks))
+            return null;
+        talks = string.Format(talks, pet.petType.Value, pet.whichBreed.Value);
+        ModEntry.Log(talks);
+        string[] args = ArgUtility.SplitBySpaceQuoteAware(talks);
+        if (
+            !ArgUtility.TryGet(args, 0, out string? dialogueAsset, out string error)
+            || !ArgUtility.TryGetOptional(
+                args,
+                1,
+                out string? portraitAsset,
+                out error,
+                defaultValue: pet.Sprite.textureName.Value
+            )
+        )
+        {
+            ModEntry.Log(error, LogLevel.Error);
+            return null;
+        }
+        if (!Game1.content.DoesAssetExist<Dictionary<string, ChatterLinesData>>(dialogueAsset))
+        {
+            ModEntry.Log($"Dialogue asset '{dialogueAsset}' does not exist", LogLevel.Error);
+            return null;
+        }
+        if (!Game1.content.DoesAssetExist<Texture2D>(portraitAsset))
+        {
+            ModEntry.Log($"Portrait asset '{portraitAsset}' does not exist", LogLevel.Debug);
+            portraitAsset = null;
+        }
+        return new AnimalTalkCtx(dialogueAsset, portraitAsset);
+    }
+}
+#endregion
+
 internal static class PetFeatures
 {
     internal const string WildAnimal_ManifestKey = $"{ModEntry.ModId}_WildAnimals";
+    internal const string TalkingAnimals_ManifestKey = $"{ModEntry.ModId}_TalkingAnimals";
+
+    internal const string TalkingAnimals_CustomField = $"{ModEntry.ModId}/Talk";
 
     internal const string ItemQuery_PET_ADOPTION = $"{ModEntry.ModId}_PET_ADOPTION";
     internal const string GSQ_HAVE_PETBOWL = $"{ModEntry.ModId}_HAVE_PETBOWL";
@@ -48,6 +214,7 @@ internal static class PetFeatures
     internal const long FarmAnimalOwnerId = -29997L;
 
     internal static PerScreen<Character?> WildEventTarget = new();
+    internal static ConditionalWeakTable<Pet, AnimalTalkCtx?>? PetChatter;
 
     internal static Action<PetLicense, string>? namePet_Method = AccessTools
         .DeclaredMethod(typeof(PetLicense), "namePet")
@@ -69,49 +236,76 @@ internal static class PetFeatures
         TriggerActionManager.RegisterAction(Action_AdoptPet, DoAdoptPet);
         TriggerActionManager.RegisterAction(Action_AdoptFarmAnimal, DoAdoptFarmAnimal);
 
+        bool hasWildAnimal = false;
+        bool hasTalkingAnimal = false;
+        foreach (IModInfo modInfo in helper.ModRegistry.GetAll())
+        {
+            hasWildAnimal |= modInfo.Manifest.ExtraFields.ContainsKey(WildAnimal_ManifestKey);
+            hasTalkingAnimal |= modInfo.Manifest.ExtraFields.ContainsKey(TalkingAnimals_ManifestKey);
+            if (hasWildAnimal && hasTalkingAnimal)
+                break;
+        }
+
+        if (hasWildAnimal || hasTalkingAnimal)
+        {
+            try
+            {
+                patcher.Patch(
+                    original: AccessTools.DeclaredMethod(typeof(Pet), nameof(Pet.checkAction)),
+                    prefix: new HarmonyMethod(typeof(PetFeatures), nameof(Pet_checkAction_Prefix))
+                );
+                patcher.Patch(
+                    original: AccessTools.DeclaredMethod(typeof(FarmAnimal), nameof(FarmAnimal.pet)),
+                    prefix: new HarmonyMethod(typeof(PetFeatures), nameof(FarmAnimal_pet_Prefix))
+                );
+            }
+            catch (Exception err)
+            {
+                ModEntry.Log($"Failed to patch LivestockBazaar(PetAction):\n{err}", LogLevel.Error);
+            }
+        }
+
         // these feature require wild animal to be enabled
-        if (
-            !helper
-                .ModRegistry.GetAll()
-                .Any(modInfo => modInfo.Manifest.ExtraFields.ContainsKey(WildAnimal_ManifestKey))
-        )
+        if (hasWildAnimal)
+        {
+            // wild pet event
+            TriggerActionManager.RegisterAction(Action_AddWildPet, DoAddWild);
+            TriggerActionManager.RegisterAction(Action_RemoveWildPet, DoRemoveWild);
+            TriggerActionManager.RegisterAction(Action_AddWildFarmAnimal, DoAddWild);
+            TriggerActionManager.RegisterAction(Action_RemoveWildFarmAnimal, DoRemoveWild);
+
+            TokenParser.RegisterParser(WildEvent_WildPos, TS_WildPos);
+            TokenParser.RegisterParser(WildEvent_WildName, TS_WildName);
+            Event.RegisterCommand(WildEvent_AddTargetWildActor, Event_AddTargetWildActor);
+            Event.RegisterCommand(WildEvent_AdoptWild, Event_AdoptWild);
+
+            TriggerActionManager.RegisterTrigger(WildInteract_Trigger);
+
+            helper.Events.GameLoop.Saving += OnSavingClearWilds;
+        }
+        else
         {
             ModEntry.Log(
                 $"No mod has manifest key '{WildAnimal_ManifestKey}', wild animal features are disabled",
-                LogLevel.Info
+                LogLevel.Debug
             );
             return;
         }
 
-        // wild pet event
-        TriggerActionManager.RegisterAction(Action_AddWildPet, DoAddWild);
-        TriggerActionManager.RegisterAction(Action_RemoveWildPet, DoRemoveWild);
-        TriggerActionManager.RegisterAction(Action_AddWildFarmAnimal, DoAddWild);
-        TriggerActionManager.RegisterAction(Action_RemoveWildFarmAnimal, DoRemoveWild);
-
-        TokenParser.RegisterParser(WildEvent_WildPos, TS_WildPos);
-        TokenParser.RegisterParser(WildEvent_WildName, TS_WildName);
-        Event.RegisterCommand(WildEvent_AddTargetWildActor, Event_AddTargetWildActor);
-        Event.RegisterCommand(WildEvent_AdoptWild, Event_AdoptWild);
-
-        try
+        if (hasTalkingAnimal)
         {
-            patcher.Patch(
-                original: AccessTools.DeclaredMethod(typeof(Pet), nameof(Pet.checkAction)),
-                prefix: new HarmonyMethod(typeof(PetFeatures), nameof(Pet_checkAction_Prefix))
-            );
-            patcher.Patch(
-                original: AccessTools.DeclaredMethod(typeof(FarmAnimal), nameof(FarmAnimal.pet)),
-                prefix: new HarmonyMethod(typeof(PetFeatures), nameof(FarmAnimal_pet_Prefix))
-            );
-        }
-        catch (Exception err)
-        {
-            ModEntry.Log($"Failed to patch LivestockBazaar(PetAction):\n{err}", LogLevel.Error);
-        }
-        TriggerActionManager.RegisterTrigger(WildInteract_Trigger);
+            PetChatter = [];
 
-        helper.Events.GameLoop.Saving += OnSavingClearWilds;
+            helper.Events.GameLoop.Saving += OnSavingResetAnimalTalk;
+        }
+        else
+        {
+            ModEntry.Log(
+                $"No mod has manifest key '{TalkingAnimals_ManifestKey}', wild animal features are disabled",
+                LogLevel.Debug
+            );
+            return;
+        }
     }
 
     private static void Event_AddTargetWildActor(Event @event, string[] args, EventContext context)
@@ -307,33 +501,50 @@ internal static class PetFeatures
         );
     }
 
+    private static void OnSavingResetAnimalTalk(object? sender, SavingEventArgs e)
+    {
+        PetChatter?.Clear();
+    }
+
     private static bool FarmAnimal_pet_Prefix(FarmAnimal __instance, Farmer who)
     {
-        if (!__instance.modData.ContainsKey(ModData_Wild))
+        if (__instance.modData.ContainsKey(ModData_Wild))
         {
-            return true;
+            if (!TryInteractTriggerOrEvent(__instance, who, who.currentLocation, out string? error))
+            {
+                ModEntry.Log(error, LogLevel.Error);
+                who.currentLocation.animals.Remove(__instance.myID.Value);
+            }
+            return false;
         }
-        if (!TryInteractTriggerOrEvent(__instance, who, who.currentLocation, out string? error))
-        {
-            ModEntry.Log(error, LogLevel.Error);
-            who.currentLocation.animals.Remove(__instance.myID.Value);
-        }
-        return false;
+
+        return true;
     }
 
     internal static bool Pet_checkAction_Prefix(Pet __instance, Farmer who, GameLocation l)
     {
-        if (!__instance.modData.ContainsKey(ModData_Wild))
+        // wild pet
+        if (__instance.modData.ContainsKey(ModData_Wild))
         {
-            return true;
+            if (!TryInteractTriggerOrEvent(__instance, who, l, out string? error))
+            {
+                ModEntry.Log(error, LogLevel.Error);
+                DelayedAction.functionAfterDelay(() => l.characters.Remove(__instance), 0);
+            }
+            return false;
         }
 
-        if (!TryInteractTriggerOrEvent(__instance, who, l, out string? error))
+        // talking pet
+        if (
+            __instance.grantedFriendshipForPet.Value
+            && PetChatter?.GetValue(__instance, AnimalTalkCtx.MakeForPet) is AnimalTalkCtx talkCtx
+            && talkCtx.TryShowDialogue(__instance.displayName, who, l)
+        )
         {
-            ModEntry.Log(error, LogLevel.Error);
-            DelayedAction.functionAfterDelay(() => l.characters.Remove(__instance), 0);
+            return false;
         }
-        return false;
+
+        return true;
     }
 
     private static bool TryInteractTriggerOrEvent(
