@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using LivestockBazaar.GUI;
 using LivestockBazaar.Model;
 using Microsoft.Xna.Framework;
@@ -28,7 +29,7 @@ public static class OpenBazaar
 
     private static bool HAS_STOCK(string[] query, GameStateQueryContext context)
     {
-        if (!ArgUtility.TryGet(query, 1, out string shopName, out string? error, allowBlank: true, "string shopId"))
+        if (!ArgUtility.TryGet(query, 1, out string? shopName, out string? error, allowBlank: true, "string shopId"))
         {
             ModEntry.Log(error, LogLevel.Error);
             return false;
@@ -59,7 +60,11 @@ public static class OpenBazaar
         Args_ShowLivestockShop(args, out _);
     }
 
-    private static bool Action_ShowLivestockShop(string[] args, TriggerActionContext context, out string? error)
+    private static bool Action_ShowLivestockShop(
+        string[] args,
+        TriggerActionContext context,
+        [NotNullWhen(false)] out string? error
+    )
     {
         return Args_ShowLivestockShop(args, out error);
     }

@@ -155,7 +155,7 @@ public sealed class AnimalTalkCtx(string dialogueAsset, string? portraitAsset)
         ModEntry.Log(talks);
         string[] args = ArgUtility.SplitBySpaceQuoteAware(talks);
         if (
-            !ArgUtility.TryGet(args, 0, out string? dialogueAsset, out string error)
+            !ArgUtility.TryGet(args, 0, out string? dialogueAsset, out string? error)
             || !ArgUtility.TryGetOptional(
                 args,
                 1,
@@ -343,7 +343,7 @@ internal static class PetFeatures
         Point tilePoint,
         int direction,
         Character templateChara,
-        string portraitAsset,
+        string? portraitAsset,
         string name
     )
     {
@@ -385,7 +385,7 @@ internal static class PetFeatures
                 args,
                 1,
                 out string wildName,
-                out string error,
+                out string? error,
                 defaultValue: string.Empty,
                 name: "string petName"
             )
@@ -701,7 +701,7 @@ internal static class PetFeatures
         return true;
     }
 
-    private static bool DoAddWild(string[] args, TriggerActionContext context, out string? error)
+    private static bool DoAddWild(string[] args, TriggerActionContext context, [NotNullWhen(false)] out string? error)
     {
         if (!Context.IsMainPlayer)
         {
@@ -709,14 +709,14 @@ internal static class PetFeatures
             return false;
         }
         if (
-            !ArgUtility.TryGet(args, 1, out string locationName, out error, allowBlank: false, name: "string location")
+            !ArgUtility.TryGet(args, 1, out string? locationName, out error, allowBlank: false, name: "string location")
             || !ArgUtility.TryGetPoint(args, 2, out Point pnt, out error, name: "Point pnt")
-            || !ArgUtility.TryGet(args, 4, out string mainId, out error, allowBlank: false, name: "string mainId")
-            || !ArgUtility.TryGet(args, 5, out string subId, out error, allowBlank: false, name: "string subId")
+            || !ArgUtility.TryGet(args, 4, out string? mainId, out error, allowBlank: false, name: "string mainId")
+            || !ArgUtility.TryGet(args, 5, out string? subId, out error, allowBlank: false, name: "string subId")
             || !ArgUtility.TryGetOptional(
                 args,
                 6,
-                out string extraArgs,
+                out string? extraArgs,
                 out error,
                 allowBlank: false,
                 name: "string extraArgs"
@@ -734,7 +734,7 @@ internal static class PetFeatures
         {
             return false;
         }
-        if (!TryGetLocationFromName(locationName, ref error, out GameLocation location))
+        if (!TryGetLocationFromName(locationName, ref error, out GameLocation? location))
         {
             return false;
         }
@@ -755,19 +755,25 @@ internal static class PetFeatures
         };
     }
 
-    private static bool DoRemoveWild(string[] args, TriggerActionContext context, out string? error)
+    private static bool DoRemoveWild(
+        string[] args,
+        TriggerActionContext context,
+        [NotNullWhen(false)] out string? error
+    )
     {
         if (!Context.IsMainPlayer)
         {
             error = $"Only the main player can use '{Action_RemoveWildPet}'";
             return false;
         }
-        if (!ArgUtility.TryGet(args, 1, out string locationName, out error, allowBlank: false, name: "string location"))
+        if (
+            !ArgUtility.TryGet(args, 1, out string? locationName, out error, allowBlank: false, name: "string location")
+        )
         {
             return false;
         }
 
-        if (!TryGetLocationFromName(locationName, ref error, out GameLocation location))
+        if (!TryGetLocationFromName(locationName, ref error, out GameLocation? location))
         {
             return false;
         }
@@ -781,15 +787,8 @@ internal static class PetFeatures
         }
 
         if (
-            !ArgUtility.TryGetOptional(args, 4, out string petId, out error, allowBlank: false, name: "string petId")
-            || !ArgUtility.TryGetOptional(
-                args,
-                5,
-                out string breedId,
-                out error,
-                allowBlank: false,
-                name: "string breedId"
-            )
+            !ArgUtility.TryGet(args, 4, out string? petId, out error, allowBlank: false, name: "string petId")
+            || !ArgUtility.TryGet(args, 5, out string? breedId, out error, allowBlank: false, name: "string breedId")
         )
         {
             return false;
@@ -824,7 +823,11 @@ internal static class PetFeatures
         );
     }
 
-    private static bool TryGetLocationFromName(string locationName, ref string? error, out GameLocation location)
+    private static bool TryGetLocationFromName(
+        string locationName,
+        [NotNullWhen(false)] ref string? error,
+        [NotNullWhen(true)] out GameLocation? location
+    )
     {
         if (locationName.EqualsIgnoreCase("Here"))
             location = Game1.currentLocation;
@@ -850,7 +853,7 @@ internal static class PetFeatures
                 query,
                 1,
                 out string? farmAnimalId,
-                out string error,
+                out string? error,
                 allowBlank: false,
                 name: "string farmAnimalId"
             )
@@ -924,7 +927,11 @@ internal static class PetFeatures
         return true;
     }
 
-    private static bool DoAdoptFarmAnimal(string[] args, TriggerActionContext context, out string? error)
+    private static bool DoAdoptFarmAnimal(
+        string[] args,
+        TriggerActionContext context,
+        [NotNullWhen(false)] out string? error
+    )
     {
         if (
             !ArgUtility.TryGet(
@@ -995,12 +1002,22 @@ internal static class PetFeatures
             return false;
         }
 
-        if (breedId.EqualsIgnoreCase("RANDOM"))
+        if (petDataSpecific.Breeds.Count == 0)
         {
-            breedId = Random.Shared.ChooseFrom(petDataSpecific.Breeds.Select(breed => breed.Id).ToList());
+            error = $"No '{petId}' pet with breed id '{breedId}'";
+            return false;
         }
 
+        if (breedId.EqualsIgnoreCase("RANDOM"))
+        {
+            breedId = Random.Shared.ChooseFrom(petDataSpecific.Breeds.Select(breed => breed.Id).ToList())!;
+        }
+
+#if SDV17
+        if (petDataSpecific.GetPreferredBreed(breedId) is null)
+#else
         if (petDataSpecific.GetBreedById(breedId, allowNull: true) is null)
+#endif
         {
             error = $"No pet with id '{breedId}'";
             return false;
@@ -1010,7 +1027,7 @@ internal static class PetFeatures
         return true;
     }
 
-    private static bool DoAdoptPet(string[] args, TriggerActionContext context, out string? error)
+    private static bool DoAdoptPet(string[] args, TriggerActionContext context, [NotNullWhen(false)] out string? error)
     {
         if (
             !ArgUtility.TryGet(args, 1, out string? petId, out error, allowBlank: false, name: "string petId")
