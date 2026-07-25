@@ -343,6 +343,7 @@ public sealed partial record BazaarContextMain : ITopLevelBazaarContext
             if (SelectedLivestock != livestock)
             {
                 SelectedLivestock = livestock;
+                SelectedLivestock.RandomizeBuyName();
                 Game1.playSound("bigSelect");
             }
         }

@@ -214,7 +214,7 @@ internal static class PetFeatures
     internal const long FarmAnimalOwnerId = -29997L;
 
     internal static PerScreen<Character?> WildEventTarget = new();
-    internal static ConditionalWeakTable<Pet, AnimalTalkCtx?>? PetChatter;
+    internal static readonly ConditionalWeakTable<Pet, AnimalTalkCtx?> PetChatter = [];
 
     internal static Action<PetLicense, string>? namePet_Method = AccessTools
         .DeclaredMethod(typeof(PetLicense), "namePet")
@@ -289,14 +289,12 @@ internal static class PetFeatures
                 $"No mod has manifest key '{WildAnimal_ManifestKey}', wild animal features are disabled",
                 LogLevel.Debug
             );
-            return;
         }
 
         if (hasTalkingAnimal)
         {
-            PetChatter = [];
-
-            helper.Events.GameLoop.Saving += OnSavingResetAnimalTalk;
+            helper.Events.GameLoop.ReturnedToTitle += static (sender, e) => PetChatter.Clear();
+            helper.Events.GameLoop.Saving += static (sender, e) => PetChatter.Clear();
         }
         else
         {
@@ -304,7 +302,6 @@ internal static class PetFeatures
                 $"No mod has manifest key '{TalkingAnimals_ManifestKey}', wild animal features are disabled",
                 LogLevel.Debug
             );
-            return;
         }
     }
 
@@ -499,11 +496,6 @@ internal static class PetFeatures
                 return true;
             }
         );
-    }
-
-    private static void OnSavingResetAnimalTalk(object? sender, SavingEventArgs e)
-    {
-        PetChatter?.Clear();
     }
 
     private static bool FarmAnimal_pet_Prefix(FarmAnimal __instance, Farmer who)
