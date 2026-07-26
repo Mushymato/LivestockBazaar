@@ -193,9 +193,13 @@ internal static class PetFeatures
     internal const string ItemQuery_PET_ADOPTION = $"{ModEntry.ModId}_PET_ADOPTION";
     internal const string GSQ_HAVE_PETBOWL = $"{ModEntry.ModId}_HAVE_PETBOWL";
     internal const string GSQ_HAVE_HOUSING = $"{ModEntry.ModId}_HAVE_HOUSING";
+    internal const string GSQ_PET_HEARTS = $"{ModEntry.ModId}_PET_HEARTS";
 
     internal const string Action_AdoptPet = $"{ModEntry.ModId}_AdoptPet";
     internal const string Action_AdoptFarmAnimal = $"{ModEntry.ModId}_AdoptFarmAnimal";
+    internal const string Action_DismissPet = $"{ModEntry.ModId}_DismissPet";
+    internal const string Action_SetPetInvisible = $"{ModEntry.ModId}_SetPetInvisible";
+    internal const string Action_SetPetVisible = $"{ModEntry.ModId}_SetPetVisible";
 
     internal const string Action_AddWildPet = $"{ModEntry.ModId}_AddWildPet";
     internal const string Action_RemoveWildPet = $"{ModEntry.ModId}_RemoveWildPet";
@@ -232,9 +236,11 @@ internal static class PetFeatures
 
         GameStateQuery.Register(GSQ_HAVE_PETBOWL, HAVE_PETBOWL);
         GameStateQuery.Register(GSQ_HAVE_HOUSING, HAVE_HOUSING);
+        GameStateQuery.Register(GSQ_PET_HEARTS, PET_HEARTS);
 
         TriggerActionManager.RegisterAction(Action_AdoptPet, DoAdoptPet);
         TriggerActionManager.RegisterAction(Action_AdoptFarmAnimal, DoAdoptFarmAnimal);
+        TriggerActionManager.RegisterAction(Action_DismissPet, DoDismissPet);
 
         bool hasWildAnimal = false;
         bool hasTalkingAnimal = false;
@@ -293,8 +299,25 @@ internal static class PetFeatures
 
         if (hasTalkingAnimal)
         {
+            TriggerActionManager.RegisterAction(Action_SetPetInvisible, SetPetInvisible);
+            TriggerActionManager.RegisterAction(Action_SetPetVisible, SetPetVisible);
+
             helper.Events.GameLoop.ReturnedToTitle += static (sender, e) => PetChatter.Clear();
             helper.Events.GameLoop.Saving += static (sender, e) => PetChatter.Clear();
+            try
+            {
+                patcher.Patch(
+                    original: AccessTools.DeclaredMethod(typeof(Pet), nameof(Pet.draw)),
+                    prefix: new HarmonyMethod(typeof(PetFeatures), nameof(Pet_draw_Prefix))
+                    {
+                        priority = Priority.First,
+                    }
+                );
+            }
+            catch (Exception err)
+            {
+                ModEntry.Log($"Failed to patch LivestockBazaar(PetDraw):\n{err}", LogLevel.Error);
+            }
         }
         else
         {
@@ -303,6 +326,49 @@ internal static class PetFeatures
                 LogLevel.Debug
             );
         }
+    }
+
+    private static bool PET_HEARTS(string[] query, GameStateQueryContext context)
+    {
+        if (!Context.IsWorldReady)
+            return false;
+        if (
+            !ArgUtility.TryGet(query, 1, out string? petId, out string? error, allowBlank: false, name: "string petId")
+            || !ArgUtility.TryGet(query, 2, out string? breedId, out error, allowBlank: false, name: "string breedId")
+            || !ArgUtility.TryGetFloat(query, 3, out float minHeart, out error, "float minHeart")
+            || !ArgUtility.TryGetOptionalFloat(
+                query,
+                4,
+                out float maxHeart,
+                out error,
+                float.MaxValue,
+                "float minHeart"
+            )
+        )
+        {
+            ModEntry.Log(error, LogLevel.Error);
+            return false;
+        }
+        bool result = false;
+        Utility.ForEachLocation(
+            delegate(GameLocation location)
+            {
+                foreach (NPC character in location.characters)
+                {
+                    if (character is Pet pet && pet.petType.Value == petId && pet.whichBreed.Value == breedId)
+                    {
+                        double hearts = pet.friendshipTowardFarmer.Value / 200f;
+                        if (minHeart <= hearts && maxHeart >= hearts)
+                        {
+                            result = true;
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+        );
+        return result;
     }
 
     private static void Event_AddTargetWildActor(Event @event, string[] args, EventContext context)
@@ -536,6 +602,13 @@ internal static class PetFeatures
             return false;
         }
 
+        return true;
+    }
+
+    private static bool Pet_draw_Prefix(Pet __instance)
+    {
+        if (__instance.IsInvisible)
+            return false;
         return true;
     }
 
@@ -1057,6 +1130,108 @@ internal static class PetFeatures
         Game1.exitActiveMenu();
         Game1.dialogueUp = false;
         Game1.player.CanMove = true;
+    }
+
+    private static bool DoDismissPet(
+        string[] args,
+        TriggerActionContext context,
+        [NotNullWhen(false)] out string? error
+    )
+    {
+        if (
+            !ArgUtility.TryGet(args, 1, out string? petId, out error, allowBlank: false, name: "string petId")
+            || !ArgUtility.TryGet(args, 2, out string? breedId, out error, allowBlank: false, name: "string breedId")
+        )
+        {
+            return false;
+        }
+        Utility.ForEachLocation(
+            delegate(GameLocation location)
+            {
+                List<Pet> toDismiss = [];
+                foreach (NPC character in location.characters)
+                {
+                    if (character is Pet pet && pet.petType.Value == petId && pet.whichBreed.Value == breedId)
+                    {
+                        toDismiss.Add(pet);
+                    }
+                }
+                if (toDismiss.Count > 0)
+                {
+                    foreach (Pet pet in toDismiss)
+                    {
+                        pet.unassignPetBowl();
+                    }
+                    location.characters.RemoveWhere(toDismiss.Contains);
+                }
+                return true;
+            }
+        );
+        return true;
+    }
+
+    private static bool SetPetInvisible(
+        string[] args,
+        TriggerActionContext context,
+        [NotNullWhen(false)] out string? error
+    )
+    {
+        if (
+            !ArgUtility.TryGet(args, 1, out string? petId, out error, allowBlank: false, name: "string petId")
+            || !ArgUtility.TryGet(args, 2, out string? breedId, out error, allowBlank: false, name: "string breedId")
+            || !ArgUtility.TryGetOptionalInt(
+                args,
+                3,
+                out int daysUntilNotInvisible,
+                out error,
+                1,
+                "string? daysUntilNotInvisible"
+            )
+        )
+        {
+            return false;
+        }
+        Utility.ForEachLocation(
+            delegate(GameLocation location)
+            {
+                foreach (NPC character in location.characters)
+                {
+                    if (character is Pet pet && pet.petType.Value == petId && pet.whichBreed.Value == breedId)
+                    {
+                        pet.IsInvisible = true;
+                        pet.daysUntilNotInvisible = daysUntilNotInvisible;
+                    }
+                }
+                return true;
+            }
+        );
+        return true;
+    }
+
+    private static bool SetPetVisible(string[] args, TriggerActionContext context, out string error)
+    {
+        if (
+            !ArgUtility.TryGet(args, 1, out string? petId, out error, allowBlank: false, name: "string petId")
+            || !ArgUtility.TryGet(args, 2, out string? breedId, out error, allowBlank: false, name: "string breedId")
+        )
+        {
+            return false;
+        }
+        Utility.ForEachLocation(
+            delegate(GameLocation location)
+            {
+                foreach (NPC character in location.characters)
+                {
+                    if (character is Pet pet && pet.petType.Value == petId && pet.whichBreed.Value == breedId)
+                    {
+                        pet.IsInvisible = false;
+                        pet.daysUntilNotInvisible = 0;
+                    }
+                }
+                return true;
+            }
+        );
+        return true;
     }
 
     internal static IEnumerable<ItemQueryResult> PET_ADOPTION(
