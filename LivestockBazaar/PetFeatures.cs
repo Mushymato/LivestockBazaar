@@ -335,15 +335,8 @@ internal static class PetFeatures
         if (
             !ArgUtility.TryGet(query, 1, out string? petId, out string? error, allowBlank: false, name: "string petId")
             || !ArgUtility.TryGet(query, 2, out string? breedId, out error, allowBlank: false, name: "string breedId")
-            || !ArgUtility.TryGetFloat(query, 3, out float minHeart, out error, "float minHeart")
-            || !ArgUtility.TryGetOptionalFloat(
-                query,
-                4,
-                out float maxHeart,
-                out error,
-                float.MaxValue,
-                "float minHeart"
-            )
+            || !ArgUtility.TryGetInt(query, 3, out int minHeart, out error, "int minHeart")
+            || !ArgUtility.TryGetOptionalInt(query, 4, out int maxHeart, out error, int.MaxValue, "int minHeart")
         )
         {
             ModEntry.Log(error, LogLevel.Error);
@@ -357,7 +350,7 @@ internal static class PetFeatures
                 {
                     if (character is Pet pet && pet.petType.Value == petId && pet.whichBreed.Value == breedId)
                     {
-                        double hearts = pet.friendshipTowardFarmer.Value / 200f;
+                        float hearts = MathF.Floor(pet.friendshipTowardFarmer.Value / 200f);
                         if (minHeart <= hearts && maxHeart >= hearts)
                         {
                             result = true;
