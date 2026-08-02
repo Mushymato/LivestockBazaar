@@ -306,7 +306,21 @@ internal static class PetFeatures
             {
                 patcher.Patch(
                     original: AccessTools.DeclaredMethod(typeof(Pet), nameof(Pet.draw)),
-                    prefix: new HarmonyMethod(typeof(PetFeatures), nameof(Pet_draw_Prefix))
+                    prefix: new HarmonyMethod(typeof(PetFeatures), nameof(Pet_invisible_Prefix))
+                    {
+                        priority = Priority.First,
+                    }
+                );
+                patcher.Patch(
+                    original: AccessTools.DeclaredMethod(typeof(Pet), nameof(Pet.PlaySound)),
+                    prefix: new HarmonyMethod(typeof(PetFeatures), nameof(Pet_invisible_Prefix))
+                    {
+                        priority = Priority.First,
+                    }
+                );
+                patcher.Patch(
+                    original: AccessTools.DeclaredMethod(typeof(Pet), nameof(Pet.hitGround)),
+                    prefix: new HarmonyMethod(typeof(PetFeatures), nameof(Pet_invisible_Prefix))
                     {
                         priority = Priority.First,
                     }
@@ -587,6 +601,10 @@ internal static class PetFeatures
 
     internal static bool Pet_checkAction_Prefix(Pet __instance, Farmer who, GameLocation l)
     {
+        // invisible
+        if (__instance.IsInvisible)
+            return false;
+
         // wild pet
         if (__instance.modData.ContainsKey(ModData_Wild))
         {
@@ -611,7 +629,7 @@ internal static class PetFeatures
         return true;
     }
 
-    private static bool Pet_draw_Prefix(Pet __instance)
+    private static bool Pet_invisible_Prefix(Pet __instance)
     {
         if (__instance.IsInvisible)
             return false;
