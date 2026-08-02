@@ -291,7 +291,7 @@ Each entry in `PetTalk` is a dictionary of `ChatterLinesData`, which has these f
 
 | Property | Type | Default | Notes |
 | -------- | ---- | ------- | ----- |
-| `Portrait` | string | _null_ | Portrait asset path, used if this line is picked. When the picked line has `null` portrait, the fallback asset `Portrait/mushymato.LivestockBazaar_<petId>_<breedId>` is tried if it exists. |
+| `Portrait` | string | _null_ | Portrait asset path, used if this line is picked. When the picked line has `null` portrait, the fallback asset `Portrait/mushymato.LivestockBazaar_<petId>_<breedId>` (or `Portrait/mushymato.LivestockBazaar_<petId>` if the key used is only `<petId>`) is tried if it exists. |
 | `Condition` | string | `"TRUE"` | A [game state query](https://stardewvalleywiki.com/Modding:Game_state_queries) used to check if this chatter should be picked. If you want to have chatter exclusively activate through [ability](004-Ability.md) with `ProcChatterKey`, use `"FALSE"`. |
 | `Precedence` | int | 0 | Sort precedence of this chatter, lower number have their conditions checked first, then one variant is chosen randomly from items of same precedence.<br/> _This field used to be called `Priority` and functioned the other way around (highest first)._ |
 | `Lines` | List\<string\> | _null_ | List of dialogue for this entry, this can be: <ul><li>[literal dialogue](https://stardewvalleywiki.com/Modding:Dialogue) (and i18n token)</li><li>translation key (e.g. `Characters/Dialogue/Abigail:Introduction`)</li><li>[tokenized text](https://stardewvalleywiki.com/Modding:Tokenizable_strings)</li></ul> You can use special value `%lbspeaker` to access the pet's player set name. |
