@@ -1,35 +1,42 @@
 {
   "$schema": "https://smapi.io/schemas/content-patcher.json",
   "Changes": [
+    // Aside from specifying a portrait for a particular line, you can also load a default portrait to this path:
+    // Portraits/mushymato.LivestockBazaar_<petId>__<breedId>
+    // e.g. Portraits/mushymato.LivestockBazaar_Cat_0
+    // Out of consideration for other mods, you should use "Priority": "Default" when you do so, instead of the default Exclusive.
     {
       "Action": "EditData",
-      "Target": "Data/Pets",
-      "TargetField": [
-        "Cat",
-        "CustomFields"
-      ],
+      "Target": "mushymato.LivestockBazaar/PetTalk",
       "Entries": {
-        "mushymato.LivestockBazaar/Talk": "\"{{ModId}}/Dialogue/{0}_{1}\" Portraits/Leah"
+        "Cat_0": {
+          "General_Any": {
+            "Portrait": "Portraits/Leah",
+            "Lines": [
+              "Cat.",
+              "Meow",
+              "Mrrrp",
+              "Mrwah",
+              "I am %lbspeaker"
+            ],
+            "Condition": "TRUE"
+          }
+        }
       }
     },
     {
-      "Action": "Load",
-      "Target": "{{ModId}}/Dialogue/Cat_0",
-      "FromFile": "blank.json"
-    },
-    {
       "Action": "EditData",
-      "Target": "{{ModId}}/Dialogue/Cat_0",
-      "Entries": {
-        "General_Any": {
-          "Lines": [
-            "Cat.",
-            "Meow",
-            "Mrrrp",
-            "Mrwah",
-            "I am %lbspeaker"
-          ],
-          "Condition": "TRUE"
+      "Target": "mushymato.LivestockBazaar/PetTalk",
+      "Fields": {
+        "Cat_0": {
+          "General_Two": {
+            "Portrait": "Portraits/Sebastian",
+            "Lines": [
+              "Snorbin",
+              "Sneebus"
+            ],
+            "Condition": "TRUE"
+          }
         }
       }
     }

@@ -25,6 +25,12 @@ namespace LivestockBazaar;
 #region yoinked from TrinketTinker
 public sealed class ChatterLinesData
 {
+    /// <summary>
+    /// The talk portrait.
+    /// Although it lives here, it is independent of lines unless <see cref="PortraitAssociated"/> is true.
+    /// </summary>
+    public string? Portrait { get; set; } = null;
+
     /// <summary>Game state query condition</summary>
     public string? Condition { get; set; } = null;
 
@@ -45,8 +51,9 @@ public sealed class ChatterLinesData
 
     public static implicit operator ChatterLinesData(string value) => new() { Lines = [value] };
 }
+#endregion
 
-public sealed class AnimalTalkCtx(string dialogueAsset, string? portraitAsset)
+public sealed class AnimalTalkCtx(string dialogueKey)
 {
     private const string QQQ = "???";
     private Dialogue? chosenDialogue = null;
@@ -59,12 +66,7 @@ public sealed class AnimalTalkCtx(string dialogueAsset, string? portraitAsset)
         BindingFlags.NonPublic | BindingFlags.Instance
     )!;
     private readonly NPC speakerNPC = new(null, Vector2.Zero, "", 0, QQQ, null, eventActor: false) { Name = QQQ };
-    private Dictionary<string, ChatterLinesData> Chatter =>
-        Game1.content.Load<Dictionary<string, ChatterLinesData>>(dialogueAsset);
-    private Texture2D? Portrait =>
-        portraitAsset != null && Game1.content.DoesAssetExist<Texture2D>(portraitAsset)
-            ? Game1.content.Load<Texture2D>(portraitAsset)
-            : null;
+
     private readonly HashSet<string> seenToday = [];
 
     public bool TryShowDialogue(string speakerName, Farmer who, GameLocation l)
@@ -78,12 +80,14 @@ public sealed class AnimalTalkCtx(string dialogueAsset, string? portraitAsset)
             Game1.DrawDialogue(chosenDialogue);
             return true;
         }
+        Dictionary<string, ChatterLinesData> chatter = PetFeatures.TalkData.GetValueSafe(dialogueKey);
         chosenDialogue = null;
         ChatterLinesData? foundLines;
         GameStateQueryContext ctx = new(l, who, null, null, Random.Shared);
+        string? portraitPath = null;
         // choose chatter data, either from next chatter key proc'd by ability or by conds
         if (
-            Chatter
+            chatter
                 .Where(
                     (kv) =>
                         GameStateQuery.CheckConditions(kv.Value.Condition, ctx)
@@ -99,6 +103,10 @@ public sealed class AnimalTalkCtx(string dialogueAsset, string? portraitAsset)
             foundLines = Random
                 .Shared.ChooseFrom(foundLinesKV.Where(kv => (kv.Value?.Precedence ?? 0) == minPrecedence).ToList())
                 .Value;
+            if (!string.IsNullOrEmpty(foundLines.Portrait))
+            {
+                portraitPath = foundLines.Portrait;
+            }
             if (foundLines?.Lines == null)
             {
                 return false;
@@ -108,6 +116,14 @@ public sealed class AnimalTalkCtx(string dialogueAsset, string? portraitAsset)
         {
             return false;
         }
+
+        Texture2D? portrait = null;
+        portraitPath ??= $"Portraits/{ModEntry.ModId}_{dialogueKey}";
+        if (Game1.content.DoesAssetExist<Texture2D>(portraitPath))
+        {
+            portrait = Game1.content.Load<Texture2D>(portraitPath);
+        }
+
         IEnumerable<string> linePool = foundLines.Lines.Except(seenToday);
         if (!linePool.Any())
         {
@@ -123,7 +139,7 @@ public sealed class AnimalTalkCtx(string dialogueAsset, string? portraitAsset)
         seenToday.Add(chosen);
 
         // draw the dialogue
-        portraitField.SetValue(speakerNPC, Portrait);
+        portraitField.SetValue(speakerNPC, portrait);
         speakerNPC.displayName = speakerName;
 
         if (foundLines.Responses != null)
@@ -145,50 +161,25 @@ public sealed class AnimalTalkCtx(string dialogueAsset, string? portraitAsset)
 
     internal static AnimalTalkCtx? MakeForPet(Pet pet)
     {
-        if (pet.GetPetData() is not PetData petData)
-            return null;
-        if (!petData.CustomFields.TryGetValue(PetFeatures.TalkingAnimals_CustomField, out string? talks))
-            return null;
-        if (string.IsNullOrEmpty(talks))
-            return null;
-        talks = string.Format(talks, pet.petType.Value, pet.whichBreed.Value);
-        ModEntry.Log(talks);
-        string[] args = ArgUtility.SplitBySpaceQuoteAware(talks);
-        if (
-            !ArgUtility.TryGet(args, 0, out string? dialogueAsset, out string? error)
-            || !ArgUtility.TryGetOptional(
-                args,
-                1,
-                out string? portraitAsset,
-                out error,
-                defaultValue: pet.Sprite.textureName.Value
-            )
-        )
+        string dialogueKey = $"{pet.petType.Value}_{pet.whichBreed.Value}";
+        if (PetFeatures.TalkData.ContainsKey(dialogueKey))
         {
-            ModEntry.Log(error, LogLevel.Error);
-            return null;
+            return new AnimalTalkCtx(dialogueKey);
         }
-        if (!Game1.content.DoesAssetExist<Dictionary<string, ChatterLinesData>>(dialogueAsset))
+        dialogueKey = pet.petType.Value;
+        if (PetFeatures.TalkData.ContainsKey(dialogueKey))
         {
-            ModEntry.Log($"Dialogue asset '{dialogueAsset}' does not exist", LogLevel.Error);
-            return null;
+            return new AnimalTalkCtx(dialogueKey);
         }
-        if (!Game1.content.DoesAssetExist<Texture2D>(portraitAsset))
-        {
-            ModEntry.Log($"Portrait asset '{portraitAsset}' does not exist", LogLevel.Debug);
-            portraitAsset = null;
-        }
-        return new AnimalTalkCtx(dialogueAsset, portraitAsset);
+        return null;
     }
 }
-#endregion
 
 internal static class PetFeatures
 {
     internal const string WildAnimal_ManifestKey = $"{ModEntry.ModId}_WildAnimals";
     internal const string TalkingAnimals_ManifestKey = $"{ModEntry.ModId}_TalkingAnimals";
-
-    internal const string TalkingAnimals_CustomField = $"{ModEntry.ModId}/Talk";
+    internal const string TalkingAnimals_Pet_Asset = $"{ModEntry.ModId}/PetTalk";
 
     internal const string ItemQuery_PET_ADOPTION = $"{ModEntry.ModId}_PET_ADOPTION";
     internal const string GSQ_HAVE_PETBOWL = $"{ModEntry.ModId}_HAVE_PETBOWL";
@@ -219,6 +210,11 @@ internal static class PetFeatures
 
     internal static PerScreen<Character?> WildEventTarget = new();
     internal static readonly ConditionalWeakTable<Pet, AnimalTalkCtx?> PetChatter = [];
+    private static Dictionary<string, Dictionary<string, ChatterLinesData>>? talkData = null;
+    internal static Dictionary<string, Dictionary<string, ChatterLinesData>> TalkData =>
+        talkData ??= Game1.content.Load<Dictionary<string, Dictionary<string, ChatterLinesData>>>(
+            TalkingAnimals_Pet_Asset
+        );
 
     internal static Action<PetLicense, string>? namePet_Method = AccessTools
         .DeclaredMethod(typeof(PetLicense), "namePet")
@@ -304,6 +300,8 @@ internal static class PetFeatures
 
             helper.Events.GameLoop.ReturnedToTitle += static (sender, e) => PetChatter.Clear();
             helper.Events.GameLoop.Saving += static (sender, e) => PetChatter.Clear();
+            helper.Events.Content.AssetRequested += OnAssetRequested;
+            helper.Events.Content.AssetsInvalidated += OnAssetInvalidated;
             try
             {
                 patcher.Patch(
@@ -322,10 +320,25 @@ internal static class PetFeatures
         else
         {
             ModEntry.Log(
-                $"No mod has manifest key '{TalkingAnimals_ManifestKey}', wild animal features are disabled",
+                $"No mod has manifest key '{TalkingAnimals_ManifestKey}', talking animal features are disabled",
                 LogLevel.Debug
             );
         }
+    }
+
+    private static void OnAssetRequested(object? sender, AssetRequestedEventArgs e)
+    {
+        if (e.NameWithoutLocale.IsEquivalentTo(TalkingAnimals_Pet_Asset))
+            e.LoadFrom(
+                static () => new Dictionary<string, Dictionary<string, ChatterLinesData>>(),
+                AssetLoadPriority.Exclusive
+            );
+    }
+
+    private static void OnAssetInvalidated(object? sender, AssetsInvalidatedEventArgs e)
+    {
+        if (e.NamesWithoutLocale.Any(name => name.IsEquivalentTo(TalkingAnimals_Pet_Asset)))
+            talkData = null;
     }
 
     private static bool PET_HEARTS(string[] query, GameStateQueryContext context)

@@ -141,6 +141,8 @@ The default values are [tokenizable strings](https://stardewvalleywiki.com/Moddi
 
 ### Extras
 
+Aside from the primary shop menu, this mod also has some modder facing features.
+
 #### Conversation Topic: purchasedAnimal_{animalType}
 
 Helps fix issue of some dialogue never showing up in other languages, because the translated name is used in the vanilla conversation topic.
@@ -148,7 +150,7 @@ This version of the topic uses the animal's internal Id.
 
 #### MailFlag: mushymato.LivestockBazaar_purchasedAnimal_{animalType}
 
-Mail flag indicating an animal had been purchased at least once.
+Mail flag indicating an animal had been purchased at least once. This does not get removed if you sell the animal since it is about whether you ever bought it.
 
 #### Trigger: mushymato.LivestockBazaar_purchasedAnimal
 
@@ -179,6 +181,11 @@ Only the main farm is considered.
 This game state query checks if there are available animal house that would accept the given farm animal.
 All buildable locations are considered.
 
+#### Game State Query: mushymato.LivestockBazaar_PET_HEARTS \<petId\> \<breedId\> \<minHeart\> [maxHeart]
+
+This game state query checks if any pets matching the given `petId` and `breedId` has heart level between the given min and max.
+If you have multiple pets of the same breed, any one of them having the specified heart range will make this return true.
+
 #### Item Query: mushymato.LivestockBazaar_PET_ADOPTION [petId] [breedId] [ignoreBaseProce] [ignoreCanBeAdoptedFromMarnie]
 
 Item query for usage in custom pet shops (NOT animal shops!), works similar to vanilla `PET_ADOPTION` item query but allows filtering.
@@ -203,6 +210,24 @@ Instantly sends a farm animal to an open farm building with a specific name, ski
 - farmAnimalName: this will be the name of the new farm animal.
 
 This action does nothing if there are no free spaces in any buildings.
+
+#### Trigger Action Action: mushymato.LivestockBazaar_DismissPet \<petId\> \<breedId\>
+
+This trigger action dismisses all pets with the given `petId` and `breedId`.
+- petId: this is the top level pet id (i.e. Cat, Dog, Turtle), must provide specific pet.
+- breedId: this is the breed id for particular appearance for pet, must provide specific breed.
+
+#### Trigger Action Action: mushymato.LivestockBazaar_SetPetInvisible \<petId\> \<breedId\>
+
+This trigger action makes all pets with the given `petId` and `breedId` invisible.
+- petId: this is the top level pet id (i.e. Cat, Dog, Turtle), must provide specific pet.
+- breedId: this is the breed id for particular appearance for pet, must provide specific breed.
+
+#### Trigger Action Action: mushymato.LivestockBazaar_SetPetVisible \<petId\> \<breedId\>
+
+This trigger action makes all pets with the given `petId` and `breedId` visible again, if they were set to invisible.
+- petId: this is the top level pet id (i.e. Cat, Dog, Turtle), must provide specific pet.
+- breedId: this is the breed id for particular appearance for pet, must provide specific breed.
 
 ### Wild Pets and Farm Animals
 
@@ -249,3 +274,28 @@ These tokenizable string works within this special event:
 These event commands work within this special event:
 - `mushymato.LivestockBazaar_AddTargetWildActor <X> <Y> <facing>`: Add the target wild pet/farm animal as event actor.
 - `mushymato.LivestockBazaar_AdoptWild [defaultName]`: Show a naming menu for adopting this wild pet/farm animal.
+
+### Talking Pets
+
+This is a system that allows pets to be given dialogue.
+
+To use this, you must have `"mushymato.LivestockBazaar_WildAnimals": "T",` in your mod manifest.
+
+See [[CP] Wild Example](%5BCP%5D%20Wild%20Example/data/pettalk.json) for example usage.
+
+#### Custom Asset: Pet Talk
+
+You need to add a `mushymato.LivestockBazaar/PetTalk` entry keyed by a particular `<petId>_<breedId>`, or only by `<petId>`. The key with a specific breed has higher priority.
+
+Each entry in `PetTalk` is a dictionary of `ChatterLinesData`, which has these fields:
+
+| Property | Type | Default | Notes |
+| -------- | ---- | ------- | ----- |
+| `Portrait` | string | _null_ | Portrait asset path, used if this line is picked. When the picked line has `null` portrait, the fallback asset `Portrait/mushymato.LivestockBazaar_<petId>_<breedId>` is tried if it exists. |
+| `Condition` | string | `"TRUE"` | A [game state query](https://stardewvalleywiki.com/Modding:Game_state_queries) used to check if this chatter should be picked. If you want to have chatter exclusively activate through [ability](004-Ability.md) with `ProcChatterKey`, use `"FALSE"`. |
+| `Precedence` | int | 0 | Sort precedence of this chatter, lower number have their conditions checked first, then one variant is chosen randomly from items of same precedence.<br/> _This field used to be called `Priority` and functioned the other way around (highest first)._ |
+| `Lines` | List\<string\> | _null_ | List of dialogue for this entry, this can be: <ul><li>[literal dialogue](https://stardewvalleywiki.com/Modding:Dialogue) (and i18n token)</li><li>translation key (e.g. `Characters/Dialogue/Abigail:Introduction`)</li><li>[tokenized text](https://stardewvalleywiki.com/Modding:Tokenizable_strings)</li></ul> You can use special value `%lbspeaker` to access the pet's player set name. |
+| `Responses` | Dictionary\<string, string\> | _null_ | Response keys, needed only if your dialogue has `$q` that point to responses. |
+
+A pet will talk until you have seen all dialogue it has for this particular day. This resets every day.
+
