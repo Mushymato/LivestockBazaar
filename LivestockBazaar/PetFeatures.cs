@@ -208,6 +208,9 @@ internal static class PetFeatures
 
     internal const long FarmAnimalOwnerId = -29997L;
 
+    private static bool hasWildAnimal = false;
+    private static bool hasTalkingAnimal = false;
+
     internal static PerScreen<Character?> WildEventTarget = new();
     internal static readonly ConditionalWeakTable<Pet, AnimalTalkCtx?> PetChatter = [];
     private static Dictionary<string, Dictionary<string, ChatterLinesData>>? talkData = null;
@@ -238,8 +241,6 @@ internal static class PetFeatures
         TriggerActionManager.RegisterAction(Action_AdoptFarmAnimal, DoAdoptFarmAnimal);
         TriggerActionManager.RegisterAction(Action_DismissPet, DoDismissPet);
 
-        bool hasWildAnimal = false;
-        bool hasTalkingAnimal = false;
         foreach (IModInfo modInfo in helper.ModRegistry.GetAll())
         {
             hasWildAnimal |= modInfo.Manifest.ExtraFields.ContainsKey(WildAnimal_ManifestKey);
@@ -586,7 +587,7 @@ internal static class PetFeatures
 
     private static bool FarmAnimal_pet_Prefix(FarmAnimal __instance, Farmer who)
     {
-        if (__instance.modData.ContainsKey(ModData_Wild))
+        if (hasWildAnimal && __instance.modData.ContainsKey(ModData_Wild))
         {
             if (!TryInteractTriggerOrEvent(__instance, who, who.currentLocation, out string? error))
             {
@@ -606,7 +607,7 @@ internal static class PetFeatures
             return false;
 
         // wild pet
-        if (__instance.modData.ContainsKey(ModData_Wild))
+        if (hasWildAnimal && __instance.modData.ContainsKey(ModData_Wild))
         {
             if (!TryInteractTriggerOrEvent(__instance, who, l, out string? error))
             {
@@ -619,6 +620,7 @@ internal static class PetFeatures
         // talking pet
         if (
             __instance.grantedFriendshipForPet.Value
+            && hasTalkingAnimal
             && PetChatter?.GetValue(__instance, AnimalTalkCtx.MakeForPet) is AnimalTalkCtx talkCtx
             && talkCtx.TryShowDialogue(__instance.displayName, who, l)
         )
