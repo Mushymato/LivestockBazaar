@@ -51,8 +51,8 @@
     </lane>
     <image sprite={@Mods/StardewUI/Sprites/ThinHorizontalDivider} layout="1236px content" margin="0,4,8,0" fit="Stretch"/>
     <lane orientation="horizontal" layout="content stretch">
-      <animal-grid *context={SelectedBuilding1} layout="50% stretch" side="1"/>
-      <animal-grid *context={SelectedBuilding2} layout="100% stretch" side="2"/>
+      <animal-grid *if={HasSelectedBuilding1} *context={SelectedBuilding1} layout={SelectedBuilding1Layout} />
+      <animal-grid *if={HasSelectedBuilding2} *context={SelectedBuilding2} layout= "100% stretch" />
     </lane>
   </lane>
 </frame>

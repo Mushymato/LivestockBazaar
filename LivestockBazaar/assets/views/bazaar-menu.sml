@@ -155,7 +155,8 @@
 
 <template name="infobox">
   <lane margin="0,4" layout="content[256..] stretch" orientation="vertical" horizontal-content-alignment="middle">
-    <label *if={:ShowInternalId} text={:Ls.Key} color="#0006"/>
+    <label *if={:ShowInternalId} text={:InternalId} color="#0006"/>
+    <label *if={:ShowFromMod} text={:FromModName} color={:FromModNameColor} shadow-alpha="0.8"/>
     <image layout="content content[64..]" fit="Contain" horizontal-alignment="middle" vertical-alignment="end" 
     tint={&tint} sprite={AnimSprite} sprite-effects={AnimFlip} />
     <outlet/>

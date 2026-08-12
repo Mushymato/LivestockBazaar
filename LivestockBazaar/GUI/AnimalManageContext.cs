@@ -134,16 +134,23 @@ public sealed partial record AnimalManageContext : ITopLevelBazaarContext
     [Notify]
     private BazaarBuildingEntry? selectedBuilding1 = null;
 
+    public bool HasSelectedBuilding1 => SelectedBuilding1 != null;
+
+    public string SelectedBuilding1Layout => SelectedBuilding2 != null ? "50% stretch" : "100% stretch";
+
     // selected building entry
     [Notify]
     private BazaarBuildingEntry? selectedBuilding2 = null;
+
+    public bool HasSelectedBuilding2 => SelectedBuilding2 != null;
 
     public BazaarLivestockEntry? SelectedLivestock => null;
 
     internal BazaarBuildingEntry? UpdateSelectBuilding(
         BazaarBuildingEntry building,
         BazaarBuildingEntry? existing,
-        BazaarBuildingEntry? other
+        BazaarBuildingEntry? other,
+        BazaarBuildingEntry.SelectionState newState
     )
     {
         if (other == building)
@@ -153,24 +160,37 @@ public sealed partial record AnimalManageContext : ITopLevelBazaarContext
             existing.Select = BazaarBuildingEntry.SelectionState.None;
             existing.HeldAnimalCanLiveHere = true;
         }
+        if (existing == building)
+        {
+            return null;
+        }
         if (BazaarMenu.AMFAEEntry is AnimalManageFarmAnimalEntry amfae)
         {
             building.HeldAnimalCanLiveHere = amfae.Animal.CanLiveIn(building.Building);
         }
+        building.Select = newState;
         Game1.playSound("drumkit6");
         return building;
     }
 
     public void HandleSelectBuilding1(BazaarBuildingEntry building)
     {
-        SelectedBuilding1 = UpdateSelectBuilding(building, SelectedBuilding1, SelectedBuilding2);
-        SelectedBuilding1?.Select = BazaarBuildingEntry.SelectionState.Left;
+        SelectedBuilding1 = UpdateSelectBuilding(
+            building,
+            SelectedBuilding1,
+            SelectedBuilding2,
+            BazaarBuildingEntry.SelectionState.Left
+        );
     }
 
     public void HandleSelectBuilding2(BazaarBuildingEntry building)
     {
-        SelectedBuilding2 = UpdateSelectBuilding(building, SelectedBuilding2, SelectedBuilding1);
-        SelectedBuilding2?.Select = BazaarBuildingEntry.SelectionState.Right;
+        SelectedBuilding2 = UpdateSelectBuilding(
+            building,
+            SelectedBuilding2,
+            SelectedBuilding1,
+            BazaarBuildingEntry.SelectionState.Right
+        );
     }
 
     public void UpdateCanLiveHere()
