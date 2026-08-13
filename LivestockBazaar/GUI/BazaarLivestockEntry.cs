@@ -55,7 +55,7 @@ public sealed partial class BazaarLivestockEntry(ITopLevelBazaarContext main, st
 {
     // config
     public bool ShowInternalId => ModEntry.Config.ShowInternalId;
-    public bool ShowFromMod => ModEntry.MNT != null && !string.IsNullOrEmpty(FromModName);
+    public bool ShowFromMod => FromMod != null;
 
     public LivestockData Ls => ls;
 
@@ -75,18 +75,9 @@ public sealed partial class BazaarLivestockEntry(ITopLevelBazaarContext main, st
     public bool ShowCurrentlyOwnedCount => CurrentlyOwnedCount > 0;
     public int CurrentlyOwnedCount => main.GetCurrentlyOwnedCount(this);
 
-    public IModNameInfo? FromMod { get; } = GetFromMod(ls.Key);
+    public IModNameInfo? FromMod { get; } = ModEntry.GetFromMod(ls.Key);
     public string FromModName => FromMod?.ModName ?? string.Empty;
     public Color? FromModNameColor => FromMod?.ModNameColor ?? Game1.textColor;
-
-    private static IModNameInfo? GetFromMod(string key)
-    {
-        if (ModEntry.MNT?.TryGetModName_FromFarmAnimalType(key, out IModNameInfo? modName) ?? false)
-        {
-            return modName;
-        }
-        return null;
-    }
 
     public string ShopScreenRead
     {

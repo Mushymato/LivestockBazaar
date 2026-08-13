@@ -3,6 +3,7 @@
     <image *if={Held} sprite={:Sprite} layout="80px 80px" padding="4"/>
     <label text={:DisplayName} font="dialogue" padding="4" />
     <label text={:DisplayType} font="small" padding="4" />
+    <label *if={:ShowFromMod}font="small"  text={:FromModName} color={:FromModNameColor} shadow-alpha="0.8" padding="4"/>
     <lane orientation="horizontal" layout="content content" padding="4">
       <panel *repeat={:Hearts}>
         <image *if={:this} sprite={@mushymato.LivestockBazaar/sprites/cursors:heartFull} layout="32px 24px"/>

@@ -1,6 +1,7 @@
 using System.Reflection;
 using HarmonyLib;
 using LivestockBazaar.GUI;
+using LivestockBazaar.Integration;
 using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -20,7 +21,7 @@ public sealed class ModEntry : Mod
     internal static ModConfig Config = null!;
     internal const string ModId = "mushymato.LivestockBazaar";
     internal static Integration.IExtraAnimalConfigApi? EAC = null;
-    internal static Integration.IModNameTooltip? MNT = null;
+    internal static Integration.IModNameAPI? MNT = null;
     private static Type? AH_AnimalQueryMenu = null;
 
     public override void Entry(IModHelper helper)
@@ -50,7 +51,7 @@ public sealed class ModEntry : Mod
         BazaarMenu.Register(Helper);
         Config.Register(Helper, ModManifest);
         EAC = Helper.ModRegistry.GetApi<Integration.IExtraAnimalConfigApi>("selph.ExtraAnimalConfig");
-        MNT = Helper.ModRegistry.GetApi<Integration.IModNameTooltip>("mushymato.ModNameTooltip");
+        MNT = Helper.ModRegistry.GetApi<Integration.IModNameAPI>("mushymato.ModNameTooltip");
 
         // AnimalHusbandryMod
         IModInfo? modInfo = Helper.ModRegistry.Get("DIGUS.ANIMALHUSBANDRYMOD");
@@ -99,5 +100,14 @@ public sealed class ModEntry : Mod
     internal static void LogOnce(string msg, LogLevel level = DEFAULT_LOG_LEVEL)
     {
         mon!.LogOnce(msg, level);
+    }
+
+    internal static IModNameInfo? GetFromMod(string key)
+    {
+        if (MNT?.TryGetModName_FromFarmAnimalType(key, out IModNameInfo? modName) ?? false)
+        {
+            return modName;
+        }
+        return null;
     }
 }

@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Xna.Framework;
+using StardewModdingAPI;
 using StardewValley;
 
 namespace LivestockBazaar.Integration;
@@ -9,6 +10,9 @@ public interface IModNameInfo
     /// <summary>The mod's unique id</summary>
     string ModId { get; }
 
+    /// <summary>The mod info, if this entry matches a real mod</summary>
+    IModInfo? ModInfo { get; }
+
     /// <summary>The mod's name, derived from either the manifest or the special translation asset</summary>
     string ModName { get; }
 
@@ -16,7 +20,7 @@ public interface IModNameInfo
     Color ModNameColor { get; }
 }
 
-public interface IModNameTooltip
+public interface IModNameAPI
 {
     /// <summary>
     /// Try and get info about which mod added an item using a real item instance
@@ -51,9 +55,9 @@ public interface IModNameTooltip
     bool TryGetModName_FromFarmAnimalType(string farmAnimalType, [NotNullWhen(true)] out IModNameInfo? modName);
 
     /// <summary>
-    /// Try and get info about which mod added a farm animal using the farm animal type
+    /// Try and get info about which mod added a NPC using the name name
     /// </summary>
-    /// <param name="npcName">The item id, qualified or unqualified</param>
+    /// <param name="npcName">The NPC's internal name</param>
     /// <param name="modName">A <see cref="IModNameInfo"/> record containing info about the mod.</param>
     /// <returns>True if the mod is found</returns>
     bool TryGetModName_FromNpcName(string npcName, [NotNullWhen(true)] out IModNameInfo? modName);

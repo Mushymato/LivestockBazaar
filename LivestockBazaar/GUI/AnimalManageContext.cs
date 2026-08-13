@@ -26,8 +26,14 @@ public record AnimalManageFarmAnimalEntry(BazaarBuildingEntry Bld, FarmAnimal An
     private const int MAX_HEIGHT = 96;
 
     public string DisplayName => Animal.displayName ?? "???";
-    public string DisplayType => Animal.displayType ?? "ERROR";
+    public string DisplayType => Animal.displayType;
     public string ScreenRead => $"{DisplayType} {DisplayName} {Bld.BuildingManageTooltip}";
+
+    public bool ShowFromMod => FromMod != null;
+    public IModNameInfo? FromMod { get; internal set; } = ModEntry.GetFromMod(Animal.type.Value);
+    public string FromModName => FromMod?.ModName ?? string.Empty;
+    public Color? FromModNameColor => FromMod?.ModNameColor ?? Game1.textColor;
+
     public IEnumerable<bool> Hearts
     {
         get
