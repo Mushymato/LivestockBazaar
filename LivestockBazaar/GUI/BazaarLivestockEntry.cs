@@ -55,7 +55,7 @@ public sealed partial class BazaarLivestockEntry(ITopLevelBazaarContext main, st
 {
     // config
     public bool ShowInternalId => ModEntry.Config.ShowInternalId;
-    public bool ShowFromMod => FromMod != null;
+    public bool ShowFromMod => ModEntry.Config.ShowFromMod && FromMod != null;
 
     public LivestockData Ls => ls;
 

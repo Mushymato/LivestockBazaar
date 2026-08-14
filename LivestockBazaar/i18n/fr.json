@@ -13,6 +13,8 @@
   "config.SortIsAsc.tooltip": "Direction de tri actuelle de la section des animaux de la boutique, peut également être modifiée directement depuis le menu personnalisé de la boutique d'animaux.",
   "config.ShowInternalId.name": "Afficher l'ID interne de l'animal",
   "config.ShowInternalId.tooltip": "Afficher l'ID interne de l'animal de la ferme dans le menu.",
+  "config.ShowFromMod.name": "Livestock Show Mod Name",
+  "config.ShowFromMod.tooltip": "Display which mod added a particular farm animal.",
   // GUI
   "GUI.PurchaseButton": "Acheter",
   "GUI.SortAsc": "{{mode}} (ASC)",

@@ -13,6 +13,8 @@
   "config.SortIsAsc.tooltip": "改变动物商店排序的排序方向。可在商店菜单中直接更改。",
   "config.ShowInternalId.name": "动物商店显示实际ID",
   "config.ShowInternalId.tooltip": "在动物商店里显示此动物的实际ID。",
+  "config.ShowFromMod.name": "动物商店显示模组名",
+  "config.ShowFromMod.tooltip": "显示哪个模组添加此动物。",
   // GUI
   "GUI.PurchaseButton": "购买",
   "GUI.SortAsc": "{{mode}} (升序)",

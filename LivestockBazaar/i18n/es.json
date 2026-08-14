@@ -13,6 +13,8 @@
   "config.SortIsAsc.tooltip": "Dirección de orden actual de la sección de ganado en la tienda, también puede cambiarse directamente desde el menú de animales personalizado.",
   "config.ShowInternalId.name": "Mostrar ID Interno del Ganado",
   "config.ShowInternalId.tooltip": "Muestra el ID interno del animal de granja en el menú.",
+  "config.ShowFromMod.name": "Livestock Show Mod Name",
+  "config.ShowFromMod.tooltip": "Display which mod added a particular farm animal.",
   // Interfaz Gráfica (GUI)
   "GUI.PurchaseButton": "Comprar",
   "GUI.SortAsc": "{{mode}} (ASC)",

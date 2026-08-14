@@ -13,6 +13,8 @@
   "config.SortIsAsc.tooltip": "Текущее направление сортировки в разделе животных магазина. Можно изменить напрямую из меню магазина животных.",
   "config.ShowInternalId.name": "Показывать внутренний ID животных",
   "config.ShowInternalId.tooltip": "Отображать внутренний ID животного в меню магазина.",
+  "config.ShowFromMod.name": "Livestock Show Mod Name",
+  "config.ShowFromMod.tooltip": "Display which mod added a particular farm animal.",
   // GUI
   "GUI.PurchaseButton": "Купить",
   "GUI.SortAsc": "{{mode}} (↑ ВОЗР.)",

@@ -40,6 +40,9 @@ internal sealed class ModConfig
     /// <summary>Show the animal's internal ID in the shop UI</summary>
     public bool ShowInternalId { get; set; } = false;
 
+    /// <summary>Display which mod added a particular farm animal</summary>
+    public bool ShowFromMod { get; set; } = true;
+
     /// <summary>Restore default config values</summary>
     private void Reset()
     {
@@ -47,6 +50,7 @@ internal sealed class ModConfig
         SortMode = LivestockSortMode.Name;
         SortIsAsc = true;
         ShowInternalId = false;
+        ShowFromMod = true;
     }
 
     public void SaveConfig()
@@ -107,5 +111,15 @@ internal sealed class ModConfig
             name: I18n.Config_ShowInternalId_Name,
             tooltip: I18n.Config_ShowInternalId_Tooltip
         );
+        if (ModEntry.MNT != null)
+        {
+            GMCM.AddBoolOption(
+                mod: mod,
+                getValue: () => ShowFromMod,
+                setValue: (value) => ShowFromMod = value,
+                name: I18n.Config_ShowFromMod_Name,
+                tooltip: I18n.Config_ShowFromMod_Tooltip
+            );
+        }
     }
 }

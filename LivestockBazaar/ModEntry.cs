@@ -47,9 +47,10 @@ public sealed class ModEntry : Mod
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
     {
         BazaarMenu.Register(Helper);
-        Config.Register(Helper, ModManifest);
         EAC = Helper.ModRegistry.GetApi<Integration.IExtraAnimalConfigApi>("selph.ExtraAnimalConfig");
         MNT = Helper.ModRegistry.GetApi<Integration.IModNameAPI>("mushymato.ModNameTooltip");
+
+        Config.Register(Helper, ModManifest);
 
         // AnimalHusbandryMod
         IModInfo? modInfo = Helper.ModRegistry.Get("DIGUS.ANIMALHUSBANDRYMOD");

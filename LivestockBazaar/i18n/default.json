@@ -13,6 +13,8 @@
   "config.SortIsAsc.tooltip": "Current sort direction of the livestock portion of shop, can also be changed from the custom animal shop menu directly.",
   "config.ShowInternalId.name": "Livestock Show Internal Id",
   "config.ShowInternalId.tooltip": "Display the farm animal's internal ID in the menu.",
+  "config.ShowFromMod.name": "Livestock Show Mod Name",
+  "config.ShowFromMod.tooltip": "Display which mod added a particular farm animal.",
   // GUI
   "GUI.PurchaseButton": "Purchase",
   "GUI.SortAsc": "{{mode}} (ASC)",
