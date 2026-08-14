@@ -30,7 +30,8 @@ public record AnimalManageFarmAnimalEntry(BazaarBuildingEntry Bld, FarmAnimal An
     public string ScreenRead => $"{DisplayType} {DisplayName} {Bld.BuildingManageTooltip}";
 
     public bool ShowFromMod => FromMod != null;
-    public IModNameInfo? FromMod { get; internal set; } = ModEntry.GetFromMod(Animal.type.Value);
+    public IModNameInfo? FromMod { get; internal set; } =
+        ModEntry.MNT?.GetModName_FromFarmAnimalType(Animal.type.Value);
     public string FromModName => FromMod?.ModName ?? string.Empty;
     public Color? FromModNameColor => FromMod?.ModNameColor ?? Game1.textColor;
 

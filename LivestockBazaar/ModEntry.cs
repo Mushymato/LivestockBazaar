@@ -1,8 +1,6 @@
 using System.Reflection;
 using HarmonyLib;
 using LivestockBazaar.GUI;
-using LivestockBazaar.Integration;
-using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -100,14 +98,5 @@ public sealed class ModEntry : Mod
     internal static void LogOnce(string msg, LogLevel level = DEFAULT_LOG_LEVEL)
     {
         mon!.LogOnce(msg, level);
-    }
-
-    internal static IModNameInfo? GetFromMod(string key)
-    {
-        if (MNT?.TryGetModName_FromFarmAnimalType(key, out IModNameInfo? modName) ?? false)
-        {
-            return modName;
-        }
-        return null;
     }
 }

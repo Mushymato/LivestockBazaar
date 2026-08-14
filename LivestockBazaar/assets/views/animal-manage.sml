@@ -60,7 +60,7 @@
 <template name="animal-grid">
   <scrollable peeking="128" layout={&layout} scrollbar-visibility="Hidden">
     <lane orientation="vertical" padding="12,0,12,0" pointer-leave=|~AnimalManageContext.ClearTooltip()|>
-      <label focusable="true" padding="4,4,0,0" font="dialogue" text={:BuildingName}/>
+      <label focusable="true" padding="4,4,0,0" font="dialogue" text={:BuildingName} shadow-alpha="0.8"/>
       <label focusable="true" padding="4,4,0,8" font="small" screen-read={:BuildingManageTooltip} text={:BuildingLocationCoordinate}/>
       <grid item-layout="length:96" opacity={CanLiveOpacity}>
         <frame *repeat={AMFAEList}

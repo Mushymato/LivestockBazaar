@@ -1,7 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
-using StardewValley;
 
 namespace LivestockBazaar.Integration;
 
@@ -23,42 +22,20 @@ public interface IModNameInfo
 public interface IModNameAPI
 {
     /// <summary>
-    /// Try and get info about which mod added an item using a real item instance
-    /// </summary>
-    /// <param name="item">Item to find mod name for</param>
-    /// <param name="modName">A <see cref="IModNameInfo"/> record containing info about the mod.</param>
-    /// <returns>True if the mod is found</returns>
-    bool TryGetModName(Item? item, [NotNullWhen(true)] out IModNameInfo? modName);
-
-    /// <summary>
-    /// Try and get info about which mod using a real character instance
-    /// </summary>
-    /// <param name="character">The character to find mod name for</param>
-    /// <param name="modName">A <see cref="IModNameInfo"/> record containing info about the mod.</param>
-    /// <returns>True if the mod is found</returns>
-    bool TryGetModName(Character? character, [NotNullWhen(true)] out IModNameInfo? modName);
-
-    /// <summary>
-    /// Try and get info about which mod added an item using the item id
-    /// </summary>
-    /// <param name="itemId">The item id, qualified or unqualified</param>
-    /// <param name="modName">A <see cref="IModNameInfo"/> record containing info about the mod.</param>
-    /// <returns>True if the mod is found</returns>
-    bool TryGetModName_FromItemId(string itemId, [NotNullWhen(true)] out IModNameInfo? modName);
-
-    /// <summary>
     /// Try and get info about which mod added a farm animal using the farm animal type
     /// </summary>
     /// <param name="farmAnimalType">The farm animal type</param>
     /// <param name="modName">A <see cref="IModNameInfo"/> record containing info about the mod.</param>
     /// <returns>True if the mod is found</returns>
     bool TryGetModName_FromFarmAnimalType(string farmAnimalType, [NotNullWhen(true)] out IModNameInfo? modName);
+}
 
-    /// <summary>
-    /// Try and get info about which mod added a NPC using the name name
-    /// </summary>
-    /// <param name="npcName">The NPC's internal name</param>
-    /// <param name="modName">A <see cref="IModNameInfo"/> record containing info about the mod.</param>
-    /// <returns>True if the mod is found</returns>
-    bool TryGetModName_FromNpcName(string npcName, [NotNullWhen(true)] out IModNameInfo? modName);
+public static class IModNameAPIExtension
+{
+    internal static IModNameInfo? GetModName_FromFarmAnimalType(this IModNameAPI api, string key)
+    {
+        if (api.TryGetModName_FromFarmAnimalType(key, out IModNameInfo? modName))
+            return modName;
+        return null;
+    }
 }

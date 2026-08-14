@@ -75,7 +75,7 @@ public sealed partial class BazaarLivestockEntry(ITopLevelBazaarContext main, st
     public bool ShowCurrentlyOwnedCount => CurrentlyOwnedCount > 0;
     public int CurrentlyOwnedCount => main.GetCurrentlyOwnedCount(this);
 
-    public IModNameInfo? FromMod { get; } = ModEntry.GetFromMod(ls.Key);
+    public IModNameInfo? FromMod { get; } = ModEntry.MNT?.GetModName_FromFarmAnimalType(ls.Key);
     public string FromModName => FromMod?.ModName ?? string.Empty;
     public Color? FromModNameColor => FromMod?.ModNameColor ?? Game1.textColor;
 
