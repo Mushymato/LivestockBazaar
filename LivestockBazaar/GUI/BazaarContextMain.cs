@@ -15,7 +15,7 @@ namespace LivestockBazaar.GUI;
 /// <summary>Context for bazaar menu</summary>
 public sealed partial record BazaarContextMain : ITopLevelBazaarContext
 {
-    private const int CELL_W = 192;
+    private const int CELL_W = 190;
 
     // viewport size, could change but ppl should just reopen menu
     public bool IsWidescreen = Game1.viewport.Width >= 1920;

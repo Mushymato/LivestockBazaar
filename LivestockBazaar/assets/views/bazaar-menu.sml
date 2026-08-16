@@ -18,7 +18,7 @@
     <lane *case="1" layout="stretch content" orientation="horizontal">
       <!-- for sale -->
       <scrollable-styled layout={:~BazaarContextMain.ForSaleLayout} >
-        <grid item-layout="length: 192" horizontal-item-alignment="middle">
+        <grid item-layout="length: 192" horizontal-item-alignment="middle" item-spacing="-4,-4">
           <frame *repeat={LivestockEntries} padding="16"
             background={:~BazaarContextMain.Theme_ItemRowBackground}
             background-tint={BackgroundTint}

@@ -27,7 +27,7 @@
         />
       </lane>
       <scrollable peeking="128" layout="100% 200px" scrollbar-visibility="Hidden">
-        <grid item-layout="length:164">
+        <grid item-layout="length:164" item-spacing="-4,-4">
           <frame *repeat={:AllLivestockBuildings}
             background={@mushymato.LivestockBazaar/sprites/cursors:shopBg}
             left-click=|~AnimalManageContext.HandleSelectBuilding1(this)|
